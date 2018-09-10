@@ -4,7 +4,19 @@
   "description": "Web-based GUI for Vulpes",
   "main": "source/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "format": "prettier --write '{source,test}/**/*.js'",
+    "precommit": "lint-staged",
+    "test": "npm run test:format",
+    "test:format": "prettier-check '{source,test}/**/*.js'"
+  },
+  "lint-staged": {
+    "{source,test}/**/*.js": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "engines": {
+    "node": ">=8"
   },
   "repository": {
     "type": "git",
