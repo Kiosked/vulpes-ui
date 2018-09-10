@@ -3,8 +3,6 @@ import Layout from "./Layout.js";
 
 export default class HomePage extends Component {
     render() {
-        return (
-            <Layout>TBA</Layout>
-        );
+        return <Layout>TBA</Layout>;
     }
 }

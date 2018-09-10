@@ -7,7 +7,6 @@ import store from "./redux/index.js";
 import history from "./redux/history.js";
 import HomePage from "./containers/HomePage.js";
 
-
 ReactDOM.render(
     <Provider store={store}>
         <ConnectedRouter history={history}>
