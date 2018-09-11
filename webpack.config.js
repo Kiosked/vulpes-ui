@@ -1,9 +1,12 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const rimraf = require("rimraf").sync;
 
 const DIST = path.resolve(__dirname, "./dist");
 const RESOURCES = path.resolve(__dirname, "./resources");
+
+rimraf(DIST);
 
 module.exports = {
     entry: path.resolve(__dirname, "./source/web/index.js"),
