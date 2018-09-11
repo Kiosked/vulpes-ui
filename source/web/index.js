@@ -7,6 +7,9 @@ import store from "./redux/index.js";
 import history from "./redux/history.js";
 import HomePage from "./containers/HomePage.js";
 
+import "./styles/vulpes.sass";
+import "./styles/base.sass";
+
 ReactDOM.render(
     <Provider store={store}>
         <ConnectedRouter history={history}>

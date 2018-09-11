@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const rimraf = require("rimraf").sync;
 
 const DIST = path.resolve(__dirname, "./dist");
@@ -32,6 +33,21 @@ module.exports = {
                         name: `[name].[ext]`
                     }
                 }
+            },
+            {
+                test: /\.s[ac]ss$/,
+                use: [
+                    MiniCSSExtractPlugin.loader,
+                    "css-loader",
+                    "sass-loader"
+                ]
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCSSExtractPlugin.loader,
+                    "css-loader"
+                ]
             }
         ]
     },
@@ -42,6 +58,9 @@ module.exports = {
     },
 
     plugins: [
+        new MiniCSSExtractPlugin({
+            filename: "[name].css"
+        }),
         new HtmlWebpackPlugin({
             title: "Vulpes",
             template: path.resolve(__dirname, "./resources/template.pug"),

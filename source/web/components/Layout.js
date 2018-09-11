@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import Header from "../containers/Header.js";
 
 const Container = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    width: 800px;
 `;
 
-export default ({ children }) => <Container>{children}</Container>;
+export default ({ children }) => (
+    <Container>
+        <Header />
+        {children}
+    </Container>
+);
