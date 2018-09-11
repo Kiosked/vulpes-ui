@@ -70,5 +70,8 @@
   "peerDependencies": {
     "express": "4.*",
     "vulpes": "0.*"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^4.5.2"
   }
 }

@@ -1,7 +1,9 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const DIST = path.resolve(__dirname, "./dist");
+const RESOURCES = path.resolve(__dirname, "./resources");
 
 module.exports = {
     entry: path.resolve(__dirname, "./source/web/index.js"),
@@ -41,6 +43,12 @@ module.exports = {
             title: "Vulpes",
             template: path.resolve(__dirname, "./resources/template.pug"),
             filename: "index.html"
-        })
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: path.join(RESOURCES, "favicon*"),
+                flatten: true
+            }
+        ])
     ]
 };
