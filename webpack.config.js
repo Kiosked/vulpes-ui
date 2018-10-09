@@ -10,7 +10,9 @@ const RESOURCES = path.resolve(__dirname, "./resources");
 rimraf(DIST);
 
 module.exports = {
-    entry: path.resolve(__dirname, "./source/web/index.js"),
+    entry: [
+        path.resolve(__dirname, "./source/web/index.js"),
+    ],
 
     module: {
         rules: [
@@ -55,6 +57,10 @@ module.exports = {
     output: {
         filename: "bundle.js",
         path: DIST
+    },
+
+    node: {
+        fs: 'empty'
     },
 
     plugins: [

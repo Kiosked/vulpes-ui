@@ -20,8 +20,12 @@ export default () => (
                     <h3>Vulpes</h3>
                 </Navbar.Heading>
                 <Navbar.Divider />
-                <Button className="bp3-minimal" icon="home" text="Dashboard" />
-                <Button className="bp3-minimal" icon="numbered-list" text="Jobs" />
+                <a href="/#">
+                    <Button className="bp3-minimal" icon="home" text="Dashboard" />
+                </a>
+                <a href="/#jobs">
+                    <Button className="bp3-minimal" icon="numbered-list" text="Jobs" />
+                </a>
                 <Button disabled={true} className="bp3-minimal" icon="align-left" text="Log" />
                 <Button disabled={true} className="bp3-minimal" icon="console" text="Terminal" />
                 <Button disabled={true} className="bp3-minimal" icon="cell-tower" text="Hooks" />
