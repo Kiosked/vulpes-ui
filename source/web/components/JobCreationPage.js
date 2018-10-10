@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { FormGroup, InputGroup, ControlGroup, Button } from "@blueprintjs/core";
 import Select from "react-select";
-import CreatableSelect from "react-select/lib/Creatable";
 import styled from "styled-components";
 import Layout from "./Layout";
 import brace from "brace";
 import AceEditor from "react-ace";
+import { fetchJobs } from "../library/app.js";
 
 import "brace/mode/json";
 import "brace/theme/xcode";
@@ -19,34 +19,47 @@ export default class JobCreationPage extends Component {
         super(props);
         this.state = {
             type: "",
-            currentType: "",
             parents: [],
             priority: 0,
             currentParent: "",
             data: JSON.stringify({}, null, 2),
             timelimit: null,
             saveDisabled: false,
-            attemptsMax: null
+            attemptsMax: null,
+            types: []
         };
     }
 
     componentDidMount() {
+        const self = this;
         const parentId = this.props.match.params.parentId;
+        let types = [];
         if (parentId) {
             const parents = this.state.parents;
             parents.push(parentId);
-            this.setState({
+            self.setState({
                 parents: parents
             });
         }
+        fetchJobs(Infinity).then(res => {
+            res.map(job => {
+                types.push(job.type);
+            });
+            var uniqueTypes = types.filter(self.filterUniqueValues);
+            self.setState({ types: uniqueTypes });
+        });
     }
 
-    handleTypeValueChange(value, actionMeta) {
-        this.setState({ currentType: value });
+    filterUniqueValues(value, index, self) {
+        return self.indexOf(value) === index;
     }
 
-    handleTypeSelectChange(value, actionMeta) {
-        this.setState({ type: value.value });
+    setType(e) {
+        this.setState({ type: e.target.value });
+    }
+
+    handleTypeSelect(event) {
+        this.setState({ type: event.target.value });
     }
 
     handlePriorityChange(value) {
@@ -103,7 +116,6 @@ export default class JobCreationPage extends Component {
     }
 
     render() {
-        const typeOptions = [{ value: "", label: "" }];
         const priorityOptions = [
             { value: 0, label: "Normal" },
             { value: -5, label: "Low" },
@@ -112,22 +124,23 @@ export default class JobCreationPage extends Component {
         return (
             <Layout>
                 <h1>New job</h1>
-                <FormGroup
-                    label="Type"
-                    labelFor="type"
-                    labelInfo="(required)"
-                    helperText={this.state.type}
-                >
-                    <CreatableSelect
-                        isClearable
-                        options={typeOptions}
-                        onChange={this.handleTypeSelectChange.bind(this)}
-                        onInputChange={this.handleTypeValueChange.bind(this)}
-                        id="type"
-                        value={
-                            this.state.type.length > 0 ? this.state.type : this.state.currentType
-                        }
-                    />
+                <FormGroup label="Type" labelFor="type" labelInfo="(required)">
+                    <div className="select-editable bp3-select bp3-fill bp3-large">
+                        <select onChange={this.handleTypeSelect.bind(this)} value={this.state.type}>
+                            <For each="type" index="idx" of={this.state.types}>
+                                <option key={idx} value={type}>
+                                    {type}
+                                </option>
+                            </For>
+                        </select>
+                        <input
+                            className="bp3-input bp3-large"
+                            type="text"
+                            name="type"
+                            value={this.state.type}
+                            onChange={this.setType.bind(this)}
+                        />
+                    </div>
                 </FormGroup>
                 <FormGroup label="Priority" labelFor="priority">
                     <Select
