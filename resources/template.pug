@@ -4,5 +4,7 @@ html(lang="en")
         title="Vulpes"
         link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
         link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
+        script(type="text/javascript").
+            window.vulpesAPIBase = window.location.href.split("#")[0];
     body
         div#root

@@ -1,10 +1,13 @@
 import axios from "axios";
+import joinURL from "url-join";
 import { dispatch } from "../redux/index.js";
 import { setJob } from "../actions/app.js";
 
+const API_BASE = window.vulpesAPIBase;
+
 export function fetchJobs(limit) {
     return axios
-        .get(`http://localhost:8081/jobs`, {
+        .get(joinURL(API_BASE, "/jobs"), {
             params: {
                 limit: limit
             }
@@ -20,7 +23,7 @@ export function fetchJobs(limit) {
 
 export function fetchJob(jobId) {
     return axios
-        .get(`http://localhost:8081/job/${jobId}`)
+        .get(joinURL(API_BASE, `/job/${jobId}`))
         .then(function(response) {
             const job = response.data;
             dispatch(
@@ -39,7 +42,7 @@ export function fetchJob(jobId) {
 
 export function fetchJobTree(jobId) {
     return axios
-        .get(`http://localhost:8081/tree/${jobId}`)
+        .get(joinURL(API_BASE, `/tree/${jobId}`))
         .then(function(response) {
             const jobTree = response.data;
             return jobTree;
@@ -52,7 +55,7 @@ export function fetchJobTree(jobId) {
 
 export function startJob(jobId) {
     return axios
-        .get(`http://localhost:8081/start/${jobId}`)
+        .get(joinURL(API_BASE, `/start/${jobId}`))
         .then(function(response) {
             const data = response.data;
             return data;
@@ -65,7 +68,7 @@ export function startJob(jobId) {
 
 export function stopJob(jobId) {
     return axios
-        .get(`http://localhost:8081/stop/${jobId}`)
+        .get(joinURL(API_BASE, `/stop/${jobId}`))
         .then(function(response) {
             const data = response.data;
             return data;
@@ -78,7 +81,7 @@ export function stopJob(jobId) {
 
 export function resetJob(jobId) {
     return axios
-        .get(`http://localhost:8081/reset/${jobId}`)
+        .get(joinURL(API_BASE, `/reset/${jobId}`))
         .then(function(response) {
             const data = response.data;
             return data;
@@ -91,7 +94,7 @@ export function resetJob(jobId) {
 
 export function updateJob(jobId, properties) {
     return axios
-        .post(`http://localhost:8081/update/${jobId}`, {
+        .post(joinURL(API_BASE, `/update/${jobId}`), {
             properties: properties
         })
         .then(function(response) {
@@ -105,7 +108,7 @@ export function updateJob(jobId, properties) {
 
 export function addJob(properties) {
     return axios
-        .post(`http://localhost:8081/add`, {
+        .post(joinURL(API_BASE, `/add`), {
             properties: properties
         })
         .then(function(response) {
