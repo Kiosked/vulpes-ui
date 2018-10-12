@@ -20,8 +20,7 @@ function createRoutes(router, service) {
 
     router.use("/", express.static(path.resolve(__dirname, "../dist")));
     router.get("/jobs", function(req, res) {
-        const limit = req.query.limit;
-        const options = { limit: limit, sort: "created", order: "desc" };
+        const options = { limit: req.query.limit, order: req.query.order, sort: req.query.sort };
         service
             .queryJobs({}, options)
             .then(data => {

@@ -5,11 +5,13 @@ import { setJob } from "../actions/app.js";
 
 const API_BASE = window.vulpesAPIBase;
 
-export function fetchJobs(limit) {
+export function fetchJobs(limit, sort, order) {
     return axios
         .get(joinURL(API_BASE, "/jobs"), {
             params: {
-                limit: limit
+                limit: limit,
+                sort: sort,
+                order: order
             }
         })
         .then(function(response) {
