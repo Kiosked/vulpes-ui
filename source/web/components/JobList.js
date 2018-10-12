@@ -26,13 +26,15 @@ export default class HomePage extends Component {
         super(props);
         this.state = {
             jobs: [],
-            limit: 10
+            limit: 5,
+            length: 0,
+            resultsLeft: true
         };
     }
 
     componentDidMount() {
         fetchJobs(this.state.limit).then(res => {
-            this.setState({ jobs: res });
+            this.setState({ jobs: res, length: res.length });
         });
     }
 
@@ -43,9 +45,13 @@ export default class HomePage extends Component {
     }
 
     loadMore() {
-        this.setState({ limit: this.state.limit + 10 }, () => {
+        this.setState({ limit: this.state.limit + 5 }, () => {
             fetchJobs(this.state.limit).then(res => {
-                this.setState({ jobs: res });
+                if (res.length > this.state.length) {
+                    this.setState({ jobs: res, length: res.length, resultsLeft: true });
+                } else {
+                    this.setState({ resultsLeft: false });
+                }
             });
         });
     }
@@ -109,11 +115,13 @@ export default class HomePage extends Component {
                                 </If> */}
                             </StyledCard>
                         </For>
-                        <StyledButton
-                            icon="plus"
-                            text="More jobs"
-                            onClick={this.loadMore.bind(this)}
-                        />
+                        <If condition={this.state.resultsLeft}>
+                            <StyledButton
+                                icon="plus"
+                                text="More jobs"
+                                onClick={this.loadMore.bind(this)}
+                            />
+                        </If>
                     </Layout>
                 </When>
                 <Otherwise>

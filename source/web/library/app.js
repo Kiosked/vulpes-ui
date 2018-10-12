@@ -2,11 +2,13 @@ import axios from "axios";
 import { dispatch } from "../redux/index.js";
 import { setJob } from "../actions/app.js";
 
-export function fetchJobs(limit) {
+export function fetchJobs(limit, sort, order) {
     return axios
         .get(`http://localhost:8081/jobs`, {
             params: {
-                limit: limit
+                limit: limit,
+                sort: sort,
+                order: order
             }
         })
         .then(function(response) {
