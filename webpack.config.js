@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
+const { HotModuleReplacementPlugin, NoEmitOnErrorsPlugin } = require("webpack");
 const rimraf = require("rimraf").sync;
 
 const DIST = path.resolve(__dirname, "./dist");
@@ -9,7 +10,34 @@ const RESOURCES = path.resolve(__dirname, "./resources");
 
 rimraf(DIST);
 
-module.exports = {
+function getPlugins(mode) {
+    const plugins = [
+        new MiniCSSExtractPlugin({
+            filename: "[name].css"
+        }),
+        new HtmlWebpackPlugin({
+            title: "Vulpes",
+            template: path.resolve(__dirname, "./resources/template.pug"),
+            filename: "index.html"
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: path.join(RESOURCES, "favicon*"),
+                flatten: true
+            }
+        ])
+    ];
+    if (mode === "development") {
+        console.log("Loading dev plugins");
+        plugins.push(
+            new HotModuleReplacementPlugin(),
+            new NoEmitOnErrorsPlugin()
+        );
+    }
+    return plugins;
+}
+
+module.exports = (env, argv) => ({
     entry: [
         path.resolve(__dirname, "./source/web/index.js"),
     ],
@@ -56,27 +84,13 @@ module.exports = {
 
     output: {
         filename: "bundle.js",
-        path: DIST
+        path: DIST,
+        publicPath: "/"
     },
 
     node: {
-        fs: 'empty'
+        fs: "empty"
     },
 
-    plugins: [
-        new MiniCSSExtractPlugin({
-            filename: "[name].css"
-        }),
-        new HtmlWebpackPlugin({
-            title: "Vulpes",
-            template: path.resolve(__dirname, "./resources/template.pug"),
-            filename: "index.html"
-        }),
-        new CopyWebpackPlugin([
-            {
-                from: path.join(RESOURCES, "favicon*"),
-                flatten: true
-            }
-        ])
-    ]
-};
+    plugins: getPlugins(argv.mode || "development")
+});

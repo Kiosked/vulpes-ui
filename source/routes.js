@@ -8,9 +8,7 @@ function createRoutes(router, service) {
             extended: true
         })
     );
-
     router.use(bodyParser.json());
-
     router.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header(
@@ -29,7 +27,8 @@ function createRoutes(router, service) {
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.get("/job/:jobId", function(req, res) {
@@ -40,7 +39,8 @@ function createRoutes(router, service) {
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.get("/tree/:jobId", function(req, res) {
@@ -51,7 +51,8 @@ function createRoutes(router, service) {
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.get("/start/:jobId", function(req, res) {
@@ -59,11 +60,11 @@ function createRoutes(router, service) {
         service
             .startJob(jobId)
             .then(data => {
-                console.log(data);
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.get("/stop/:jobId", function(req, res) {
@@ -71,11 +72,11 @@ function createRoutes(router, service) {
         service
             .stopJob(jobId, "job/result/fail/timeout")
             .then(data => {
-                console.log(data);
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.get("/reset/:jobId", function(req, res) {
@@ -83,25 +84,24 @@ function createRoutes(router, service) {
         service
             .resetJob(jobId)
             .then(data => {
-                console.log(data);
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.post("/update/:jobId", function(req, res) {
         const jobId = req.params.jobId;
         const mergedProperties = req.body.properties;
-        console.log(mergedProperties);
         service
             .updateJob(jobId, mergedProperties)
             .then(data => {
-                console.log(data);
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.get(`/children/:jobId`, function(req, res) {
@@ -109,23 +109,23 @@ function createRoutes(router, service) {
         service
             .getJobChildren(jobId)
             .then(data => {
-                console.log(data);
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
     router.post("/add", function(req, res) {
         const properties = req.body.properties;
-        console.log(properties);
         service
             .addJob(properties)
             .then(data => {
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err.message);
+                console.error(err);
+                res.status(500).send("Internal server error");
             });
     });
 }
