@@ -7,6 +7,7 @@ import history from "../redux/history.js";
 import HomePage from "../containers/HomePage.js";
 import Joblist from "../containers/JobList";
 import JobPage from "../containers/JobPage";
+import JobTree from "../containers/JobTree";
 import JobCreationPage from "../containers/JobCreationPage";
 import "../styles/vulpes.sass";
 import "../styles/base.sass";
@@ -21,6 +22,7 @@ class App extends Component {
                         <Route path="/" exact component={HomePage} />
                         <Route path="/jobs" exact component={Joblist} />
                         <Route path="/job/:jobId" exact component={JobPage} />
+                        <Route path="/job/tree/:jobId" exact component={JobTree} />
                         <Route path="/new" exact component={JobCreationPage} />
                         <Route path="/new/parents/:parentId" exact component={JobCreationPage} />
                     </Switch>

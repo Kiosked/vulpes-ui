@@ -15,12 +15,6 @@ const StyledButton = styled(Button)`
     margin-bottom: 10px;
 `;
 
-const LoaderBox = styled.div`
-    float: right;
-    position: relative;
-    bottom: 50px;
-`;
-
 export default class HomePage extends Component {
     constructor(props) {
         super(props);
@@ -107,12 +101,6 @@ export default class HomePage extends Component {
                                         </li>
                                     </ul>
                                 </div>
-                                {/**
-                                <If condition={job.status.replace("job/status/", "") === "running"}>
-                                    <LoaderBox>
-                                        <Loader type="Watch" color="#00BFFF" height="50" width="50" />
-                                    </LoaderBox>
-                                </If> */}
                             </StyledCard>
                         </For>
                         <If condition={this.state.resultsLeft}>

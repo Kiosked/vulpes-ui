@@ -3,9 +3,7 @@ import styled from "styled-components";
 import _ from "lodash";
 import { Icon, Button } from "@blueprintjs/core";
 import Loader from "react-loader-spinner";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Layout from "./Layout";
-import JobTree from "./JobTree";
 import EditingData from "./EditingData";
 import { fetchJob, startJob, stopJob, updateJob, resetJob } from "../library/app.js";
 
@@ -25,12 +23,12 @@ const JobHeader = styled.div`
     justify-content: space-between;
 `;
 
-const CustomTabList = styled(TabList)`
+const CustomTabList = styled.ul`
     list-style-type: none;
     width: 100%;
 `;
 
-const CustomTab = styled(Tab)`
+const CustomTab = styled.li`
     display: inline;
     border-bottom: 5px solid #219bb6;
     margin-right: 15px;
@@ -170,197 +168,181 @@ export default class JobPage extends Component {
             <Choose>
                 <When condition={this.props.job}>
                     <Layout>
-                        <Tabs defaultFocus={true}>
-                            <CustomTabList>
-                                <CustomTab>Job details</CustomTab>
-                                <CustomTab>Job tree</CustomTab>
-                            </CustomTabList>
-                            <Buttons>
-                                <StyledButton
-                                    icon="add"
-                                    text="New job"
-                                    onClick={this.props.goToNewJobPage}
-                                />
-                                <StyledButton
-                                    icon="add"
-                                    text="New dependent job"
-                                    onClick={this.props.goToNewDependentJobPage.bind(
-                                        this,
-                                        this.props.job.id
-                                    )}
-                                />
-                            </Buttons>
-                            <h1>Job {this.props.job.id}</h1>
-                            <TabPanel>
-                                <JobHeader>
-                                    <h4>Type: {this.props.job.type}</h4>
-                                    <h4>
-                                        <strong>Status: </strong>
-                                        {this.props.job.status.replace("job/status/", "")}
-                                    </h4>
-                                    <h4>Created: {this.parseDate(this.props.job.created)}</h4>
-                                </JobHeader>
-                                <h5>Data:</h5>
-                                <If condition={!_.isEmpty(this.props.job.data)}>
-                                    <IconButton onClick={this.beginEditing.bind(this, "jobData")}>
-                                        Edit job data <Icon icon="edit" iconSize={25} />
+                        <CustomTabList>
+                            <CustomTab onClick={() => this.props.goToJobPage(this.props.job.id)}>
+                                Job details
+                            </CustomTab>
+                            <CustomTab
+                                onClick={() => this.props.goToJobTreePage(this.props.job.id)}
+                            >
+                                Job tree
+                            </CustomTab>
+                        </CustomTabList>
+                        <Buttons>
+                            <StyledButton
+                                icon="add"
+                                text="New job"
+                                onClick={this.props.goToNewJobPage}
+                            />
+                            <StyledButton
+                                icon="add"
+                                text="New dependent job"
+                                onClick={this.props.goToNewDependentJobPage.bind(
+                                    this,
+                                    this.props.job.id
+                                )}
+                            />
+                        </Buttons>
+                        <h1>Job {this.props.job.id}</h1>
+                        <JobHeader>
+                            <h4>Type: {this.props.job.type}</h4>
+                            <h4>
+                                <strong>Status: </strong>
+                                {this.props.job.status.replace("job/status/", "")}
+                            </h4>
+                            <h4>Created: {this.parseDate(this.props.job.created)}</h4>
+                        </JobHeader>
+                        <h5>Data:</h5>
+                        <If condition={!_.isEmpty(this.props.job.data)}>
+                            <IconButton onClick={this.beginEditing.bind(this, "jobData")}>
+                                Edit job data <Icon icon="edit" iconSize={25} />
+                            </IconButton>
+                        </If>
+                        <If condition={!this.state.editingData}>
+                            <ul>
+                                {Object.values(this.props.job.data).map((data, index) => {
+                                    return (
+                                        <li key={index}>
+                                            <strong>
+                                                {Object.keys(this.props.job.data)[index]}:{" "}
+                                            </strong>
+                                            {data.toString()}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </If>
+                        <If condition={this.state.editingData}>
+                            <EditingData
+                                data={this.props.job.data}
+                                id={this.props.job.id}
+                                dataStr="jobData"
+                                saveData={this.sendDataForUpdate.bind(this)}
+                            />
+                        </If>
+                        <h5>Result:</h5>
+                        <ul>
+                            <li>
+                                <strong>
+                                    Type:{" "}
+                                    <span
+                                        className={
+                                            this.props.job.result.type
+                                                ? this.props.job.result.type.replace(
+                                                      "job/result/",
+                                                      ""
+                                                  )
+                                                : ""
+                                        }
+                                    >
+                                        {this.props.job.result.type
+                                            ? this.props.job.result.type.replace("job/result/", "")
+                                            : ""}
+                                    </span>
+                                </strong>
+                            </li>
+                            <li>
+                                <strong>Data:</strong>
+                                <If condition={!_.isEmpty(this.props.job.result.data)}>
+                                    <IconButton
+                                        onClick={this.beginEditing.bind(this, "resultData")}
+                                    >
+                                        Edit result data <Icon icon="edit" iconSize={25} />
                                     </IconButton>
-                                </If>
-                                <If condition={!this.state.editingData}>
-                                    <ul>
-                                        {Object.values(this.props.job.data).map((data, index) => {
-                                            return (
-                                                <li key={index}>
-                                                    <strong>
-                                                        {Object.keys(this.props.job.data)[index]}:{" "}
-                                                    </strong>
-                                                    {data.toString()}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </If>
-                                <If condition={this.state.editingData}>
-                                    <EditingData
-                                        data={this.props.job.data}
-                                        id={this.props.job.id}
-                                        dataStr="jobData"
-                                        saveData={this.sendDataForUpdate.bind(this)}
-                                    />
-                                </If>
-                                <h5>Result:</h5>
-                                <ul>
-                                    <li>
-                                        <strong>
-                                            Type:{" "}
-                                            <span
-                                                className={
-                                                    this.props.job.result.type
-                                                        ? this.props.job.result.type.replace(
-                                                              "job/result/",
-                                                              ""
-                                                          )
-                                                        : ""
+                                    <If condition={!this.state.editingResults}>
+                                        <ul>
+                                            {Object.values(this.props.job.result.data).map(
+                                                (data, index) => {
+                                                    return (
+                                                        <li key={index}>
+                                                            <strong>
+                                                                {
+                                                                    Object.keys(
+                                                                        this.props.job.result.data
+                                                                    )[index]
+                                                                }
+                                                                :{" "}
+                                                            </strong>
+                                                            {data.toString()}
+                                                        </li>
+                                                    );
                                                 }
-                                            >
-                                                {this.props.job.result.type
-                                                    ? this.props.job.result.type.replace(
-                                                          "job/result/",
-                                                          ""
-                                                      )
-                                                    : ""}
-                                            </span>
-                                        </strong>
-                                    </li>
-                                    <li>
-                                        <strong>Data:</strong>
-                                        <If condition={!_.isEmpty(this.props.job.result.data)}>
-                                            <IconButton
-                                                onClick={this.beginEditing.bind(this, "resultData")}
-                                            >
-                                                Edit result data <Icon icon="edit" iconSize={25} />
-                                            </IconButton>
-                                            <If condition={!this.state.editingResults}>
-                                                <ul>
-                                                    {Object.values(this.props.job.result.data).map(
-                                                        (data, index) => {
-                                                            return (
-                                                                <li key={index}>
-                                                                    <strong>
-                                                                        {
-                                                                            Object.keys(
-                                                                                this.props.job
-                                                                                    .result.data
-                                                                            )[index]
-                                                                        }
-                                                                        :{" "}
-                                                                    </strong>
-                                                                    {data.toString()}
-                                                                </li>
-                                                            );
-                                                        }
-                                                    )}
-                                                </ul>
-                                            </If>
-                                            <If condition={this.state.editingResults}>
-                                                <EditingData
-                                                    data={this.props.job.result.data}
-                                                    id={this.props.job.id}
-                                                    dataStr="resultData"
-                                                    saveData={this.sendDataForUpdate.bind(this)}
-                                                />
-                                            </If>
-                                        </If>
-                                    </li>
-                                </ul>
-                                <Buttons>
-                                    <Choose>
-                                        <When
-                                            condition={
-                                                this.props.job.status.replace("job/status/", "") ===
-                                                "pending"
-                                            }
-                                        >
-                                            <IconButton
-                                                onClick={this.startJob.bind(
-                                                    this,
-                                                    this.props.job.id
-                                                )}
-                                            >
-                                                Start job <StyledIcon icon="play" iconSize={25} />
-                                            </IconButton>
-                                        </When>
-                                        <When
-                                            condition={
-                                                this.props.job.status.replace("job/status/", "") ===
-                                                "running"
-                                            }
-                                        >
-                                            <IconButton
-                                                onClick={this.stopJob.bind(this, this.props.job.id)}
-                                            >
-                                                Stop job <StyledIcon icon="stop" iconSize={25} />
-                                            </IconButton>
-                                        </When>
-                                        <When
-                                            condition={
-                                                this.props.job.status.replace("job/status/", "") ===
-                                                    "stopped" &&
-                                                this.props.job.result.type.replace(
-                                                    "job/result/",
-                                                    ""
-                                                ) !== "success"
-                                            }
-                                        >
-                                            <IconButton
-                                                onClick={this.resetJob.bind(
-                                                    this,
-                                                    this.props.job.id
-                                                )}
-                                            >
-                                                Reset job{" "}
-                                                <StyledIcon icon="swap-horizontal" iconSize={20} />
-                                            </IconButton>
-                                        </When>
-                                        <Otherwise />
-                                    </Choose>
-                                </Buttons>
-                                <If condition={this.state.message.length > 0}>
-                                    <If condition={this.state.failed}>
-                                        <Error>{this.state.message}</Error>
+                                            )}
+                                        </ul>
                                     </If>
-                                    <If condition={!this.state.failed}>
-                                        <Success>{this.state.message}</Success>
+                                    <If condition={this.state.editingResults}>
+                                        <EditingData
+                                            data={this.props.job.result.data}
+                                            id={this.props.job.id}
+                                            dataStr="resultData"
+                                            saveData={this.sendDataForUpdate.bind(this)}
+                                        />
                                     </If>
                                 </If>
-                            </TabPanel>
-                            <TabPanel>
-                                <JobTree
-                                    job={this.props.job}
-                                    goToJobPage={this.props.goToJobPage}
-                                />
-                            </TabPanel>
-                        </Tabs>
+                            </li>
+                        </ul>
+                        <Buttons>
+                            <Choose>
+                                <When
+                                    condition={
+                                        this.props.job.status.replace("job/status/", "") ===
+                                        "pending"
+                                    }
+                                >
+                                    <IconButton
+                                        onClick={this.startJob.bind(this, this.props.job.id)}
+                                    >
+                                        Start job <StyledIcon icon="play" iconSize={25} />
+                                    </IconButton>
+                                </When>
+                                <When
+                                    condition={
+                                        this.props.job.status.replace("job/status/", "") ===
+                                        "running"
+                                    }
+                                >
+                                    <IconButton
+                                        onClick={this.stopJob.bind(this, this.props.job.id)}
+                                    >
+                                        Stop job <StyledIcon icon="stop" iconSize={25} />
+                                    </IconButton>
+                                </When>
+                                <When
+                                    condition={
+                                        this.props.job.status.replace("job/status/", "") ===
+                                            "stopped" &&
+                                        this.props.job.result.type.replace("job/result/", "") !==
+                                            "success"
+                                    }
+                                >
+                                    <IconButton
+                                        onClick={this.resetJob.bind(this, this.props.job.id)}
+                                    >
+                                        Reset job{" "}
+                                        <StyledIcon icon="swap-horizontal" iconSize={20} />
+                                    </IconButton>
+                                </When>
+                                <Otherwise />
+                            </Choose>
+                        </Buttons>
+                        <If condition={this.state.message.length > 0}>
+                            <If condition={this.state.failed}>
+                                <Error>{this.state.message}</Error>
+                            </If>
+                            <If condition={!this.state.failed}>
+                                <Success>{this.state.message}</Success>
+                            </If>
+                        </If>
                     </Layout>
                 </When>
                 <Otherwise>

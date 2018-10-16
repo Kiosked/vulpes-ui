@@ -1,8 +1,22 @@
 import React, { Component } from "react";
 import { ReactCytoscape } from "react-cytoscape";
 import Loader from "react-loader-spinner";
+import styled from "styled-components";
 import { fetchJobTree } from "../library/app";
+import Layout from "./Layout";
 import Modal from "./Modal";
+
+const CustomTabList = styled.ul`
+    list-style-type: none;
+    width: 100%;
+`;
+
+const CustomTab = styled.li`
+    display: inline;
+    border-bottom: 5px solid #219bb6;
+    margin-right: 15px;
+    cursor: pointer;
+`;
 
 export default class HomePage extends Component {
     constructor(props) {
@@ -15,7 +29,8 @@ export default class HomePage extends Component {
     }
 
     componentDidMount() {
-        fetchJobTree(this.props.job.id)
+        const jobId = this.props.jobId;
+        fetchJobTree(jobId)
             .then(res => {
                 this.setState({ tree: res });
             })
@@ -26,7 +41,7 @@ export default class HomePage extends Component {
     }
 
     getElements() {
-        const jobId = this.props.job.id;
+        const jobId = this.props.jobId;
         const tree = this.state.tree;
         let nodes = [];
         let edges = [];
@@ -95,29 +110,39 @@ export default class HomePage extends Component {
 
     render() {
         return (
-            <Choose>
-                <When condition={this.state.tree}>
-                    <ReactCytoscape
-                        containerID="cy"
-                        elements={this.getElements()}
-                        cyRef={cy => {
-                            this.cyRef(cy);
-                        }}
-                        cytoscapeOptions={{ wheelSensitivity: 0.1 }}
-                        layout={{ name: "dagre" }}
-                    />
-                    <If condition={this.state.showModal}>
-                        <Modal
-                            data={this.state.modalData}
-                            onClose={this.toggleModal.bind(this)}
-                            goToJobPage={this.props.goToJobPage}
+            <Layout>
+                <CustomTabList>
+                    <CustomTab onClick={() => this.props.goToJobPage(this.props.jobId)}>
+                        Job details
+                    </CustomTab>
+                    <CustomTab onClick={() => this.props.goToJobTreePage(this.props.jobId)}>
+                        Job tree
+                    </CustomTab>
+                </CustomTabList>
+                <Choose>
+                    <When condition={this.state.tree}>
+                        <ReactCytoscape
+                            containerID="cy"
+                            elements={this.getElements()}
+                            cyRef={cy => {
+                                this.cyRef(cy);
+                            }}
+                            cytoscapeOptions={{ wheelSensitivity: 0.1 }}
+                            layout={{ name: "dagre" }}
                         />
-                    </If>
-                </When>
-                <Otherwise>
-                    <Loader type="Puff" color="#00BFFF" height="100" width="100" />
-                </Otherwise>
-            </Choose>
+                        <If condition={this.state.showModal}>
+                            <Modal
+                                data={this.state.modalData}
+                                onClose={this.toggleModal.bind(this)}
+                                goToJobPage={this.props.goToJobPage}
+                            />
+                        </If>
+                    </When>
+                    <Otherwise>
+                        <Loader type="Puff" color="#00BFFF" height="100" width="100" />
+                    </Otherwise>
+                </Choose>
+            </Layout>
         );
     }
 
@@ -130,19 +155,6 @@ export default class HomePage extends Component {
             self.setState({ modalData: jobData });
             self.toggleModal();
         });
-        /** 
-        cy.nodes().animate({
-            css: {
-              'background-color': 'red',
-              'width': 75
-            },
-        }, {
-            duration: 5000,
-            complete: function() {
-                console.log("Done");
-            }
-        });
-        console.log(cy.nodes());*/
     }
 
     toggleModal() {
