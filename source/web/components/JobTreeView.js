@@ -3,24 +3,12 @@ import { ReactCytoscape } from "react-cytoscape";
 import { Spinner } from "@blueprintjs/core";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import Layout from "./Layout";
 import Modal from "./Modal";
 import { JobShape } from "../library/propTypes.js";
 
 function shortID(id) {
     return `${id.split("-")[0]}…`;
 }
-
-const CustomTabList = styled.ul`
-    list-style-type: none;
-    width: 100%;
-`;
-const CustomTab = styled.li`
-    display: inline;
-    border-bottom: 5px solid #219bb6;
-    margin-right: 15px;
-    cursor: pointer;
-`;
 
 export default class JobTreePage extends Component {
     static propTypes = {
@@ -29,17 +17,10 @@ export default class JobTreePage extends Component {
         jobTree: PropTypes.arrayOf(JobShape)
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            showModal: false,
-            modalData: {}
-        };
-    }
-
-    componentDidMount() {
-        this.props.onReady(this.props.jobID);
-    }
+    state = {
+        showModal: false,
+        modalData: {}
+    };
 
     getElements() {
         const tree = [...this.props.jobTree].reverse();
@@ -111,39 +92,29 @@ export default class JobTreePage extends Component {
 
     render() {
         return (
-            <Layout>
-                <CustomTabList>
-                    <CustomTab onClick={() => this.props.goToJobPage(this.props.jobID)}>
-                        Job details
-                    </CustomTab>
-                    <CustomTab onClick={() => this.props.goToJobTreePage(this.props.jobID)}>
-                        Job tree
-                    </CustomTab>
-                </CustomTabList>
-                <Choose>
-                    <When condition={this.props.jobTree && this.props.job}>
-                        <ReactCytoscape
-                            containerID="cy"
-                            elements={this.getElements()}
-                            cyRef={cy => {
-                                this.cyRef(cy);
-                            }}
-                            cytoscapeOptions={{ wheelSensitivity: 0.1 }}
-                            layout={{ name: "dagre" }}
+            <Choose>
+                <When condition={this.props.jobTree && this.props.job}>
+                    <ReactCytoscape
+                        containerID="cy"
+                        elements={this.getElements()}
+                        cyRef={cy => {
+                            this.cyRef(cy);
+                        }}
+                        cytoscapeOptions={{ wheelSensitivity: 0.1 }}
+                        layout={{ name: "dagre" }}
+                    />
+                    <If condition={this.state.showModal}>
+                        <Modal
+                            data={this.state.modalData}
+                            onClose={this.toggleModal.bind(this)}
+                            goToJobPage={this.props.goToJobPage}
                         />
-                        <If condition={this.state.showModal}>
-                            <Modal
-                                data={this.state.modalData}
-                                onClose={this.toggleModal.bind(this)}
-                                goToJobPage={this.props.goToJobPage}
-                            />
-                        </If>
-                    </When>
-                    <Otherwise>
-                        <Spinner />
-                    </Otherwise>
-                </Choose>
-            </Layout>
+                    </If>
+                </When>
+                <Otherwise>
+                    <Spinner />
+                </Otherwise>
+            </Choose>
         );
     }
 

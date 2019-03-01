@@ -1,21 +1,16 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobPage from "../components/JobPage.js";
-import { getJob } from "../selectors/jobs.js";
-import { collectJob, resetJob, stopJob, updateJob } from "../library/jobs.js";
+import { getJob, getJobTree } from "../selectors/jobs.js";
+import { collectJob, collectJobTree, resetJob, stopJob, updateJob } from "../library/jobs.js";
 
 export default connect(
     (state, ownProps) => ({
         job: getJob(state, ownProps.match.params.jobId),
-        jobID: ownProps.match.params.jobId
+        jobID: ownProps.match.params.jobId,
+        jobTree: getJobTree(state, ownProps.match.params.jobId)
     }),
     {
-        goToJobPage: jobID => dispatch => {
-            dispatch(push(`/job/${jobID}`));
-        },
-        goToJobTreePage: jobID => dispatch => {
-            dispatch(push(`/job/tree/${jobID}`));
-        },
         goToNewJobPage: () => dispatch => {
             dispatch(push("/new"));
         },
@@ -24,6 +19,7 @@ export default connect(
         },
         onReady: jobID => () => {
             collectJob(jobID);
+            collectJobTree(jobID);
         },
         resetJob: jobID => () => {
             resetJob(jobID)
