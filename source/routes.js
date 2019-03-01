@@ -1,6 +1,15 @@
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+const pify = require("pify");
+const joinURL = require("url-join");
+const { Symbol: VulpesSymbols } = require("vulpes");
+
+const readFile = pify(fs.readFile);
+
+const DIST = path.resolve(__dirname, "../dist");
+const INDEX = path.join(DIST, "index.html");
 
 function createRoutes(router, service) {
     router.use(
@@ -18,7 +27,18 @@ function createRoutes(router, service) {
         next();
     });
 
-    router.use("/", express.static(path.resolve(__dirname, "../dist")));
+    router.get("/", (req, res) => {
+        readFile(INDEX, "utf8")
+            .then(indexSrc => {
+                const apiBase = req.path.replace(/index\.html.+$/, "");
+                res.send(indexSrc.replace("__VULPES_API_BASE__", apiBase));
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
+    router.use("/", express.static(DIST));
     router.get("/jobs", function(req, res) {
         const options = { limit: req.query.limit, order: req.query.order, sort: req.query.sort };
         service
@@ -70,7 +90,7 @@ function createRoutes(router, service) {
     router.get("/stop/:jobId", function(req, res) {
         const jobId = req.params.jobId;
         service
-            .stopJob(jobId, "job/result/fail/timeout")
+            .stopJob(jobId, VulpesSymbols.JOB_RESULT_TYPE_FAILURE)
             .then(data => {
                 res.status(200).send(data);
             })

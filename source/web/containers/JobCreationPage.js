@@ -1,10 +1,13 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobCreationPage from "../components/JobCreationPage";
-import { addJob } from "../library/app";
+import { addJob, collectAllJobs } from "../library/jobs.js";
+import { getJobTypes } from "../selectors/jobs.js";
 
 export default connect(
-    (state, ownProps) => ({}),
+    (state, ownProps) => ({
+        jobTypes: getJobTypes(state)
+    }),
     {
         addNewJob: properties => dispatch => {
             addJob(properties)
@@ -15,6 +18,9 @@ export default connect(
                 .catch(err => {
                     console.log(err);
                 });
+        },
+        onReady: () => () => {
+            collectAllJobs();
         }
     }
 )(JobCreationPage);

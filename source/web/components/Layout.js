@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import Header from "../containers/Header.js";
+import LayoutErrorBoundary from "./LayoutErrorBoundary.js";
 
 const Container = styled.div`
     width: 800px;
@@ -9,6 +10,6 @@ const Container = styled.div`
 export default ({ children }) => (
     <Container>
         <Header />
-        {children}
+        <LayoutErrorBoundary>{children}</LayoutErrorBoundary>
     </Container>
 );

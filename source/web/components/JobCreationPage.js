@@ -1,39 +1,41 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { FormGroup, InputGroup, ControlGroup, Button } from "@blueprintjs/core";
 import Select from "react-select";
 import styled from "styled-components";
 import Layout from "./Layout";
 import brace from "brace";
 import AceEditor from "react-ace";
-import { fetchJobs } from "../library/app.js";
 
 import "brace/mode/json";
 import "brace/theme/xcode";
+
+const DEFAULT_PRIORITY = 0;
 
 const ParentsInput = styled(InputGroup)`
     width: 90%;
 `;
 
 export default class JobCreationPage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            type: "",
-            parents: [],
-            priority: 0,
-            currentParent: "",
-            data: JSON.stringify({}, null, 2),
-            timelimit: null,
-            saveDisabled: false,
-            attemptsMax: null,
-            types: []
-        };
-    }
+    static propTypes = {
+        jobTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+        onReady: PropTypes.func.isRequired
+    };
+
+    state = {
+        type: "",
+        parents: [],
+        priority: DEFAULT_PRIORITY,
+        currentParent: "",
+        data: JSON.stringify({}, null, 2),
+        timelimit: null,
+        saveDisabled: false,
+        attemptsMax: null
+    };
 
     componentDidMount() {
         const self = this;
         const parentId = this.props.match.params.parentId;
-        let types = [];
         if (parentId) {
             const parents = this.state.parents;
             parents.push(parentId);
@@ -41,17 +43,7 @@ export default class JobCreationPage extends Component {
                 parents: parents
             });
         }
-        fetchJobs(Infinity).then(res => {
-            res.map(job => {
-                types.push(job.type);
-            });
-            var uniqueTypes = types.filter(self.filterUniqueValues);
-            self.setState({ types: uniqueTypes });
-        });
-    }
-
-    filterUniqueValues(value, index, self) {
-        return self.indexOf(value) === index;
+        this.props.onReady();
     }
 
     setType(e) {
@@ -117,17 +109,20 @@ export default class JobCreationPage extends Component {
 
     render() {
         const priorityOptions = [
-            { value: 0, label: "Normal" },
+            { value: DEFAULT_PRIORITY, label: "Normal" },
             { value: -5, label: "Low" },
             { value: 5, label: "High" }
         ];
+        const selectedPriorityOption = priorityOptions.find(
+            opt => opt.value === this.state.priority
+        );
         return (
             <Layout>
                 <h1>New job</h1>
                 <FormGroup label="Type" labelFor="type" labelInfo="(required)">
                     <div className="select-editable bp3-select bp3-fill bp3-large">
                         <select onChange={this.handleTypeSelect.bind(this)} value={this.state.type}>
-                            <For each="type" index="idx" of={this.state.types}>
+                            <For each="type" index="idx" of={this.props.jobTypes}>
                                 <option key={idx} value={type}>
                                     {type}
                                 </option>
@@ -147,6 +142,7 @@ export default class JobCreationPage extends Component {
                         options={priorityOptions}
                         id="priority"
                         onChange={this.handlePriorityChange.bind(this)}
+                        value={selectedPriorityOption}
                     />
                 </FormGroup>
                 <FormGroup
