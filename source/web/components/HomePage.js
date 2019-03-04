@@ -38,41 +38,9 @@ export default class HomePage extends Component {
         onReady: PropTypes.func.isRequired
     };
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         jobs: []
-    //     };
-    // }
-
     componentDidMount() {
         this.props.onReady();
-        // fetchJobs(Infinity).then(res => {
-        //     this.setState({ jobs: res });
-        // });
     }
-
-    // getJobStatusValue(status) {
-    //     const total = this.state.jobs.length;
-    //     const statusTotal = this.state.jobs.filter(
-    //         job => job.status.replace("job/status/", "") === status
-    //     ).length;
-    //     const percentage = (statusTotal * 100) / total;
-    //     return percentage / 100;
-    // }
-
-    // getJobResultValue(result) {
-    //     const stoppedJobs = this.state.jobs.filter(
-    //         job => job.status.replace("job/status/", "") === "stopped"
-    //     );
-    //     const total = stoppedJobs.length;
-    //     const resultTotal = stoppedJobs.filter(
-    //         job =>
-    //             job.result.type ? job.result.type.replace("job/result/", "").includes(result) : ""
-    //     ).length;
-    //     const percentage = (resultTotal * 100) / total;
-    //     return percentage / 100;
-    // }
 
     render() {
         const countsByResult = {
@@ -134,42 +102,6 @@ export default class HomePage extends Component {
                             </JobStat>
                         </JobRow>
                     </TabPanel>
-                    {/* <TabPanel>
-                        <h3>Running jobs</h3>
-                        <ProgressBar
-                            intent="primary"
-                            value={this.getJobStatusValue("running")}
-                            animate={true}
-                        />
-                        <h3>Stopped jobs</h3>
-                        <ProgressBar
-                            intent="primary"
-                            value={this.getJobStatusValue("stopped")}
-                            animate={false}
-                        />
-                        <SubBar>
-                            <h4>Stopped jobs - success</h4>
-                            <ProgressBar
-                                intent="success"
-                                value={this.getJobResultValue("success")}
-                                animate={false}
-                            />
-                        </SubBar>
-                        <SubBar>
-                            <h4>Stopped jobs - fail</h4>
-                            <ProgressBar
-                                intent="danger"
-                                value={this.getJobResultValue("fail")}
-                                animate={false}
-                            />
-                        </SubBar>
-                        <h3>Pending jobs</h3>
-                        <ProgressBar
-                            intent="none"
-                            value={this.getJobStatusValue("pending")}
-                            animate={false}
-                        />
-                    </TabPanel> */}
                 </Tabs>
             </Layout>
         );

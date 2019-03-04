@@ -12,13 +12,8 @@ export default class JobTreePage extends Component {
     static propTypes = {
         job: JobShape.isRequired,
         jobTree: PropTypes.arrayOf(JobShape),
-        // onReady: PropTypes.func.isRequired,
         show: PropTypes.string.isRequired
     };
-
-    // componentDidMount() {
-    //     this.props.onReady(this.props.jobID);
-    // }
 
     render() {
         const canShow = targetJob =>

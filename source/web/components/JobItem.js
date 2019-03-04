@@ -202,40 +202,6 @@ export default class JobItem extends Component {
                         </PaddedValue>
                     </JobDetailCell>
                 </Row>
-                {/* <div>
-                    <h5
-                        className={
-                            job.result.type
-                                ? job.result.type.replace("job/result/", "")
-                                : ""
-                        }
-                    >
-                        {job.id}
-                    </h5>
-                    <ul>
-                        <li>
-                            <strong>Type: </strong>
-                            {job.type}
-                        </li>
-                        <li>
-                            <strong>Status: </strong>
-                            {job.status.replace("job/status/", "")}
-                        </li>
-                        <li>
-                            <strong>Priority: </strong>
-                            <Choose>
-                                <When condition={job.priority === 0}>Normal</When>
-                                <When condition={job.priority === 5}>High</When>
-                                <When condition={job.priority === -5}>Low</When>
-                                <Otherwise>Unknown</Otherwise>
-                            </Choose>
-                        </li>
-                        <li>
-                            <strong>Created: </strong>
-                            {parseDate(job.created)}
-                        </li>
-                    </ul>
-                </div> */}
             </StyledCard>
         );
     }
