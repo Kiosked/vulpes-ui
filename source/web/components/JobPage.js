@@ -65,6 +65,12 @@ export default class JobPage extends Component {
                     >
                         Parent Jobs
                     </CustomTab>
+                    <CustomTab
+                        selected={this.state.tab === "children"}
+                        onClick={() => this.setState({ tab: "children" })}
+                    >
+                        Child Jobs
+                    </CustomTab>
                 </CustomTabList>
                 <Choose>
                     <When condition={this.state.tab === "job"}>
@@ -86,7 +92,10 @@ export default class JobPage extends Component {
                         />
                     </When>
                     <When condition={this.state.tab === "parents"}>
-                        <JobRelatedItemsView jobID={this.props.jobID} show="parents" />
+                        <JobRelatedItemsView job={this.props.job} show="parents" />
+                    </When>
+                    <When condition={this.state.tab === "children"}>
+                        <JobRelatedItemsView job={this.props.job} show="children" />
                     </When>
                 </Choose>
             </Layout>
