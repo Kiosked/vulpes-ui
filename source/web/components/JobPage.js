@@ -5,6 +5,7 @@ import Layout from "./Layout";
 import { JobShape } from "../library/propTypes.js";
 import JobView from "./JobView.js";
 import JobTreeView from "./JobTreeView.js";
+import JobRelatedItemsView from "../containers/JobRelatedItemsView.js";
 
 const CustomTabList = styled.ul`
     list-style-type: none;
@@ -58,6 +59,12 @@ export default class JobPage extends Component {
                     >
                         Job tree
                     </CustomTab>
+                    <CustomTab
+                        selected={this.state.tab === "parents"}
+                        onClick={() => this.setState({ tab: "parents" })}
+                    >
+                        Parent Jobs
+                    </CustomTab>
                 </CustomTabList>
                 <Choose>
                     <When condition={this.state.tab === "job"}>
@@ -77,6 +84,9 @@ export default class JobPage extends Component {
                             jobID={this.props.jobID}
                             jobTree={this.props.jobTree}
                         />
+                    </When>
+                    <When condition={this.state.tab === "parents"}>
+                        <JobRelatedItemsView jobID={this.props.jobID} show="parents" />
                     </When>
                 </Choose>
             </Layout>
