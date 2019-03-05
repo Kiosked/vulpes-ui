@@ -1,50 +1,31 @@
 import React, { Component } from "react";
 import { ReactCytoscape } from "react-cytoscape";
-import Loader from "react-loader-spinner";
+import { Spinner } from "@blueprintjs/core";
+import PropTypes from "prop-types";
 import styled from "styled-components";
-import { fetchJobTree } from "../library/app";
-import Layout from "./Layout";
 import Modal from "./Modal";
+import { JobShape } from "../library/propTypes.js";
 
-const CustomTabList = styled.ul`
-    list-style-type: none;
-    width: 100%;
-`;
+function shortID(id) {
+    return `${id.split("-")[0]}…`;
+}
 
-const CustomTab = styled.li`
-    display: inline;
-    border-bottom: 5px solid #219bb6;
-    margin-right: 15px;
-    cursor: pointer;
-`;
+export default class JobTreePage extends Component {
+    static propTypes = {
+        job: JobShape,
+        jobID: PropTypes.string.isRequired,
+        jobTree: PropTypes.arrayOf(JobShape)
+    };
 
-export default class HomePage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            tree: [],
-            showModal: false,
-            modalData: {}
-        };
-    }
-
-    componentDidMount() {
-        const jobId = this.props.jobId;
-        fetchJobTree(jobId)
-            .then(res => {
-                this.setState({ tree: res });
-            })
-            .catch(err => {
-                console.log(err);
-                throw err;
-            });
-    }
+    state = {
+        showModal: false,
+        modalData: {}
+    };
 
     getElements() {
-        const jobId = this.props.jobId;
-        const tree = this.state.tree;
-        let nodes = [];
-        let edges = [];
+        const tree = [...this.props.jobTree].reverse();
+        const nodes = [];
+        const edges = [];
         if (tree) {
             tree.map((job, index) => {
                 let status = job.result.type ? job.result.type.replace("job/result/", "") : "";
@@ -65,9 +46,9 @@ export default class HomePage extends Component {
                     default:
                         statusColor = "#11479e";
                 }
-                let node = {
+                const node = {
                     data: {
-                        id: index,
+                        id: shortID(job.id),
                         jobParents: job.parents,
                         jobData: {
                             id: job.id,
@@ -78,13 +59,14 @@ export default class HomePage extends Component {
                     },
                     style: {
                         "background-color": statusColor,
-                        shape: jobId === job.id ? "rectangle" : "ellipse",
+                        shape: this.props.jobID === job.id ? "rectangle" : "ellipse",
                         "border-width": "3px",
-                        "border-opacity": jobId === job.id ? "0.7" : "0",
+                        "border-opacity": this.props.jobID === job.id ? "0.7" : "0",
                         color:
-                            job.status.replace("job/status/", "") === "running" ? "white" : "black"
+                            job.status.replace("job/status/", "") === "running" ? "white" : "black",
+                        "font-size": "10px"
                     },
-                    selected: jobId === job.id ? true : false
+                    selected: this.props.jobID === job.id ? true : false
                 };
                 nodes.push(node);
             });
@@ -110,39 +92,29 @@ export default class HomePage extends Component {
 
     render() {
         return (
-            <Layout>
-                <CustomTabList>
-                    <CustomTab onClick={() => this.props.goToJobPage(this.props.jobId)}>
-                        Job details
-                    </CustomTab>
-                    <CustomTab onClick={() => this.props.goToJobTreePage(this.props.jobId)}>
-                        Job tree
-                    </CustomTab>
-                </CustomTabList>
-                <Choose>
-                    <When condition={this.state.tree}>
-                        <ReactCytoscape
-                            containerID="cy"
-                            elements={this.getElements()}
-                            cyRef={cy => {
-                                this.cyRef(cy);
-                            }}
-                            cytoscapeOptions={{ wheelSensitivity: 0.1 }}
-                            layout={{ name: "dagre" }}
+            <Choose>
+                <When condition={this.props.jobTree && this.props.job}>
+                    <ReactCytoscape
+                        containerID="cy"
+                        elements={this.getElements()}
+                        cyRef={cy => {
+                            this.cyRef(cy);
+                        }}
+                        cytoscapeOptions={{ wheelSensitivity: 0.1 }}
+                        layout={{ name: "dagre" }}
+                    />
+                    <If condition={this.state.showModal}>
+                        <Modal
+                            data={this.state.modalData}
+                            onClose={this.toggleModal.bind(this)}
+                            goToJobPage={this.props.goToJobPage}
                         />
-                        <If condition={this.state.showModal}>
-                            <Modal
-                                data={this.state.modalData}
-                                onClose={this.toggleModal.bind(this)}
-                                goToJobPage={this.props.goToJobPage}
-                            />
-                        </If>
-                    </When>
-                    <Otherwise>
-                        <Loader type="Puff" color="#00BFFF" height="100" width="100" />
-                    </Otherwise>
-                </Choose>
-            </Layout>
+                    </If>
+                </When>
+                <Otherwise>
+                    <Spinner />
+                </Otherwise>
+            </Choose>
         );
     }
 

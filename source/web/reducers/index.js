@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
 import routing from "./routing.js";
-import app from "./app.js";
+import jobs from "./jobs.js";
 
 export default combineReducers({
-    routing,
-    app
+    jobs,
+    routing
 });

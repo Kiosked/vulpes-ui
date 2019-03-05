@@ -3,5 +3,9 @@
     "@babel/preset-env",
     "@babel/preset-react"
   ],
-  "plugins": ["react-hot-loader/babel","jsx-control-statements"]
+  "plugins": [
+    "react-hot-loader/babel",
+    "jsx-control-statements",
+    "@babel/plugin-proposal-class-properties"
+  ]
 }

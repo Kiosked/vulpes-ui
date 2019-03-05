@@ -1,26 +1,50 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobPage from "../components/JobPage.js";
-import { getJob } from "../selectors/app.js";
-import { fetchJob } from "../library/app.js";
+import { getJob, getJobTree } from "../selectors/jobs.js";
+import { collectJob, collectJobTree, resetJob, stopJob, updateJob } from "../library/jobs.js";
 
 export default connect(
     (state, ownProps) => ({
-        job: getJob(state, ownProps.match.params.jobId)
+        job: getJob(state, ownProps.match.params.jobId),
+        jobID: ownProps.match.params.jobId,
+        jobTree: getJobTree(state, ownProps.match.params.jobId)
     }),
     {
-        goToJobPage: jobId => dispatch => {
-            fetchJob(jobId);
-            dispatch(push(`/job/${jobId}`));
-        },
-        goToJobTreePage: jobId => dispatch => {
-            dispatch(push(`/job/tree/${jobId}`));
-        },
         goToNewJobPage: () => dispatch => {
             dispatch(push("/new"));
         },
-        goToNewDependentJobPage: jobId => dispatch => {
-            dispatch(push(`/new/parents/${jobId}`));
+        goToNewDependentJobPage: jobID => dispatch => {
+            dispatch(push(`/new/parents/${jobID}`));
+        },
+        onReady: jobID => () => {
+            collectJob(jobID);
+            collectJobTree(jobID);
+        },
+        resetJob: jobID => () => {
+            resetJob(jobID)
+                .then(() => {
+                    return collectJob(jobID);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        },
+        stopJob: jobID => () => {
+            stopJob(jobID)
+                .then(() => {
+                    return collectJob(jobID);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        },
+        updateJob: (jobID, properties) => () => {
+            return updateJob(jobID, properties)
+                .then(() => collectJob(jobID))
+                .catch(err => {
+                    console.log(err);
+                });
         }
     }
 )(JobPage);

@@ -42,6 +42,8 @@ module.exports = (env, argv) => ({
         path.resolve(__dirname, "./source/web/index.js"),
     ],
 
+    mode: argv.mode,
+
     module: {
         rules: [
             {
