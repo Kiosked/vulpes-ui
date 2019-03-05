@@ -111,10 +111,10 @@ const ResultText = styled.span`
     justify-content: flex-start;
     align-items: center;
 `;
-const ResultSuccess = ResultText.extend`
+const ResultSuccess = styled(ResultText)`
     color: ${Colors.GREEN4};
 `;
-const ResultFailure = ResultText.extend`
+const ResultFailure = styled(ResultText)`
     color: ${Colors.RED4};
 `;
 const IconRightPadded = styled(Icon)`

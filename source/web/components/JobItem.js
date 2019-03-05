@@ -111,7 +111,7 @@ const Row = styled.div`
     justify-content: flex-end;
     align-items: center;
 `;
-const JobTopRow = Row.extend`
+const JobTopRow = styled(Row)`
     justify-content: space-between;
     border-bottom: 1px solid #eee;
 `;
