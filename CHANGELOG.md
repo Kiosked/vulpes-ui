@@ -1,5 +1,10 @@
 # Vulpes-UI
 
+## v0.2.2
+_2019-03-05_
+
+ * **Bugfix**: Include correct files in `package.json`
+
 ## v0.2.1
 _2019-03-05_
 
