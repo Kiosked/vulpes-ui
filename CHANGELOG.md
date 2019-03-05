@@ -1,5 +1,12 @@
 # Vulpes-UI
 
+## v0.2.0
+_2019-03-05_
+
+ * Update user interface
+ * Update dependencies
+ * Add parent/child jobs view
+
 ## v0.1.1
 _2018-10-16_
 
