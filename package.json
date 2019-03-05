@@ -16,6 +16,10 @@
     "test:unit": "mocha -r test/index.js 'test/unit/**/*.spec.js'",
     "watch": "npm run build:development"
   },
+  "files": [
+    "dist/**/*",
+    "source/*.js"
+  ],
   "lint-staged": {
     "{source,test}/**/*.js": [
       "prettier --write",
