@@ -70,7 +70,12 @@ module.exports = (env, argv) => ({
                 test: /\.s[ac]ss$/,
                 use: [
                     MiniCSSExtractPlugin.loader,
-                    "css-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            minimize: true
+                        }
+                    },
                     "sass-loader"
                 ]
             },
@@ -78,7 +83,12 @@ module.exports = (env, argv) => ({
                 test: /\.css$/,
                 use: [
                     MiniCSSExtractPlugin.loader,
-                    "css-loader"
+                    {
+                        loader: "css-loader",
+                        options: {
+                            minimize: true
+                        }
+                    }
                 ]
             }
         ]

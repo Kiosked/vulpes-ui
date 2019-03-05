@@ -9,6 +9,7 @@
     "dev": "node ./scripts/dev.js",
     "format": "prettier --write '{source,test}/**/*.js'",
     "precommit": "lint-staged",
+    "prepublishOnly": "npm run build",
     "test": "run-s test:unit test:integration test:format",
     "test:format": "prettier-check '{source,test}/**/*.js'",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
