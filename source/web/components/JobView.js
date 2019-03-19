@@ -47,6 +47,12 @@ const JOB_STATUS_MAP = {
     [JOB_STATUS_STOPPED]: "Stopped"
 };
 
+function filterViewableData(data) {
+    return Object.keys(data).reduce((output, key) => {
+        return /^%/.test(key) ? output : { ...output, [key]: data[key] };
+    }, {});
+}
+
 function parseDate(created) {
     const options = {
         year: "numeric",
@@ -249,11 +255,11 @@ export default class JobPage extends Component {
                         </ButtonGroup>
                     </StyledCard>
                     <If condition={!this.state.editingData}>
-                        <JSONView src={this.props.job.data} />
+                        <JSONView src={filterViewableData(this.props.job.data)} />
                     </If>
                     <If condition={this.state.editingData}>
                         <EditingData
-                            data={this.props.job.data}
+                            data={filterViewableData(this.props.job.data)}
                             id={this.props.job.id}
                             dataStr="jobData"
                             saveData={this.sendDataForUpdate.bind(this)}
@@ -341,23 +347,41 @@ export default class JobPage extends Component {
         );
     }
 
-    sendDataForUpdate(dataStr, data, jobId) {
+    sendDataForUpdate(dataType, data, jobId) {
         const self = this;
         let properties;
-        if (dataStr === "jobData") {
+        if (dataType === "jobData") {
             properties = {
-                data
+                data: {
+                    ...data,
+                    ...Object.keys(this.props.job.data).reduce(
+                        (invisible, key) =>
+                            /^%/.test(key)
+                                ? { ...invisible, [key]: this.props.job.data[key] }
+                                : invisible,
+                        {}
+                    )
+                }
             };
         } else {
             properties = {
                 result: {
-                    data,
+                    data: {
+                        ...data,
+                        ...Object.keys(this.props.job.result.data).reduce(
+                            (invisible, key) =>
+                                /^%/.test(key)
+                                    ? { ...invisible, [key]: this.props.job.result.data[key] }
+                                    : invisible,
+                            {}
+                        )
+                    },
                     type: self.props.job.result.type
                 }
             };
         }
         this.props.updateJob(jobId, properties).then(() => {
-            if (dataStr === "jobData") {
+            if (dataType === "jobData") {
                 self.setState({ editingData: false });
             } else {
                 self.setState({ editingResults: false });
