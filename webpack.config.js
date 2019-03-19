@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
+const LiveReloadPlugin = require("webpack-livereload-plugin");
 const { HotModuleReplacementPlugin, NoEmitOnErrorsPlugin } = require("webpack");
 const rimraf = require("rimraf").sync;
 
@@ -10,7 +11,8 @@ const RESOURCES = path.resolve(__dirname, "./resources");
 
 rimraf(DIST);
 
-function getPlugins(mode) {
+function getPlugins(env, argv) {
+    const { mode = "development" } = argv;
     const plugins = [
         new MiniCSSExtractPlugin({
             filename: "[name].css"
@@ -33,6 +35,12 @@ function getPlugins(mode) {
             new HotModuleReplacementPlugin(),
             new NoEmitOnErrorsPlugin()
         );
+    }
+    if (process.env.RELOAD === "yes") {
+        plugins.push(new LiveReloadPlugin({
+            appendScriptTag: true,
+            delay: 250
+        }));
     }
     return plugins;
 }
@@ -104,5 +112,5 @@ module.exports = (env, argv) => ({
         fs: "empty"
     },
 
-    plugins: getPlugins(argv.mode || "development")
+    plugins: getPlugins(env, argv)
 });

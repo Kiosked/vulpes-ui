@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --progress --mode production --config webpack.config.js",
     "build:development": "webpack --watch --progress --mode development --config webpack.config.js",
-    "dev": "concurrently --kill-others -n 'server,webpack' 'node ./scripts/dev.js' 'npm run build:development'",
+    "dev": "RELOAD=yes concurrently --kill-others -n 'server,webpack' 'node ./scripts/dev.js' 'npm run build:development'",
     "format": "prettier --write '{source,test}/**/*.js'",
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
@@ -102,7 +102,8 @@
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "^3.6.0",
-    "webpack-hot-middleware": "^2.24.3"
+    "webpack-hot-middleware": "^2.24.3",
+    "webpack-livereload-plugin": "^2.2.0"
   },
   "peerDependencies": {
     "express": "4.*",
