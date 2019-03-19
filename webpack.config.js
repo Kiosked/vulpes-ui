@@ -37,6 +37,7 @@ function getPlugins(env, argv) {
         );
     }
     if (process.env.RELOAD === "yes") {
+        console.log("Loading live-reload plugin");
         plugins.push(new LiveReloadPlugin({
             appendScriptTag: true,
             delay: 250
