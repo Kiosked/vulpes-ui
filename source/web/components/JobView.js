@@ -322,14 +322,12 @@ export default class JobPage extends Component {
                             </When>
                             <When
                                 condition={
-                                    this.props.job.status.replace("job/status/", "") ===
-                                        "stopped" &&
-                                    this.props.job.result.type.replace("job/result/", "") !==
-                                        "success"
+                                    this.props.job.status === JOB_STATUS_STOPPED &&
+                                    this.props.job.result.type === JOB_RESULT_TYPE_SUCCESS
                                 }
                             >
                                 <IconButton onClick={() => this.props.resetJob(this.props.jobID)}>
-                                    <StyledIcon icon="swap-horizontal" iconSize={20} /> Reset job
+                                    <StyledIcon icon="swap-horizontal" iconSize={20} /> Re-run job
                                 </IconButton>
                             </When>
                             <Otherwise />
