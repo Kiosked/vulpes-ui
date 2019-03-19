@@ -11,6 +11,9 @@ export default connect(
         jobTree: getJobTree(state, ownProps.match.params.jobId)
     }),
     {
+        goToJobPage: jobID => dispatch => {
+            dispatch(push(`/job/${jobID}`));
+        },
         goToNewJobPage: () => dispatch => {
             dispatch(push("/new"));
         },

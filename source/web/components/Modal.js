@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { dispatch } from "../redux/index.js";
@@ -36,6 +37,10 @@ const ModalFooter = styled.div`
 `;
 
 class Modal extends Component {
+    static propTypes = {
+        goToJobPage: PropTypes.func.isRequired
+    };
+
     goToJobPage(jobId) {
         this.props.onClose();
         this.props.goToJobPage(jobId);

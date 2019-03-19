@@ -10,7 +10,7 @@ function shortID(id) {
     return `${id.split("-")[0]}…`;
 }
 
-export default class JobTreePage extends Component {
+export default class JobTreeView extends Component {
     static propTypes = {
         job: JobShape,
         jobID: PropTypes.string.isRequired,
