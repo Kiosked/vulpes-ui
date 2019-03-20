@@ -22,8 +22,12 @@ class App extends Component {
                         <Route path="/" exact component={HomePage} />
                         <Route path="/jobs" exact component={JobListPage} />
                         <Route path="/job/:jobId" exact component={JobPage} />
-                        <Route path="/new" exact component={JobCreationPage} />
-                        <Route path="/new/parents/:parentId" exact component={JobCreationPage} />
+                        <Route path="/new-job" exact component={JobCreationPage} />
+                        <Route
+                            path="/new-job/parents/:parentId"
+                            exact
+                            component={JobCreationPage}
+                        />
                         <Route path="/scheduling" exact component={SchedulingPage} />
                     </Switch>
                 </ConnectedRouter>

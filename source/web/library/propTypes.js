@@ -14,3 +14,10 @@ export const JobShape = PropTypes.shape({
     data: PropTypes.object.isRequired,
     priority: PropTypes.number.isRequired
 });
+export const ScheduledTaskShape = PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    schedule: PropTypes.string.isRequired,
+    enabled: PropTypes.bool.isRequired,
+    jobs: PropTypes.arrayOf(JobShape).isRequired
+});

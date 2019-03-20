@@ -14,7 +14,7 @@ export default connect(
         },
         onReady: () => () => collectAllJobs(),
         goToNewJobPage: () => dispatch => {
-            dispatch(push("/new"));
+            dispatch(push("/new-job"));
         }
     }
 )(JobList);

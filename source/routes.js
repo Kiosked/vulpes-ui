@@ -124,7 +124,7 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get(`/children/:jobId`, function(req, res) {
+    router.get("/children/:jobId", function(req, res) {
         const jobId = req.params.jobId;
         service
             .getJobChildren(jobId)
@@ -140,6 +140,17 @@ function createRoutes(router, service) {
         const properties = req.body.properties;
         service
             .addJob(properties)
+            .then(data => {
+                res.status(200).send(data);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
+    router.get("/scheduled-tasks", function(req, res) {
+        service.scheduler
+            .getScheduledTasks()
             .then(data => {
                 res.status(200).send(data);
             })
