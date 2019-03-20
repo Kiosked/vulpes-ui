@@ -7,7 +7,7 @@ const Container = styled.div`
     width: 800px;
 `;
 
-export default ({ children }) => (
+export default ({ children = null }) => (
     <Container>
         <Header />
         <LayoutErrorBoundary>{children}</LayoutErrorBoundary>

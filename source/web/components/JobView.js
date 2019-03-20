@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import JSONView from "react-json-view";
-import { Symbol as VulpesSymbols } from "vulpes";
+import VulpesSymbols from "vulpes/symbols.js";
 import _ from "lodash";
 import {
     Button,

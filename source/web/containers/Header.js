@@ -11,6 +11,8 @@ export default connect(
         onClickJobs: () => dispatch => {
             dispatch(push("/jobs"));
         },
-        onClickScheduling: () => dispatch => {}
+        onClickScheduling: () => dispatch => {
+            dispatch(push("/scheduling"));
+        }
     }
 )(Header);

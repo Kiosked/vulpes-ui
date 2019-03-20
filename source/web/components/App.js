@@ -9,6 +9,7 @@ import HomePage from "../containers/HomePage.js";
 import JobListPage from "../containers/JobListPage.js";
 import JobPage from "../containers/JobPage.js";
 import JobCreationPage from "../containers/JobCreationPage.js";
+import SchedulingPage from "../containers/SchedulingPage.js";
 import "../styles/vulpes.sass";
 import "../styles/base.sass";
 
@@ -23,6 +24,7 @@ class App extends Component {
                         <Route path="/job/:jobId" exact component={JobPage} />
                         <Route path="/new" exact component={JobCreationPage} />
                         <Route path="/new/parents/:parentId" exact component={JobCreationPage} />
+                        <Route path="/scheduling" exact component={SchedulingPage} />
                     </Switch>
                 </ConnectedRouter>
             </Provider>
