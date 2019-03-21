@@ -11,7 +11,7 @@ const VerticallySpacedButton = styled(Button)`
     margin-bottom: 10px;
 `;
 
-export default class HomePage extends Component {
+export default class JobListPage extends Component {
     static propTypes = {
         goToJobPage: PropTypes.func.isRequired,
         jobs: PropTypes.arrayOf(JobShape).isRequired,

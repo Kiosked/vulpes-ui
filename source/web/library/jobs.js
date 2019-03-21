@@ -8,7 +8,7 @@ const API_BASE = window.vulpesAPIBase;
 
 export function addJob(properties) {
     return axios
-        .post(joinURL(API_BASE, `/add`), {
+        .post(joinURL(API_BASE, "/add"), {
             properties: properties
         })
         .then(function(response) {

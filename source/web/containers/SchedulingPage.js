@@ -9,7 +9,9 @@ export default connect(
         tasks: getScheduledTasks(state)
     }),
     {
-        goToNewScheduledTask: () => dispatch => {},
+        goToNewScheduledTask: () => dispatch => {
+            dispatch(push("/scheduling/new"));
+        },
         onReady: jobID => () => {
             collectAllScheduledTasks();
         }

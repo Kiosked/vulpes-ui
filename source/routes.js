@@ -159,6 +159,25 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.post("/scheduled-tasks/create", function(req, res) {
+        const { title, schedule } = req.body;
+        service.scheduler
+            .addScheduledTask({
+                title,
+                schedule,
+                enabled: false, // Enabled later
+                jobs: []
+            })
+            .then(taskID => {
+                res.status(200).send({
+                    id: taskID
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
 }
 
 module.exports = {
