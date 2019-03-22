@@ -44,6 +44,7 @@ function createRoutes(router, service) {
         service
             .queryJobs({}, options)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -56,6 +57,7 @@ function createRoutes(router, service) {
         service
             .getJob(jobId)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -68,6 +70,7 @@ function createRoutes(router, service) {
         service
             .getJobTree(jobId, { resolveParents: true })
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -80,6 +83,7 @@ function createRoutes(router, service) {
         service
             .startJob(jobId)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -92,6 +96,7 @@ function createRoutes(router, service) {
         service
             .stopJob(jobId, VulpesSymbols.JOB_RESULT_TYPE_FAILURE)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -104,6 +109,7 @@ function createRoutes(router, service) {
         service
             .resetJob(jobId)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -117,6 +123,7 @@ function createRoutes(router, service) {
         service
             .updateJob(jobId, mergedProperties)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -129,6 +136,7 @@ function createRoutes(router, service) {
         service
             .getJobChildren(jobId)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -141,6 +149,7 @@ function createRoutes(router, service) {
         service
             .addJob(properties)
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
             .catch(err => {
@@ -152,7 +161,25 @@ function createRoutes(router, service) {
         service.scheduler
             .getScheduledTasks()
             .then(data => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send(data);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
+    router.get("/scheduled-task/:id", function(req, res) {
+        const taskID = req.params.id;
+        service.scheduler
+            .getScheduledTask(taskID)
+            .then(task => {
+                if (task) {
+                    res.set("Content-Type", "application/json");
+                    res.status(200).send(task);
+                } else {
+                    res.status(404).send("Not found");
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -169,6 +196,7 @@ function createRoutes(router, service) {
                 jobs: []
             })
             .then(taskID => {
+                res.set("Content-Type", "application/json");
                 res.status(200).send({
                     id: taskID
                 });
