@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Button } from "@blueprintjs/core";
 import Layout from "./Layout";
 import { ScheduledTaskShape } from "../library/propTypes.js";
+import ScheduledTaskItem from "./ScheduledTaskItem.js";
 
 const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
@@ -13,6 +14,7 @@ const VerticallySpacedButton = styled(Button)`
 export default class SchedulingPage extends Component {
     static propTypes = {
         goToNewScheduledTask: PropTypes.func.isRequired,
+        goToScheduledTask: PropTypes.func.isRequired,
         onReady: PropTypes.func.isRequired,
         tasks: PropTypes.arrayOf(ScheduledTaskShape).isRequired
     };
@@ -31,6 +33,20 @@ export default class SchedulingPage extends Component {
                     text="New scheduled task"
                     onClick={this.props.goToNewScheduledTask}
                 />
+                <Choose>
+                    <When condition={this.props.tasks}>
+                        <For each="task" of={this.props.tasks}>
+                            <ScheduledTaskItem
+                                task={task}
+                                key={task.id}
+                                onClick={() => this.props.goToScheduledTask(task.id)}
+                            />
+                        </For>
+                    </When>
+                    <Otherwise>
+                        <Spinner />
+                    </Otherwise>
+                </Choose>
             </Layout>
         );
     }

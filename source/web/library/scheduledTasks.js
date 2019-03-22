@@ -1,15 +1,21 @@
 import axios from "axios";
 import joinURL from "url-join";
 import { dispatch } from "../redux/index.js";
-import { fetchScheduledTasks } from "../library/jobFetching.js";
-import { setScheduledTasks } from "../actions/scheduledTasks.js";
+import { fetchScheduledTask, fetchScheduledTasks } from "../library/jobFetching.js";
+import { setScheduledTask, setScheduledTasks } from "../actions/scheduledTasks.js";
 
 const API_BASE = window.vulpesAPIBase;
 
 export function collectAllScheduledTasks() {
-    fetchScheduledTasks().then(tasks => {
+    return fetchScheduledTasks().then(tasks => {
         dispatch(setScheduledTasks(tasks));
         return tasks;
+    });
+}
+
+export function collectScheduledTask(taskID) {
+    return fetchScheduledTask(taskID).then(task => {
+        dispatch(setScheduledTask(task));
     });
 }
 

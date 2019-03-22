@@ -43,6 +43,16 @@ export function fetchJobTree(jobId) {
         });
 }
 
+export function fetchScheduledTask(taskID) {
+    return axios
+        .get(joinURL(API_BASE, `/scheduled-task/${taskID}`))
+        .then(response => response.data)
+        .catch(err => {
+            console.error(err);
+            throw err;
+        });
+}
+
 export function fetchScheduledTasks() {
     return axios
         .get(joinURL(API_BASE, "/scheduled-tasks"))
