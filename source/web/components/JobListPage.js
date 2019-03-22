@@ -25,6 +25,7 @@ export default class JobListPage extends Component {
     render() {
         return (
             <Layout>
+                <h1>Jobs</h1>
                 <VerticallySpacedButton
                     icon="add"
                     text="New job"

@@ -83,7 +83,7 @@ export default class ScheduledTaskItem extends Component {
                 elevation={Elevation.TWO}
                 key={task.id}
                 onClick={() => this.props.onClick()}
-                background={task.enabled ? "rgba(0,255,0,0.03)" : "rgba(0,0,0,0.03)"}
+                background={task.enabled ? "rgba(0,255,0,0.03)" : "rgba(0,0,0,0.01)"}
             >
                 <JobTopRow>
                     <PaddedValue>

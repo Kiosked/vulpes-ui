@@ -33,3 +33,9 @@ export function createScheduledTask(title, schedule) {
             throw error;
         });
 }
+
+export function toggleScheduledTask(taskID, enabled) {
+    return axios.post(joinURL(API_BASE, `/scheduled-task/${taskID}/status`), {
+        enabled
+    });
+}
