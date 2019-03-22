@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Card, Elevation, Button, Icon, Intent, Spinner } from "@blueprintjs/core";
+import prettyCron from "prettycron";
 import { ScheduledTaskShape } from "../library/propTypes.js";
 
 function parseDate(created) {
@@ -47,8 +48,11 @@ const JobType = styled.span`
     color: #777;
 `;
 const JobCreatedDate = styled.span`
+    font-family: monospace;
+`;
+const ExpectedRunTime = styled.span`
     color: #666;
-    font-size: 11px;
+    font-size: 12px;
 `;
 const Row = styled.div`
     width: 100%;
@@ -79,6 +83,7 @@ export default class ScheduledTaskItem extends Component {
                 elevation={Elevation.TWO}
                 key={task.id}
                 onClick={() => this.props.onClick()}
+                background={task.enabled ? "rgba(0,255,0,0.03)" : "rgba(0,0,0,0.03)"}
             >
                 <JobTopRow>
                     <PaddedValue>
@@ -96,36 +101,11 @@ export default class ScheduledTaskItem extends Component {
                     </JobDetailCell>
                     <JobDetailCell>
                         <PaddedValue>
-                            {/* <Choose>
-                                <When condition={job.priority === 0}>
-                                    <Icon icon="dot" intent={Intent.NONE} />
-                                    <JobPriority>normal</JobPriority>
-                                </When>
-                                <When condition={job.priority > 0}>
-                                    <Icon icon="caret-up" intent={Intent.NONE} />
-                                    <JobPriority>high</JobPriority>
-                                </When>
-                                <When condition={job.priority < 0}>
-                                    <Icon icon="caret-down" intent={Intent.NONE} />
-                                    <JobPriority>low</JobPriority>
-                                </When>
-                            </Choose> */}
+                            <ExpectedRunTime>{prettyCron.toString(task.schedule)}</ExpectedRunTime>
                         </PaddedValue>
                     </JobDetailCell>
                     <JobDetailCell>
                         <PaddedValue>
-                            {/* <Choose>
-                                <When condition={result === "success"}>
-                                    <Icon icon="tick" intent={Intent.SUCCESS} />
-                                </When>
-                                <When condition={result === "failure"}>
-                                    <Icon icon="warning-sign" intent={Intent.DANGER} />
-                                </When>
-                                <Otherwise>
-                                    <Icon icon="pulse" intent={Intent.NONE} />
-                                </Otherwise>
-                            </Choose>
-                            <JobStatus>{result ? result : "(no result)"}</JobStatus> */}
                             <Icon color="rgba(0,0,0,0.5)" iconSize={12} icon="cube" />
                             &nbsp;&nbsp;
                             <span>{task.jobs.length}</span>

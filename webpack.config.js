@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
-const { NoEmitOnErrorsPlugin } = require("webpack");
+const { EnvironmentPlugin, NoEmitOnErrorsPlugin } = require("webpack");
 const rimraf = require("rimraf").sync;
 
 const DIST = path.resolve(__dirname, "./dist");
@@ -27,7 +27,10 @@ function getPlugins(env, argv) {
                 from: path.join(RESOURCES, "favicon*"),
                 flatten: true
             }
-        ])
+        ]),
+        new EnvironmentPlugin({
+            LATER_COV: false
+        })
     ];
     if (mode === "development") {
         console.log("Loading dev plugins");
