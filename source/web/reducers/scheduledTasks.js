@@ -14,19 +14,11 @@ export default function scheduledTasksReducer(state = INITIAL, action = {}) {
                 tasks: [...tasks, task]
             };
         }
-        case SCHEDULED_TASK_SET_MANY: {
-            const incoming = action.payload;
-            const tasks = state.tasks.filter(currentTask => {
-                const hasIncoming = !!incoming.find(
-                    incomingTask => incomingTask.id === currentTask.id
-                );
-                return !hasIncoming;
-            });
+        case SCHEDULED_TASK_SET_MANY:
             return {
                 ...state,
-                tasks: [...tasks, ...incoming]
+                tasks: [...action.payload]
             };
-        }
         default:
             return state;
     }
