@@ -25,6 +25,21 @@ export default class ScheduledTaskPage extends Component {
         taskID: PropTypes.string.isRequired
     };
 
+    state = {
+        editingJob: null
+    };
+
+    addNewJob() {
+        const nextID = Math.max(...this.props.task.jobs.map(job => job.id)) + 1;
+        this.setState({
+            editingJob: {
+                id: nextID,
+                type: "",
+                data: {}
+            }
+        });
+    }
+
     componentDidMount() {
         this.props.onReady(this.props.taskID);
     }
@@ -83,7 +98,8 @@ export default class ScheduledTaskPage extends Component {
                             <VerticallySpacedButton
                                 icon="add"
                                 text="New scheduled job"
-                                onClick={() => {}}
+                                onClick={::this.addNewJob}
+                                disabled={!!this.state.editingJob}
                             />
                             <VerticallySpacedButton
                                 icon={this.props.task.enabled ? "stop" : "play"}
@@ -94,6 +110,7 @@ export default class ScheduledTaskPage extends Component {
                                         !this.props.task.enabled
                                     )
                                 }
+                                disabled={!!this.state.editingJob}
                             />
                         </ButtonGroup>
                     </When>
