@@ -6,8 +6,8 @@ const { createVulpesRouter } = require("../source/index.js");
 Object.assign(global, { __DEV__: true });
 
 const app = express();
-// const storage = new FileStorage(path.resolve(__dirname, "../test/data/jobs.db.json"));
-const storage = new MemoryStorage();
+const storage = new FileStorage(path.resolve(__dirname, "../jobs.db.json"));
+// const storage = new MemoryStorage();
 const service = new Service(storage);
 
 service
