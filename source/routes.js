@@ -222,6 +222,31 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.post("/scheduled-task/:id/job", function(req, res) {
+        const taskID = req.params.id;
+        const job = req.body.job;
+        if (typeof job !== "object" || !job) {
+            console.error("Expected 'job' to be a job object");
+            res.status(400).send("Bad request");
+            return;
+        }
+        service.scheduler
+            .getScheduledTask(taskID)
+            .catch(err => {
+                err.status = 404;
+                throw err;
+            })
+            .then(task => service.scheduler.setJobsForScheduledTask(taskID, [...task.jobs, job]))
+            .then(() => res.status(200).send(""))
+            .catch(err => {
+                console.error(err);
+                if (err.status === 404) {
+                    res.status(404).send("Not found");
+                } else {
+                    res.status(500).send("Internal server error");
+                }
+            });
+    });
 }
 
 module.exports = {

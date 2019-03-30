@@ -5,6 +5,7 @@ import LayoutErrorBoundary from "./LayoutErrorBoundary.js";
 
 const Container = styled.div`
     width: 800px;
+    padding-bottom: 30px;
 `;
 
 export default ({ children = null }) => (

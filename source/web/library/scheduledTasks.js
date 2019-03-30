@@ -6,6 +6,12 @@ import { setScheduledTask, setScheduledTasks } from "../actions/scheduledTasks.j
 
 const API_BASE = window.vulpesAPIBase;
 
+export function addJobToScheduledTask(taskID, job) {
+    return axios.post(joinURL(API_BASE, `/scheduled-task/${taskID}/job`), {
+        job
+    });
+}
+
 export function collectAllScheduledTasks() {
     return fetchScheduledTasks().then(tasks => {
         dispatch(setScheduledTasks(tasks));
