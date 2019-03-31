@@ -18,9 +18,13 @@ const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
     margin-bottom: 10px;
 `;
+const FullWidthTable = styled(HTMLTable)`
+    width: 100%;
+`;
 
 export default class ScheduledTaskPage extends Component {
     static propTypes = {
+        onAddJob: PropTypes.func.isRequired,
         onToggleTask: PropTypes.func.isRequired,
         task: ScheduledTaskShape,
         taskID: PropTypes.string.isRequired
@@ -31,12 +35,13 @@ export default class ScheduledTaskPage extends Component {
     };
 
     addNewJob() {
-        const nextID = Math.max(...this.props.task.jobs.map(job => job.id)) + 1;
+        const nextID =
+            this.props.task.jobs.length > 0
+                ? Math.max(...this.props.task.jobs.map(job => job.id)) + 1
+                : 1;
         this.setState({
             editingJob: {
                 id: nextID
-                // type: "",
-                // data: {}
             }
         });
     }
@@ -116,8 +121,39 @@ export default class ScheduledTaskPage extends Component {
                         </ButtonGroup>
                         <If condition={this.state.editingJob}>
                             <Card>
-                                <JobEditor job={this.state.editingJob} onSave={::this.saveNewJob} />
+                                <JobEditor
+                                    canSetID
+                                    job={this.state.editingJob}
+                                    onSave={::this.saveNewJob}
+                                    onCancel={() => this.setState({ editingJob: null })}
+                                />
                             </Card>
+                        </If>
+                        <If condition={this.props.task}>
+                            <FullWidthTable striped={true}>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Type</th>
+                                        <th>Parents</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <For each="job" of={this.props.task.jobs} index="jobIdx">
+                                        <tr key={`job:${job.id || job.type || jobIdx}`}>
+                                            <td>{job.id}</td>
+                                            <td>{job.type}</td>
+                                            <td>{(job.parents || []).join(", ")}</td>
+                                            <td>
+                                                <ButtonGroup>
+                                                    <Button icon="cross" small />
+                                                </ButtonGroup>
+                                            </td>
+                                        </tr>
+                                    </For>
+                                </tbody>
+                            </FullWidthTable>
                         </If>
                     </When>
                     <Otherwise>
@@ -128,5 +164,8 @@ export default class ScheduledTaskPage extends Component {
         );
     }
 
-    saveNewJob(job) {}
+    saveNewJob(job) {
+        this.props.onAddJob(this.props.taskID, job);
+        this.setState({ editingJob: null });
+    }
 }

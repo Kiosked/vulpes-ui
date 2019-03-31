@@ -14,10 +14,18 @@ export const JobShape = PropTypes.shape({
     data: PropTypes.object.isRequired,
     priority: PropTypes.number.isRequired
 });
+export const JobShapeNew = PropTypes.shape({
+    id: PropTypes.number,
+    type: PropTypes.string,
+    result: JobResultShape,
+    parents: PropTypes.arrayOf(PropTypes.string),
+    data: PropTypes.object,
+    priority: PropTypes.number
+});
 export const ScheduledTaskShape = PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     schedule: PropTypes.string.isRequired,
     enabled: PropTypes.bool.isRequired,
-    jobs: PropTypes.arrayOf(JobShape).isRequired
+    jobs: PropTypes.arrayOf(JobShapeNew).isRequired
 });

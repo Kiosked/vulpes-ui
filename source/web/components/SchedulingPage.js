@@ -28,6 +28,7 @@ export default class SchedulingPage extends Component {
     render() {
         return (
             <Layout>
+                <h1>Scheduled Tasks</h1>
                 <VerticallySpacedButton
                     icon="add"
                     text="New scheduled task"

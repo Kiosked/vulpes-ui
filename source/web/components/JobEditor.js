@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {
     Button,
+    ButtonGroup,
     Classes,
     ControlGroup,
     FormGroup,
@@ -9,12 +10,13 @@ import {
     Intent,
     Tag
 } from "@blueprintjs/core";
+import nestedProperty from "nested-property";
 import objectHash from "object-hash";
 import ms from "ms";
 import brace from "brace";
 import AceEditor from "react-ace";
 import Select from "react-select";
-import { JobShape } from "../library/propTypes.js";
+import { JobShape, JobShapeNew } from "../library/propTypes.js";
 import {
     JOB_PRIORITY_HIGH,
     JOB_PRIORITY_LOW,
@@ -25,7 +27,7 @@ import {
 import "brace/mode/json";
 import "brace/theme/xcode";
 
-function dataObjectsDiffer(obj1, obj2) {
+function objectsDiffer(obj1, obj2) {
     const hash1 = objectHash(obj1);
     const hash2 = objectHash(obj2);
     return hash1 !== hash2;
@@ -33,12 +35,15 @@ function dataObjectsDiffer(obj1, obj2) {
 
 export default class JobEditor extends Component {
     static defaultProps = {
+        canSetID: false,
         jobTypes: []
     };
 
     static propTypes = {
-        job: JobShape,
+        canSetID: PropTypes.bool.isRequired,
+        job: PropTypes.oneOfType([JobShape, JobShapeNew]),
         jobTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+        onCancel: PropTypes.func,
         onSave: PropTypes.func.isRequired
     };
 
@@ -61,6 +66,9 @@ export default class JobEditor extends Component {
             JSON.parse(this.state.jobData);
         } catch (e) {
             invalidItems.push("data");
+        }
+        if (this.props.canSetID && !/^\d+$/.test(this.state.jobID)) {
+            invalidItems.push("id");
         }
         if (this.state.jobType.trim().length <= 0) {
             invalidItems.push("type");
@@ -115,37 +123,19 @@ export default class JobEditor extends Component {
     }
 
     processUpdatedJob(job) {
-        const newState = {};
-        if (job.data && dataObjectsDiffer(job.data, JSON.parse(this.state.jobData))) {
-            newState.data = JSON.stringify(job.data, undefined, 2);
+        if (!objectsDiffer(job, this.state.offlineTemplate)) {
+            return;
         }
-        if (job.id && this.state.jobID !== job.id) {
-            newState.jobID = job.id;
-        }
-        if (job.predicate) {
-            if (
-                typeof job.predicate.attemptsMax !== "undefined" &&
-                job.predicate.attemptsMax !== this.state.jobMaxAttempts
-            ) {
-                newState.jobMaxAttempts = job.predicate.attemptsMax;
-            }
-        }
-        if (Array.isArray(job.parents)) {
-            newState.jobParents = [...job.parents];
-        }
-        if (job.priority !== this.state.jobPriority) {
-            newState.jobPriority = job.priority;
-        }
-        if (typeof job.timeLimit !== "undefined" && job.timeLimit !== this.state.jobTimeLimit) {
-            newState.jobTimeLimit = job.timeLimit;
-        }
-        if (job.type && job.type !== this.state.jobType) {
-            newState.jobType = job.type;
-        }
-        if (Object.keys(newState).length > 0) {
-            newState.offlineTemplate = JSON.parse(JSON.stringify(job));
-            this.setState(newState);
-        }
+        this.setState({
+            jobData: job.data ? JSON.stringify(job.data, undefined, 2) : "{}",
+            jobID: job.id || null,
+            jobMaxAttempts: nestedProperty.get(job, "predicate.attemptsMax") || null,
+            jobParents: Array.isArray(job.parents) ? [...job.parents] : [],
+            jobPriority: job.priority || null,
+            jobTimeLimit: job.timeLimit || null,
+            jobType: job.type || "",
+            offlineTemplate: JSON.parse(JSON.stringify(job))
+        });
     }
 
     render() {
@@ -163,6 +153,21 @@ export default class JobEditor extends Component {
                 : "";
         return (
             <>
+                <If condition={this.props.canSetID}>
+                    <FormGroup label="ID" labelFor="id" labelInfo="(Job placeholder ID - eg. '1')">
+                        <InputGroup
+                            type="text"
+                            id="id"
+                            value={this.state.jobID === null ? "" : this.state.jobID}
+                            onChange={evt =>
+                                this.setState({
+                                    jobID: evt.target.value.trim() ? evt.target.value.trim() : null
+                                })
+                            }
+                            intent={this.invalidItems.includes("id") ? Intent.DANGER : Intent.NONE}
+                        />
+                    </FormGroup>
+                </If>
                 <FormGroup label="Type" labelFor="type" labelInfo="(required)">
                     <div className={`${Classes.SELECT} select-editable ${Classes.FILL}`}>
                         <select
@@ -280,12 +285,17 @@ export default class JobEditor extends Component {
                         editorProps={{ $blockScrolling: Infinity }}
                     />
                 </FormGroup>
-                <Button
-                    icon="key-enter"
-                    text="Save job"
-                    onClick={::this.saveJob}
-                    disabled={this.invalidItems.length > 0}
-                />
+                <ButtonGroup>
+                    <Button
+                        icon="document-share"
+                        text="Save job"
+                        onClick={::this.saveJob}
+                        disabled={this.invalidItems.length > 0}
+                    />
+                    <If condition={typeof this.props.onCancel === "function"}>
+                        <Button icon="delete" text="Cancel" onClick={::this.props.onCancel} />
+                    </If>
+                </ButtonGroup>
             </>
         );
     }
