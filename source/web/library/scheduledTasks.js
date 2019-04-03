@@ -40,8 +40,21 @@ export function createScheduledTask(title, schedule) {
         });
 }
 
+export function setScheduledTaskJobs(taskID, jobs) {
+    return axios.put(joinURL(API_BASE, `/scheduled-task/${taskID}/jobs`), {
+        jobs
+    });
+}
+
 export function toggleScheduledTask(taskID, enabled) {
     return axios.post(joinURL(API_BASE, `/scheduled-task/${taskID}/status`), {
         enabled
+    });
+}
+
+export function updateScheduledTask(taskID, title, schedule) {
+    return axios.post(joinURL(API_BASE, `/scheduled-task/${taskID}/details`), {
+        title,
+        schedule
     });
 }

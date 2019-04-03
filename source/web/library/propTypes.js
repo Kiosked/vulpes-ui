@@ -15,7 +15,7 @@ export const JobShape = PropTypes.shape({
     priority: PropTypes.number.isRequired
 });
 export const JobShapeNew = PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string.isRequired,
     type: PropTypes.string,
     result: JobResultShape,
     parents: PropTypes.arrayOf(PropTypes.string),

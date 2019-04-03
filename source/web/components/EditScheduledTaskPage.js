@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Classes, FormGroup, InputGroup, Intent, Button } from "@blueprintjs/core";
 import cron from "node-cron";
 import Layout from "./Layout.js";
-import { JobShape } from "../library/propTypes.js";
+import { ScheduledTaskShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
 
 const CRON_SCHEDULES = {
@@ -19,15 +19,34 @@ export default class EditScheduledTaskPage extends Component {
     static propTypes = {
         mode: PropTypes.oneOf(["create", "edit"]),
         onCreateTask: PropTypes.func.isRequired,
-        onUpdateTask: PropTypes.func.isRequired
+        onUpdateTask: PropTypes.func.isRequired,
+        task: ScheduledTaskShape,
+        taskID: PropTypes.string
     };
 
     state = {
         editedSchedule: false,
         editedTitle: false,
+        loadedTask: false,
         schedule: "",
         title: ""
     };
+
+    componentDidMount() {
+        if (this.props.mode === "edit") {
+            this.props.loadTask(this.props.taskID);
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.props.mode === "edit" && this.state.loadedTask === false && this.props.task) {
+            this.setState({
+                title: this.props.task.title,
+                schedule: this.props.task.schedule,
+                loadedTask: true
+            });
+        }
+    }
 
     get isValid() {
         return this.scheduleValid && this.titleValid;
@@ -75,6 +94,8 @@ export default class EditScheduledTaskPage extends Component {
                             }
                             value={this.state.schedule}
                         >
+                            <option value="">&nbsp;</option>
+                            {/* Weird hack as first item is not selectable */}
                             <For each="scheduleName" of={Object.keys(CRON_SCHEDULES)}>
                                 <option
                                     key={CRON_SCHEDULES[scheduleName]}
@@ -109,6 +130,7 @@ export default class EditScheduledTaskPage extends Component {
         if (this.props.mode === "create") {
             this.props.onCreateTask(this.state.title, this.state.schedule);
         } else if (this.props.mode === "edit") {
+            this.props.onUpdateTask(this.props.taskID, this.state.title, this.state.schedule);
         }
     }
 }

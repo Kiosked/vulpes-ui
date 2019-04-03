@@ -1,7 +1,17 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { Button, ButtonGroup, Callout, Card, HTMLTable, Icon, Spinner } from "@blueprintjs/core";
+import {
+    Alert,
+    Button,
+    ButtonGroup,
+    Callout,
+    Card,
+    HTMLTable,
+    Icon,
+    Spinner,
+    Intent
+} from "@blueprintjs/core";
 import prettyCron from "prettycron";
 import Layout from "./Layout";
 import { ScheduledTaskShape } from "../library/propTypes.js";
@@ -25,12 +35,15 @@ const FullWidthTable = styled(HTMLTable)`
 export default class ScheduledTaskPage extends Component {
     static propTypes = {
         onAddJob: PropTypes.func.isRequired,
+        onDeleteJobFromTask: PropTypes.func.isRequired,
+        onEditTask: PropTypes.func.isRequired,
         onToggleTask: PropTypes.func.isRequired,
         task: ScheduledTaskShape,
         taskID: PropTypes.string.isRequired
     };
 
     state = {
+        deleteJobTarget: null,
         editingJob: null
     };
 
@@ -54,6 +67,13 @@ export default class ScheduledTaskPage extends Component {
         if (this.props.taskID !== prevProps.taskID) {
             this.props.onReady(this.props.taskID);
         }
+    }
+
+    deleteJob(jobNumber) {
+        this.setState({
+            deleteJobTarget: null
+        });
+        this.props.onDeleteJobFromTask(this.props.taskID, jobNumber);
     }
 
     render() {
@@ -99,13 +119,21 @@ export default class ScheduledTaskPage extends Component {
                                     </tr>
                                 </tbody>
                             </HTMLTable>
+                            <ButtonGroup>
+                                <Button
+                                    icon="edit"
+                                    onClick={() => this.props.onEditTask(this.props.taskID)}
+                                >
+                                    Edit
+                                </Button>
+                            </ButtonGroup>
                         </Callout>
                         <ButtonGroup>
                             <VerticallySpacedButton
                                 icon="add"
                                 text="New scheduled job"
                                 onClick={::this.addNewJob}
-                                disabled={!!this.state.editingJob}
+                                disabled={!!this.state.editingJob || !!this.state.editingTask}
                             />
                             <VerticallySpacedButton
                                 icon={this.props.task.enabled ? "stop" : "play"}
@@ -116,7 +144,7 @@ export default class ScheduledTaskPage extends Component {
                                         !this.props.task.enabled
                                     )
                                 }
-                                disabled={!!this.state.editingJob}
+                                disabled={!!this.state.editingJob || !!this.state.editingTask}
                             />
                         </ButtonGroup>
                         <If condition={this.state.editingJob}>
@@ -147,7 +175,15 @@ export default class ScheduledTaskPage extends Component {
                                             <td>{(job.parents || []).join(", ")}</td>
                                             <td>
                                                 <ButtonGroup>
-                                                    <Button icon="cross" small />
+                                                    <Button
+                                                        icon="cross"
+                                                        small
+                                                        onClick={() =>
+                                                            this.setState({
+                                                                deleteJobTarget: job.id
+                                                            })
+                                                        }
+                                                    />
                                                 </ButtonGroup>
                                             </td>
                                         </tr>
@@ -160,6 +196,18 @@ export default class ScheduledTaskPage extends Component {
                         <Spinner />
                     </Otherwise>
                 </Choose>
+                <Alert
+                    isOpen={this.state.deleteJobTarget}
+                    cancelButtonText="Cancel"
+                    canEscapeKeyCancel={true}
+                    intent={Intent.DANGER}
+                    icon="trash"
+                    confirmButtonText="Delete"
+                    onCancel={() => this.setState({ deleteJobTarget: false })}
+                    onConfirm={() => this.deleteJob(this.state.deleteJobTarget)}
+                >
+                    Are you sure you want to remove the job with ID "{this.state.deleteJobTarget}"?
+                </Alert>
             </Layout>
         );
     }
