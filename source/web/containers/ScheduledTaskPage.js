@@ -26,7 +26,7 @@ export default connect(
         },
         onDeleteJobFromTask: (taskID, jobNumber) => (dispatch, getState) => {
             const { jobs } = getScheduledTask(getState(), taskID);
-            const jobInd = jobs.findIndex(job => `${job.id}` === `${jobNumber}`);
+            const jobInd = jobs.findIndex(job => job.id === jobNumber);
             if (jobInd === -1) {
                 notifyError(`Failed deleting job with ID: ${jobNumber}`);
                 return;
@@ -45,6 +45,25 @@ export default connect(
         },
         onEditTask: taskID => dispatch => {
             dispatch(push(`/scheduling/edit/${taskID}`));
+        },
+        onEditTaskJob: (taskID, replacementJob) => (dispatch, getState) => {
+            const { jobs } = getScheduledTask(getState(), taskID);
+            const jobInd = jobs.findIndex(job => job.id === replacementJob.id);
+            if (jobInd === -1) {
+                notifyError(`Failed replacing job with ID: ${replacementJob.id}`);
+                return;
+            }
+            const updatedJobs = [...jobs];
+            updatedJobs.splice(jobInd, 1, replacementJob);
+            return setScheduledTaskJobs(taskID, updatedJobs)
+                .then(() => collectScheduledTask(taskID))
+                .then(() => {
+                    notifySuccess(`Successfully replaced job: ${replacementJob.id}`);
+                })
+                .catch(err => {
+                    console.error(err);
+                    notifyError(`Failed replacing task job: ${err.message}`);
+                });
         },
         onReady: taskID => () => {
             collectScheduledTask(taskID).catch(err => {

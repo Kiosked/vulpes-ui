@@ -76,6 +76,12 @@ export default class ScheduledTaskPage extends Component {
         this.props.onDeleteJobFromTask(this.props.taskID, jobNumber);
     }
 
+    editJob(job) {
+        this.setState({
+            editingJob: JSON.parse(JSON.stringify(job))
+        });
+    }
+
     render() {
         return (
             <Layout>
@@ -153,7 +159,7 @@ export default class ScheduledTaskPage extends Component {
                                     canSetID
                                     isTemplate
                                     job={this.state.editingJob}
-                                    onSave={::this.saveNewJob}
+                                    onSave={::this.saveJob}
                                     onCancel={() => this.setState({ editingJob: null })}
                                 />
                             </Card>
@@ -176,6 +182,11 @@ export default class ScheduledTaskPage extends Component {
                                             <td>{(job.parents || []).join(", ")}</td>
                                             <td>
                                                 <ButtonGroup>
+                                                    <Button
+                                                        icon="edit"
+                                                        small
+                                                        onClick={() => this.editJob(job)}
+                                                    />
                                                     <Button
                                                         icon="trash"
                                                         small
@@ -213,8 +224,13 @@ export default class ScheduledTaskPage extends Component {
         );
     }
 
-    saveNewJob(job) {
-        this.props.onAddJob(this.props.taskID, job);
+    saveJob(job) {
+        const replacementJob = this.props.task.jobs.find(existingJob => existingJob.id === job.id);
+        if (replacementJob) {
+            this.props.onEditTaskJob(this.props.taskID, job);
+        } else {
+            this.props.onAddJob(this.props.taskID, job);
+        }
         this.setState({ editingJob: null });
     }
 }
