@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.3.0
+_2019-04-03_
+
+ * Scheduled tasks
+ * Many stability upgrades
+
 ## v0.2.2
 _2019-03-05_
 
