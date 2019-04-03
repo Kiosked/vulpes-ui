@@ -3,8 +3,19 @@ import PropTypes from "prop-types";
 import { Callout, ProgressBar } from "@blueprintjs/core";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import styled from "styled-components";
+import VulpesSymbols from "vulpes/symbols.js";
 import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
+
+const {
+    JOB_RESULT_TYPE_FAILURE,
+    JOB_RESULT_TYPE_FAILURE_SOFT,
+    JOB_RESULT_TYPE_SUCCESS,
+    JOB_RESULT_TYPE_TIMEOUT,
+    JOB_STATUS_PENDING,
+    JOB_STATUS_RUNNING,
+    JOB_STATUS_STOPPED
+} = VulpesSymbols;
 
 const JobStat = styled.div`
     width: 50%;
@@ -44,20 +55,23 @@ export default class HomePage extends Component {
 
     render() {
         const countsByResult = {
-            success: 0,
-            fail: 0,
-            running: 0,
-            pending: 0
+            [JOB_RESULT_TYPE_SUCCESS]: 0,
+            [JOB_RESULT_TYPE_FAILURE]: 0,
+            [JOB_RESULT_TYPE_FAILURE_SOFT]: 0,
+            [JOB_RESULT_TYPE_TIMEOUT]: 0
+        };
+        const countsByStatus = {
+            [JOB_STATUS_PENDING]: 0,
+            [JOB_STATUS_RUNNING]: 0,
+            [JOB_STATUS_STOPPED]: 0
         };
         this.props.jobs.forEach(job => {
+            countsByStatus[job.status] += 1;
             const result = job.result.type;
             if (!result) {
                 return;
             }
-            const match = /^job\/result\/([a-zA-Z]+)/.exec(result);
-            if (match) {
-                countsByResult[match[1]] += 1;
-            }
+            countsByResult[result] += 1;
         });
         return (
             <Layout>
@@ -70,24 +84,28 @@ export default class HomePage extends Component {
                         <JobRow>
                             <JobStat>
                                 <Callout icon="tick" intent="success" title="Succeeded jobs">
-                                    <h3>{countsByResult.success}</h3>
+                                    <h3>{countsByResult[JOB_RESULT_TYPE_SUCCESS]}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
                                 <Callout icon="cross" intent="danger" title="Failed jobs">
-                                    <h3>{countsByResult.fail}</h3>
+                                    <h3>
+                                        {countsByResult[JOB_RESULT_TYPE_FAILURE] +
+                                            countsByResult[JOB_RESULT_TYPE_FAILURE_SOFT] +
+                                            countsByResult[JOB_RESULT_TYPE_TIMEOUT]}
+                                    </h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
                                 <Callout icon="repeat" intent="primary" title="Running jobs">
-                                    <h3>{countsByResult.running}</h3>
+                                    <h3>{countsByStatus[JOB_STATUS_RUNNING]}</h3>
                                 </Callout>
                             </JobStat>
                         </JobRow>
                         <JobRow>
                             <JobStat>
                                 <Callout icon="outdated" intent="none" title="Pending jobs">
-                                    <h3>{countsByResult.pending}</h3>
+                                    <h3>{countsByStatus[JOB_STATUS_PENDING]}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>

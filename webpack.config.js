@@ -2,7 +2,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
-const { HotModuleReplacementPlugin, NoEmitOnErrorsPlugin } = require("webpack");
+const LiveReloadPlugin = require("webpack-livereload-plugin");
+const { EnvironmentPlugin, NoEmitOnErrorsPlugin } = require("webpack");
 const rimraf = require("rimraf").sync;
 
 const DIST = path.resolve(__dirname, "./dist");
@@ -10,7 +11,8 @@ const RESOURCES = path.resolve(__dirname, "./resources");
 
 rimraf(DIST);
 
-function getPlugins(mode) {
+function getPlugins(env, argv) {
+    const { mode = "development" } = argv;
     const plugins = [
         new MiniCSSExtractPlugin({
             filename: "[name].css"
@@ -25,19 +27,30 @@ function getPlugins(mode) {
                 from: path.join(RESOURCES, "favicon*"),
                 flatten: true
             }
-        ])
+        ]),
+        new EnvironmentPlugin({
+            LATER_COV: false
+        })
     ];
     if (mode === "development") {
         console.log("Loading dev plugins");
         plugins.push(
-            new HotModuleReplacementPlugin(),
             new NoEmitOnErrorsPlugin()
         );
+    }
+    if (process.env.RELOAD === "yes") {
+        console.log("Loading live-reload plugin");
+        plugins.push(new LiveReloadPlugin({
+            appendScriptTag: true,
+            delay: 250
+        }));
     }
     return plugins;
 }
 
 module.exports = (env, argv) => ({
+    devtool: false,
+
     entry: [
         path.resolve(__dirname, "./source/web/index.js"),
     ],
@@ -104,5 +117,5 @@ module.exports = (env, argv) => ({
         fs: "empty"
     },
 
-    plugins: getPlugins(argv.mode || "development")
+    plugins: getPlugins(env, argv)
 });

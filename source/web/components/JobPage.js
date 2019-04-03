@@ -24,6 +24,7 @@ const CustomTab = styled.li`
 
 export default class JobPage extends Component {
     static propTypes = {
+        goToJobPage: PropTypes.func.isRequired,
         goToNewDependentJobPage: PropTypes.func.isRequired,
         goToNewJobPage: PropTypes.func.isRequired,
         job: JobShape,
@@ -41,6 +42,23 @@ export default class JobPage extends Component {
 
     componentDidMount() {
         this.props.onReady(this.props.jobID);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.jobID !== prevProps.jobID) {
+            this.props.onReady(this.props.jobID);
+        }
+    }
+
+    goToJobPage(jobID) {
+        this.setState(
+            {
+                tab: "job"
+            },
+            () => {
+                this.props.goToJobPage(jobID);
+            }
+        );
     }
 
     render() {
@@ -86,16 +104,25 @@ export default class JobPage extends Component {
                     </When>
                     <When condition={this.state.tab === "tree"}>
                         <JobTreeView
+                            goToJobPage={::this.goToJobPage}
                             job={this.props.job}
                             jobID={this.props.jobID}
                             jobTree={this.props.jobTree}
                         />
                     </When>
                     <When condition={this.state.tab === "parents"}>
-                        <JobRelatedItemsView job={this.props.job} show="parents" />
+                        <JobRelatedItemsView
+                            goToJobPage={::this.goToJobPage}
+                            job={this.props.job}
+                            show="parents"
+                        />
                     </When>
                     <When condition={this.state.tab === "children"}>
-                        <JobRelatedItemsView job={this.props.job} show="children" />
+                        <JobRelatedItemsView
+                            goToJobPage={::this.goToJobPage}
+                            job={this.props.job}
+                            show="children"
+                        />
                     </When>
                 </Choose>
             </Layout>

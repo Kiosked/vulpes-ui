@@ -6,12 +6,12 @@ import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
 
-const StyledButton = styled(Button)`
+const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
     margin-bottom: 10px;
 `;
 
-export default class HomePage extends Component {
+export default class JobListPage extends Component {
     static propTypes = {
         goToJobPage: PropTypes.func.isRequired,
         jobs: PropTypes.arrayOf(JobShape).isRequired,
@@ -24,14 +24,15 @@ export default class HomePage extends Component {
 
     render() {
         return (
-            <Choose>
-                <When condition={this.props.jobs}>
-                    <Layout>
-                        <StyledButton
-                            icon="add"
-                            text="New job"
-                            onClick={this.props.goToNewJobPage}
-                        />
+            <Layout>
+                <h1>Jobs</h1>
+                <VerticallySpacedButton
+                    icon="add"
+                    text="New job"
+                    onClick={this.props.goToNewJobPage}
+                />
+                <Choose>
+                    <When condition={this.props.jobs}>
                         <For each="job" of={this.props.jobs}>
                             <JobItem
                                 job={job}
@@ -39,12 +40,12 @@ export default class HomePage extends Component {
                                 onClick={() => this.props.goToJobPage(job.id)}
                             />
                         </For>
-                    </Layout>
-                </When>
-                <Otherwise>
-                    <Spinner />
-                </Otherwise>
-            </Choose>
+                    </When>
+                    <Otherwise>
+                        <Spinner />
+                    </Otherwise>
+                </Choose>
+            </Layout>
         );
     }
 }

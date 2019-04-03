@@ -8,7 +8,7 @@ const API_BASE = window.vulpesAPIBase;
 
 export function addJob(properties) {
     return axios
-        .post(joinURL(API_BASE, `/add`), {
+        .post(joinURL(API_BASE, "/add"), {
             properties: properties
         })
         .then(function(response) {
@@ -21,13 +21,13 @@ export function addJob(properties) {
 }
 
 export function collectJob(jobID) {
-    fetchJob(jobID).then(job => {
+    return fetchJob(jobID).then(job => {
         dispatch(setJob(job));
     });
 }
 
 export function collectAllJobs() {
-    fetchJobs(Infinity).then(jobs => {
+    return fetchJobs(Infinity).then(jobs => {
         dispatch(setJobs(jobs));
         return jobs;
     });

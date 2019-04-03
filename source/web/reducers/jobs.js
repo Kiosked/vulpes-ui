@@ -5,7 +5,7 @@ const INITIAL = {
     jobTrees: {}
 };
 
-export default function appReducer(state = INITIAL, action = {}) {
+export default function jobsReducer(state = INITIAL, action = {}) {
     switch (action.type) {
         case JOB_SET: {
             const job = action.payload;

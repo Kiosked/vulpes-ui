@@ -1,15 +1,17 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { Spinner } from "@blueprintjs/core";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
 
-export default class JobTreePage extends Component {
+export default class JobRelatedItemsView extends Component {
     static defaultProps = {
         show: "all"
     };
 
     static propTypes = {
+        goToJobPage: PropTypes.func.isRequired,
         job: JobShape.isRequired,
         jobTree: PropTypes.arrayOf(JobShape),
         show: PropTypes.string.isRequired
@@ -22,11 +24,22 @@ export default class JobTreePage extends Component {
             (this.props.show === "children" && targetJob.parents.includes(this.props.job.id));
         return (
             <Fragment>
-                <For each="job" of={this.props.jobTree}>
-                    <If condition={canShow(job)}>
-                        <JobItem job={job} onClick={() => {}} key={job.id} />
-                    </If>
-                </For>
+                <Choose>
+                    <When condition={this.props.jobTree}>
+                        <For each="job" of={this.props.jobTree}>
+                            <If condition={canShow(job)}>
+                                <JobItem
+                                    job={job}
+                                    onClick={() => this.props.goToJobPage(job.id)}
+                                    key={job.id}
+                                />
+                            </If>
+                        </For>
+                    </When>
+                    <Otherwise>
+                        <Spinner />
+                    </Otherwise>
+                </Choose>
             </Fragment>
         );
     }

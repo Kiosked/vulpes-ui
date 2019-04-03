@@ -4,8 +4,8 @@
     "@babel/preset-react"
   ],
   "plugins": [
-    "react-hot-loader/babel",
     "jsx-control-statements",
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-function-bind"
   ]
 }

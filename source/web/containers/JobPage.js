@@ -11,11 +11,14 @@ export default connect(
         jobTree: getJobTree(state, ownProps.match.params.jobId)
     }),
     {
+        goToJobPage: jobID => dispatch => {
+            dispatch(push(`/job/${jobID}`));
+        },
         goToNewJobPage: () => dispatch => {
-            dispatch(push("/new"));
+            dispatch(push("/new-job"));
         },
         goToNewDependentJobPage: jobID => dispatch => {
-            dispatch(push(`/new/parents/${jobID}`));
+            dispatch(push(`/new-job/parents/${jobID}`));
         },
         onReady: jobID => () => {
             collectJob(jobID);
