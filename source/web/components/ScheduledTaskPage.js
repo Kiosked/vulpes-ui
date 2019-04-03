@@ -54,7 +54,7 @@ export default class ScheduledTaskPage extends Component {
                 : 1;
         this.setState({
             editingJob: {
-                id: nextID
+                id: nextID.toString()
             }
         });
     }
@@ -151,6 +151,7 @@ export default class ScheduledTaskPage extends Component {
                             <Card>
                                 <JobEditor
                                     canSetID
+                                    isTemplate
                                     job={this.state.editingJob}
                                     onSave={::this.saveNewJob}
                                     onCancel={() => this.setState({ editingJob: null })}
@@ -176,7 +177,7 @@ export default class ScheduledTaskPage extends Component {
                                             <td>
                                                 <ButtonGroup>
                                                     <Button
-                                                        icon="cross"
+                                                        icon="trash"
                                                         small
                                                         onClick={() =>
                                                             this.setState({

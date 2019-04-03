@@ -33,14 +33,18 @@ function objectsDiffer(obj1, obj2) {
     return hash1 !== hash2;
 }
 
+const TEMPLATE_JOB_ID_REXP = /^\d+$/;
+
 export default class JobEditor extends Component {
     static defaultProps = {
         canSetID: false,
+        isTemplate: false,
         jobTypes: []
     };
 
     static propTypes = {
         canSetID: PropTypes.bool.isRequired,
+        isTemplate: PropTypes.bool.isRequired,
         job: PropTypes.oneOfType([JobShape, JobShapeNew]),
         jobTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
         onCancel: PropTypes.func,
@@ -216,7 +220,11 @@ export default class JobEditor extends Component {
                         <Button
                             icon="add"
                             onClick={::this.addNewParent}
-                            disabled={!UUID_REXP.test(this.state.newParent)}
+                            disabled={
+                                this.props.isTemplate
+                                    ? !TEMPLATE_JOB_ID_REXP.test(this.state.newParent)
+                                    : !UUID_REXP.test(this.state.newParent)
+                            }
                         />
                     </ControlGroup>
                 </FormGroup>
