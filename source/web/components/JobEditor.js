@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import {
     Button,
     ButtonGroup,
     Classes,
     ControlGroup,
     FormGroup,
+    Icon,
     InputGroup,
     Intent,
     Tag
@@ -26,6 +28,29 @@ import {
 
 import "brace/mode/json";
 import "brace/theme/xcode";
+
+const ParentIDUL = styled.ul`
+    padding: 0 0 0 10px;
+`;
+const ParentIDLI = styled.li`
+    display: flex;
+    flex-direction: row;
+`;
+const Bullet = styled.div`
+    width: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: #bbb;
+`;
+const ParentID = styled.div`
+    margin-right: 8px;
+    font-family: monospace;
+`;
+const RemoveLink = styled.a`
+    color: #aaa;
+`;
 
 function objectsDiffer(obj1, obj2) {
     const hash1 = objectHash(obj1);
@@ -108,6 +133,14 @@ export default class JobEditor extends Component {
         if (this.props.job) {
             this.processUpdatedJob(this.props.job);
         }
+    }
+
+    handleRemoveJobParent(event, parentID) {
+        event.preventDefault();
+        const parents = this.state.jobParents.filter(p => p !== parentID);
+        this.setState({
+            jobParents: parents
+        });
     }
 
     prepareOutgoingJob() {
@@ -205,11 +238,7 @@ export default class JobEditor extends Component {
                         value={selectedPriorityOption}
                     />
                 </FormGroup>
-                <FormGroup
-                    label="Parents"
-                    labelFor="parents"
-                    helperText={this.state.jobParents.join(", ")}
-                >
+                <FormGroup label="Parents" labelFor="parents">
                     <ControlGroup>
                         <InputGroup
                             type="text"
@@ -227,6 +256,20 @@ export default class JobEditor extends Component {
                             }
                         />
                     </ControlGroup>
+                    <ParentIDUL>
+                        <For each="parentID" of={this.state.jobParents}>
+                            <ParentIDLI key={parentID}>
+                                <Bullet>■</Bullet>
+                                <ParentID>{parentID}</ParentID>
+                                <RemoveLink
+                                    href="#"
+                                    onClick={evt => this.handleRemoveJobParent(evt, parentID)}
+                                >
+                                    <Icon icon="trash" />
+                                </RemoveLink>
+                            </ParentIDLI>
+                        </For>
+                    </ParentIDUL>
                 </FormGroup>
                 <FormGroup
                     label="Time limit"

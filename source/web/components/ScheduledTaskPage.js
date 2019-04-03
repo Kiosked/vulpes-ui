@@ -134,6 +134,16 @@ export default class ScheduledTaskPage extends Component {
                                 </Button>
                             </ButtonGroup>
                         </Callout>
+                        <If condition={!this.props.task.enabled}>
+                            <br />
+                            <Callout intent={Intent.PRIMARY} title="Scheduled Task Disabled">
+                                This task is <strong>disabled</strong>: Jobs will not be created
+                                from this schedule while it is in this state. Re-enable it for the
+                                CRON schedule to take effect and for jobs to be created from that
+                                schedule.
+                            </Callout>
+                            <br />
+                        </If>
                         <ButtonGroup>
                             <VerticallySpacedButton
                                 icon="add"
