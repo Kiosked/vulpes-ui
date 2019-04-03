@@ -3,6 +3,8 @@
 
 [![Build Status](https://travis-ci.org/Kiosked/vulpes-ui.svg?branch=master)](https://travis-ci.org/Kiosked/vulpes-ui)
 
+![Vulpes UI](demo.jpg)
+
 ## About
 
 Vulpes-UI is a plugin for the Vulpes platform that provides a web-based user interface to manage Vulpes jobs. Vulpes provides a `Service` which can be used to connect with Vulpes-UI to display jobs and their properties. Vulpes-UI provides a basic API (not related to [Vulpes-API](https://github.com/Kiosked/vulpes-api)) for handling UI events.
