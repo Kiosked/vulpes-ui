@@ -201,7 +201,7 @@ export default class JobEditor extends Component {
                     <Select
                         options={priorityOptions}
                         id="priority"
-                        onChange={item => this.setState({ jobType: item.value })}
+                        onChange={item => this.setState({ jobPriority: item.value })}
                         value={selectedPriorityOption}
                     />
                 </FormGroup>
