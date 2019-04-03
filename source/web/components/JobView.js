@@ -12,12 +12,16 @@ import {
     Colors,
     HTMLTable,
     Icon,
+    Intent,
     Menu,
     MenuItem,
     Popover,
-    Spinner
+    ProgressBar,
+    Spinner,
+    Tag
 } from "@blueprintjs/core";
 import Layout from "./Layout";
+import { getJobProgress } from "../library/progress.js";
 import EditingData from "./EditingData";
 import { JobShape } from "../library/propTypes.js";
 
@@ -126,6 +130,21 @@ const ResultFailure = styled(ResultText)`
 const IconRightPadded = styled(Icon)`
     margin-right: 4px;
 `;
+const ProgressContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+`;
+const ProgressBarContainer = styled.div`
+    flex-grow: 3;
+`;
+const ProgressValue = styled.div`
+    flex: 0 0 auto;
+    font-weight: bold;
+    padding-left: 6px;
+`;
 
 export default class JobPage extends Component {
     static propTypes = {
@@ -155,6 +174,7 @@ export default class JobPage extends Component {
     }
 
     render() {
+        const progress = this.props.job ? getJobProgress(this.props.job) : 0;
         return (
             <Choose>
                 <When condition={this.props.job}>
@@ -188,6 +208,16 @@ export default class JobPage extends Component {
                             </Popover>
                         </TopRight>
                     </JobHeader>
+                    <If condition={progress > 0 && this.props.job.status === JOB_STATUS_RUNNING}>
+                        <ProgressContainer>
+                            <ProgressBarContainer>
+                                <ProgressBar intent={Intent.PRIMARY} value={progress} />
+                            </ProgressBarContainer>
+                            <ProgressValue>
+                                <Tag minimal>{Math.floor(progress * 100)}%</Tag>
+                            </ProgressValue>
+                        </ProgressContainer>
+                    </If>
                     <Callout icon="calendar" title="Timestamps">
                         <HTMLTable>
                             <tbody>

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Card, Elevation, Button, Icon, Intent, Spinner } from "@blueprintjs/core";
 import VulpesSymbols from "vulpes/symbols.js";
 import { JobShape } from "../library/propTypes.js";
+import { getJobProgress } from "../library/progress.js";
 
 const {
     JOB_RESULT_TYPE_FAILURE,
@@ -109,7 +110,7 @@ const Row = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
+    align-items: stretch;
 `;
 const JobTopRow = styled(Row)`
     justify-content: space-between;
@@ -117,6 +118,37 @@ const JobTopRow = styled(Row)`
 `;
 const JobDetailCell = styled.div`
     border-left: 1px solid #eee;
+`;
+const ProgressContainer = styled.div`
+    flex-grow: 2;
+    position: relative;
+    background-color: #b3cfff;
+`;
+const ProgressBar = styled.div`
+    position: absolute;
+    height: 100%;
+    top: 0px;
+    right: 0px;
+    width: ${props => 100 - (props.width || 0)}%;
+    background-color: #fff;
+    overflow: hidden;
+`;
+const ProgressTextOnWhite = styled.div`
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    padding: 0 8px;
+`;
+const ProgressTextOnColour = styled(ProgressTextOnWhite)`
+    color: #fff;
 `;
 
 export default class JobItem extends Component {
@@ -129,6 +161,7 @@ export default class JobItem extends Component {
         const { job } = this.props;
         const status = jobStatus(job);
         const result = jobResult(job);
+        const progress = getJobProgress(job);
         return (
             <StyledCard
                 interactive={true}
@@ -146,6 +179,18 @@ export default class JobItem extends Component {
                     </PaddedValue>
                 </JobTopRow>
                 <Row>
+                    <If condition={progress > 0 && job.status === JOB_STATUS_RUNNING}>
+                        <ProgressContainer>
+                            <ProgressTextOnColour>
+                                {Math.floor(progress * 100)}%
+                            </ProgressTextOnColour>
+                            <ProgressBar width={progress * 100}>
+                                <ProgressTextOnWhite>
+                                    {Math.floor(progress * 100)}%
+                                </ProgressTextOnWhite>
+                            </ProgressBar>
+                        </ProgressContainer>
+                    </If>
                     <JobDetailCell>
                         <PaddedValue>
                             <JobCreatedDate>{parseDate(job.created)}</JobCreatedDate>

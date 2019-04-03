@@ -44,3 +44,21 @@ createVulpesRouter(service);
 ```
 
 The returned value is a router instance from [`express-promise-router`](https://github.com/express-promise-router/express-promise-router).
+
+## Data Aspects
+
+Vulpes UI reacts to various states of job data, many of which you can affect by setting result data or something similar.
+
+### Job Progress
+
+Vulpes UI can render a progress bar on jobs that are:
+
+ * Running
+ * Returning progress metrics _as they proceed_
+
+Job progress metrics are to be stored in result data, which can be set even while the job is running. The properties are as follows (note the hidden-property prefix `%`):
+
+ * `%progressCurrent`: The current progress value - a number greater than or equal to 0.
+ * `%progressMax`: The maximum progress value - a number greater than or equal to 0, but greater than or equal to `%progressCurrent`.
+
+For example: if a job was processing images, and `108` out of `165` had been processed, you might set `%progressCurrent` to `108` and `%progressMax` to `165` which would render _65%_ in the UI.
