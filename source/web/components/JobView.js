@@ -23,6 +23,7 @@ import {
 import Layout from "./Layout";
 import { getJobProgress } from "../library/progress.js";
 import EditingData from "./EditingData";
+import Attachments from "./Attachments.js";
 import { JobShape } from "../library/propTypes.js";
 
 const {
@@ -367,6 +368,7 @@ export default class JobPage extends Component {
                             <Otherwise />
                         </Choose>
                     </Buttons>
+                    <Attachments results={this.props.job ? this.props.job.result.data : {}} />
                 </When>
                 <Otherwise>
                     <Spinner />
