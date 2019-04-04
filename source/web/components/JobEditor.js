@@ -83,6 +83,7 @@ export default class JobEditor extends Component {
         jobMaxAttempts: null,
         jobParents: [],
         jobPriority: JOB_PRIORITY_NORMAL,
+        jobTimeBetweenRetries: 0,
         jobTimeLimit: null,
         jobType: "",
         newParent: "",
@@ -104,6 +105,12 @@ export default class JobEditor extends Component {
         }
         if (this.state.jobMaxAttempts !== null && typeof this.state.jobMaxAttempts !== "number") {
             invalidItems.push("attemptsMax");
+        }
+        if (
+            typeof this.state.jobTimeBetweenRetries !== "number" ||
+            this.state.jobTimeBetweenRetries < 0
+        ) {
+            invalidItems.push("timeBetweenRetries");
         }
         if (this.state.jobTimeLimit !== null && typeof this.state.jobTimeLimit !== "number") {
             invalidItems.push("timeLimit");
@@ -153,7 +160,8 @@ export default class JobEditor extends Component {
             priority: this.state.jobPriority,
             predicate: {
                 ...(this.state.offlineTemplate.predicate || {}),
-                attemptsMax: this.state.jobMaxAttempts
+                attemptsMax: this.state.jobMaxAttempts,
+                timeBetweenRetries: this.state.jobTimeBetweenRetries
             },
             timeLimit: this.state.jobTimeLimit
         };
@@ -169,6 +177,8 @@ export default class JobEditor extends Component {
             jobMaxAttempts: nestedProperty.get(job, "predicate.attemptsMax") || null,
             jobParents: Array.isArray(job.parents) ? [...job.parents] : [],
             jobPriority: job.priority || null,
+            jobTimeBetweenRetries:
+                nestedProperty.get(job, "predicate.timeBetweenRetries") || ms("5m"),
             jobTimeLimit: job.timeLimit || null,
             jobType: job.type || "",
             offlineTemplate: JSON.parse(JSON.stringify(job))
@@ -315,6 +325,38 @@ export default class JobEditor extends Component {
                         step="1"
                         intent={
                             this.invalidItems.includes("attemptsMax") ? Intent.DANGER : Intent.NONE
+                        }
+                    />
+                </FormGroup>
+                <FormGroup
+                    label="Time Between Retries"
+                    labelInfo="(milliseconds)"
+                    labelFor="timeBetweenRetries"
+                >
+                    <InputGroup
+                        type="number"
+                        id="timebetweenretries"
+                        value={this.state.jobTimeBetweenRetries}
+                        onChange={evt =>
+                            this.setState({
+                                jobTimeBetweenRetries: evt.target.value
+                                    ? parseInt(evt.target.value, 10)
+                                    : 0
+                            })
+                        }
+                        min="0"
+                        step="1000"
+                        rightElement={
+                            this.state.jobTimeBetweenRetries > 0 ? (
+                                <Tag>~ {ms(this.state.jobTimeBetweenRetries, { long: true })}</Tag>
+                            ) : (
+                                <Tag>No Delay</Tag>
+                            )
+                        }
+                        intent={
+                            this.invalidItems.includes("timeBetweenRetries")
+                                ? Intent.DANGER
+                                : Intent.NONE
                         }
                     />
                 </FormGroup>
