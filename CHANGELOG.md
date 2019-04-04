@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.5.1
+_2019-04-04_
+
+ * **Bugfix**:
+   * Last line of text file previews was hidden
+
 ## v0.5.0
 _2019-04-04_
 
