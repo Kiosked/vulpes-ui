@@ -9,6 +9,7 @@ export function startTimer(callback, delay) {
         }
         if (retVal && typeof retVal.then === "function") {
             retVal.then(startTimer, startTimer);
+            return;
         }
         startTimer();
     };
