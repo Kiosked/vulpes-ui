@@ -15,7 +15,7 @@ export default connect(
         goToScheduledTask: taskID => dispatch => {
             dispatch(push(`/scheduling/task/${taskID}`));
         },
-        onReady: jobID => () => {
+        onReady: () => () => {
             collectAllScheduledTasks();
         }
     }

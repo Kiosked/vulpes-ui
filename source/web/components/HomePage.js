@@ -6,6 +6,7 @@ import styled from "styled-components";
 import VulpesSymbols from "vulpes/symbols.js";
 import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
+import { startTimer, stopTimer } from "../library/timers.js";
 
 const {
     JOB_RESULT_TYPE_FAILURE,
@@ -51,6 +52,11 @@ export default class HomePage extends Component {
 
     componentDidMount() {
         this.props.onReady();
+        this.timer = startTimer(() => this.props.onReady(), 5000);
+    }
+
+    componentWillUnmount() {
+        stopTimer(this.timer);
     }
 
     render() {

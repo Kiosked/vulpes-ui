@@ -5,6 +5,7 @@ import { Card, Elevation, Button, Icon, Intent, Spinner } from "@blueprintjs/cor
 import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
+import { startTimer, stopTimer } from "../library/timers.js";
 
 const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
@@ -20,6 +21,11 @@ export default class JobListPage extends Component {
 
     componentDidMount() {
         this.props.onReady();
+        this.timer = startTimer(() => this.props.onReady(), 5000);
+    }
+
+    componentWillUnmount() {
+        stopTimer(this.timer);
     }
 
     render() {

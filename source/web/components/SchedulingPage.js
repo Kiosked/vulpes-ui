@@ -5,6 +5,7 @@ import { Button } from "@blueprintjs/core";
 import Layout from "./Layout";
 import { ScheduledTaskShape } from "../library/propTypes.js";
 import ScheduledTaskItem from "./ScheduledTaskItem.js";
+import { startTimer, stopTimer } from "../library/timers.js";
 
 const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
@@ -22,7 +23,12 @@ export default class SchedulingPage extends Component {
     state = {};
 
     componentDidMount() {
-        this.props.onReady(this.props.jobID);
+        this.props.onReady();
+        this.timer = startTimer(() => this.props.onReady(), 5000);
+    }
+
+    componentWillUnmount() {
+        stopTimer(this.timer);
     }
 
     render() {

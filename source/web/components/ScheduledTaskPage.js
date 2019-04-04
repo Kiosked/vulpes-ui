@@ -16,6 +16,7 @@ import prettyCron from "prettycron";
 import Layout from "./Layout";
 import { ScheduledTaskShape } from "../library/propTypes.js";
 import JobEditor from "./JobEditor.js";
+import { startTimer, stopTimer } from "../library/timers.js";
 
 const TaskID = styled.pre`
     margin: 0;
@@ -61,12 +62,17 @@ export default class ScheduledTaskPage extends Component {
 
     componentDidMount() {
         this.props.onReady(this.props.taskID);
+        this.timer = startTimer(() => this.props.onReady(this.props.taskID), 5000);
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.taskID !== prevProps.taskID) {
             this.props.onReady(this.props.taskID);
         }
+    }
+
+    componentWillUnmount() {
+        stopTimer(this.timer);
     }
 
     deleteJob(jobNumber) {
