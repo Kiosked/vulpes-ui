@@ -359,7 +359,7 @@ export default class JobPage extends Component {
                             <When
                                 condition={
                                     this.props.job.status === JOB_STATUS_STOPPED &&
-                                    this.props.job.result.type === JOB_RESULT_TYPE_SUCCESS
+                                    JOB_RESULT_FAILURES.includes(this.props.job.result.type)
                                 }
                             >
                                 <IconButton onClick={() => this.props.resetJob(this.props.jobID)}>
