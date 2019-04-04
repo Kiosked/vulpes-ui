@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Card, Icon } from "@blueprintjs/core";
+import { Card, Dialog, Icon } from "@blueprintjs/core";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const MIME_IMAGE_REXP = /^image\//;
@@ -10,12 +10,12 @@ const Items = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 `;
 const Item = styled.div`
     width: 120px;
     display: flex;
-    padding: 2px;
+    padding: 4px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
@@ -58,18 +58,45 @@ const NoImage = styled.div`
 const Title = styled.div`
     text-align: center;
 `;
+const BigImage = styled.img`
+    max-width: 100%;
+    height: auto;
+`;
+const PreviewDialog = styled(Dialog)`
+    width: 70vw;
+    height
+`;
+const DialogContent = styled.div`
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+`;
+const NoContentMessage = styled.div`
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-style: italic;
+    color: #aaa;
+`;
 
 export default class Attachments extends Component {
     static propTypes = {
         results: PropTypes.object.isRequired
     };
 
+    state = {
+        presentedAttachment: null
+    };
+
     handleClickFile(attachment) {
-        if (MIME_IMAGE_REXP.test(attachment.mime)) {
-            // todo
-        } else {
-            // todo
-        }
+        this.setState({
+            presentedAttachment: attachment
+        });
     }
 
     render() {
@@ -103,6 +130,30 @@ export default class Attachments extends Component {
                         </Item>
                     </For>
                 </Items>
+                <PreviewDialog
+                    isOpen={!!this.state.presentedAttachment}
+                    onClose={() => this.setState({ presentedAttachment: null })}
+                    title={
+                        this.state.presentedAttachment ? this.state.presentedAttachment.title : ""
+                    }
+                >
+                    <DialogContent>
+                        <If condition={!!this.state.presentedAttachment}>
+                            <Choose>
+                                <When
+                                    condition={MIME_IMAGE_REXP.test(
+                                        this.state.presentedAttachment.mime
+                                    )}
+                                >
+                                    <BigImage src={this.state.presentedAttachment.data} />
+                                </When>
+                                <Otherwise>
+                                    <NoContentMessage>No preview available</NoContentMessage>
+                                </Otherwise>
+                            </Choose>
+                        </If>
+                    </DialogContent>
+                </PreviewDialog>
             </Card>
         );
     }
