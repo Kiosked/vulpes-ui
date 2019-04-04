@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Card, Dialog, Icon } from "@blueprintjs/core";
+import { LazyLog } from "react-lazylog";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const MIME_IMAGE_REXP = /^image\//;
+const MIME_TEXT_REXP = /(^text\/|^application\/(javascript|ecmascript|json))/;
 
 const Items = styled.div`
     display: flex;
@@ -69,7 +71,7 @@ const PreviewDialog = styled(Dialog)`
 const DialogContent = styled.div`
     width: 100%;
     height: 100%;
-    min-height: 200px;
+    min-height: 60vh;
     overflow-x: hidden;
     overflow-y: scroll;
 `;
@@ -146,6 +148,13 @@ export default class Attachments extends Component {
                                     )}
                                 >
                                     <BigImage src={this.state.presentedAttachment.data} />
+                                </When>
+                                <When
+                                    condition={MIME_TEXT_REXP.test(
+                                        this.state.presentedAttachment.mime
+                                    )}
+                                >
+                                    <LazyLog url={this.state.presentedAttachment.data} />
                                 </When>
                                 <Otherwise>
                                     <NoContentMessage>No preview available</NoContentMessage>
