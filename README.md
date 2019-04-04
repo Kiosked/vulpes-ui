@@ -62,3 +62,16 @@ Job progress metrics are to be stored in result data, which can be set even whil
  * `%progressMax`: The maximum progress value - a number greater than or equal to 0, but greater than or equal to `%progressCurrent`.
 
 For example: if a job was processing images, and `108` out of `165` had been processed, you might set `%progressCurrent` to `108` and `%progressMax` to `165` which would render _65%_ in the UI.
+
+### Attachments / Assets
+
+The UI can display attachments when added to result data correctly. An attachment's property key must be in the following format: `%attachment:facbe41f-7889-426b-9388-20da2ad667fc`. The latter part after the colon is a v4 UUID.
+
+The value of these properties must be an object with the following properties:
+
+| Property      | Type          | Required  | Description                               |
+|---------------|---------------|-----------|-------------------------------------------|
+| `title`       | `String`      | Yes       | The title of the attachment               |
+| `created`     | `Number`      | Yes       | JS timestamp of when it was created       |
+| `mime`        | `String`      | Yes       | The MIME type of the attachment           |
+| `data`        | `String`      | Yes       | Base64 encoded data of the attachment (data URI) |

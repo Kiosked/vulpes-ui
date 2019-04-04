@@ -23,6 +23,7 @@ import {
 import Layout from "./Layout";
 import { getJobProgress } from "../library/progress.js";
 import EditingData from "./EditingData";
+import Attachments from "./Attachments.js";
 import { JobShape } from "../library/propTypes.js";
 
 const {
@@ -331,18 +332,16 @@ export default class JobPage extends Component {
                             </Button>
                         </ButtonGroup>
                     </StyledCard>
-                    <If condition={!_.isEmpty(this.props.job.result.data)}>
-                        <If condition={!this.state.editingResults}>
-                            <JSONView src={this.props.job.result.data} />
-                        </If>
-                        <If condition={this.state.editingResults}>
-                            <EditingData
-                                data={this.props.job.result.data}
-                                id={this.props.job.id}
-                                dataStr="resultData"
-                                saveData={this.sendDataForUpdate.bind(this)}
-                            />
-                        </If>
+                    <If condition={!this.state.editingResults}>
+                        <JSONView src={filterViewableData(this.props.job.result.data)} />
+                    </If>
+                    <If condition={this.state.editingResults}>
+                        <EditingData
+                            data={filterViewableData(this.props.job.result.data)}
+                            id={this.props.job.id}
+                            dataStr="resultData"
+                            saveData={this.sendDataForUpdate.bind(this)}
+                        />
                     </If>
                     <Buttons>
                         <Choose>
@@ -369,6 +368,7 @@ export default class JobPage extends Component {
                             <Otherwise />
                         </Choose>
                     </Buttons>
+                    <Attachments results={this.props.job ? this.props.job.result.data : {}} />
                 </When>
                 <Otherwise>
                     <Spinner />
