@@ -1,6 +1,6 @@
 # Vulpes-UI
 
-## v0.6.0
+## v0.6.1
 _2019-04-04_
 
  * Auto-refresh status and jobs/tasks
