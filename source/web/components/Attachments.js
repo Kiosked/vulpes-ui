@@ -154,7 +154,10 @@ export default class Attachments extends Component {
                                         this.state.presentedAttachment.mime
                                     )}
                                 >
-                                    <LazyLog url={this.state.presentedAttachment.data} />
+                                    <LazyLog
+                                        url={this.state.presentedAttachment.data}
+                                        extraLines={2}
+                                    />
                                 </When>
                                 <Otherwise>
                                     <NoContentMessage>No preview available</NoContentMessage>
