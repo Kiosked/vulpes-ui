@@ -1,5 +1,15 @@
 # Vulpes-UI
 
+## v0.7.0
+_2019-04-05_
+
+ * Remove attachment button
+ * Cancel-editing button when editing data
+ * Date shown for attachments
+ * Sort attachments by date (newest first)
+ * **Bugfix**:
+   * Not possible to remove properties from data when editing
+
 ## v0.6.1
 _2019-04-04_
 
