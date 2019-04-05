@@ -1,12 +1,23 @@
 import React, { Component } from "react";
-import { Button } from "@blueprintjs/core";
+import PropTypes from "prop-types";
+import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
+import styled from "styled-components";
 import brace from "brace";
 import AceEditor from "react-ace";
 
 import "brace/mode/json";
 import "brace/theme/xcode";
 
+const OffsetButtonGroup = styled(ButtonGroup)`
+    margin-top: 6px;
+`;
+
 export default class EditingData extends Component {
+    static propTypes = {
+        onCancel: PropTypes.func.isRequired,
+        onSaveData: PropTypes.func.isRequired
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -33,7 +44,7 @@ export default class EditingData extends Component {
     }
 
     saveData() {
-        this.props.saveData(this.props.dataStr, JSON.parse(this.state.data), this.props.id);
+        this.props.onSaveData(this.props.dataStr, JSON.parse(this.state.data), this.props.id);
     }
 
     render() {
@@ -43,19 +54,23 @@ export default class EditingData extends Component {
                     mode="json"
                     theme="xcode"
                     height="200px"
-                    onChange={this.setJobData.bind(this)}
+                    onChange={::this.setJobData}
                     value={this.state.data}
                     fontSize={14}
                     showPrintMargin={true}
                     showGutter={true}
                     editorProps={{ $blockScrolling: Infinity }}
                 />
-                <Button
-                    icon="key-enter"
-                    text="Save"
-                    onClick={this.saveData.bind(this)}
-                    disabled={this.state.saveDisabled}
-                />
+                <OffsetButtonGroup>
+                    <Button
+                        icon="document-share"
+                        text="Save"
+                        onClick={::this.saveData}
+                        disabled={this.state.saveDisabled}
+                        intent={Intent.PRIMARY}
+                    />
+                    <Button icon="undo" text="Cancel" onClick={::this.props.onCancel} />
+                </OffsetButtonGroup>
             </div>
         );
     }

@@ -293,7 +293,8 @@ export default class JobPage extends Component {
                             data={filterViewableData(this.props.job.data)}
                             id={this.props.job.id}
                             dataStr="jobData"
-                            saveData={this.sendDataForUpdate.bind(this)}
+                            onSaveData={::this.sendDataForUpdate}
+                            onCancel={() => this.setState({ editingData: null })}
                         />
                     </If>
                     <h4>Result</h4>
@@ -340,7 +341,8 @@ export default class JobPage extends Component {
                             data={filterViewableData(this.props.job.result.data)}
                             id={this.props.job.id}
                             dataStr="resultData"
-                            saveData={this.sendDataForUpdate.bind(this)}
+                            onSaveData={this.sendDataForUpdate.bind(this)}
+                            onCancel={() => this.setState({ editingResults: null })}
                         />
                     </If>
                     <Buttons>
