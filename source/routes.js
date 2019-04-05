@@ -14,10 +14,15 @@ const INDEX = path.join(DIST, "index.html");
 function createRoutes(router, service) {
     router.use(
         bodyParser.urlencoded({
-            extended: true
+            extended: true,
+            limit: "100mb"
         })
     );
-    router.use(bodyParser.json());
+    router.use(
+        bodyParser.json({
+            limit: "100mb"
+        })
+    );
     router.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header(
@@ -121,7 +126,7 @@ function createRoutes(router, service) {
         const jobId = req.params.jobId;
         const mergedProperties = req.body.properties;
         service
-            .updateJob(jobId, mergedProperties)
+            .updateJob(jobId, mergedProperties, { stripResults: true })
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
