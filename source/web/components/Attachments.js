@@ -95,6 +95,16 @@ export default class Attachments extends Component {
         presentedAttachment: null
     };
 
+    get attachments() {
+        return Object.keys(this.props.results)
+            .filter(key => ATTACHMENT_REXP.test(key))
+            .map(key => ({
+                ...this.props.results[key],
+                id: key
+            }))
+            .sort((a, b) => b.created - a.created);
+    }
+
     handleClickFile(attachment) {
         this.setState({
             presentedAttachment: attachment
@@ -102,12 +112,7 @@ export default class Attachments extends Component {
     }
 
     render() {
-        const attachments = Object.keys(this.props.results)
-            .filter(key => ATTACHMENT_REXP.test(key))
-            .map(key => ({
-                ...this.props.results[key],
-                id: key
-            }));
+        const attachments = this.attachments;
         if (attachments.length <= 0) {
             return null;
         }
