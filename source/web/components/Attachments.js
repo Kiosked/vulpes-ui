@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Card, Dialog, Icon } from "@blueprintjs/core";
+import { Button, ButtonGroup, Card, Classes, Dialog, Icon, Intent } from "@blueprintjs/core";
 import { LazyLog } from "react-lazylog";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -18,6 +18,7 @@ const Item = styled.div`
     width: 120px;
     display: flex;
     padding: 4px;
+    position: relative;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
@@ -25,6 +26,23 @@ const Item = styled.div`
     &:hover {
         background-color: #eee;
     }
+`;
+const ItemRemoveButton = styled.div`
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #000;
+    border-radius: 9px;
+    user-select: none;
+    cursor: pointer;
+    &:hover {
+        box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.5);
+    }
+    background-color: #fff;
+    font-size: 9px;
+    z-index: 10;
 `;
 const ImageContainer = styled.div`
     width: 110px;
@@ -66,7 +84,6 @@ const BigImage = styled.img`
 `;
 const PreviewDialog = styled(Dialog)`
     width: 70vw;
-    height
 `;
 const DialogContent = styled.div`
     width: 100%;
@@ -88,11 +105,13 @@ const NoContentMessage = styled.div`
 
 export default class Attachments extends Component {
     static propTypes = {
+        onRemoveAttachment: PropTypes.func.isRequired,
         results: PropTypes.object.isRequired
     };
 
     state = {
-        presentedAttachment: null
+        presentedAttachment: null,
+        removeAttachment: null
     };
 
     get attachments() {
@@ -100,7 +119,7 @@ export default class Attachments extends Component {
             .filter(key => ATTACHMENT_REXP.test(key))
             .map(key => ({
                 ...this.props.results[key],
-                id: key
+                id: key.replace(/^%attachment:/, "")
             }))
             .sort((a, b) => b.created - a.created);
     }
@@ -108,6 +127,21 @@ export default class Attachments extends Component {
     handleClickFile(attachment) {
         this.setState({
             presentedAttachment: attachment
+        });
+    }
+
+    handleClickFileRemove(event, attachment) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.setState({
+            removeAttachment: attachment
+        });
+    }
+
+    removeSelectedAttachment() {
+        this.props.onRemoveAttachment(this.state.removeAttachment.id);
+        this.setState({
+            removeAttachment: null
         });
     }
 
@@ -134,6 +168,11 @@ export default class Attachments extends Component {
                                 </Choose>
                             </ImageContainer>
                             <Title>{attachment.title}</Title>
+                            <ItemRemoveButton
+                                onClick={evt => this.handleClickFileRemove(evt, attachment)}
+                            >
+                                <Icon icon="cross" />
+                            </ItemRemoveButton>
                         </Item>
                     </For>
                 </Items>
@@ -171,6 +210,29 @@ export default class Attachments extends Component {
                         </If>
                     </DialogContent>
                 </PreviewDialog>
+                <Dialog
+                    title="Remove Attachment"
+                    isOpen={!!this.state.removeAttachment}
+                    onClose={() => this.setState({ removeAttachment: null })}
+                >
+                    <div className={Classes.DIALOG_BODY}>
+                        Are you sure that you want to remove "
+                        {this.state.removeAttachment ? this.state.removeAttachment.title : ""}"?
+                    </div>
+                    <div className={Classes.DIALOG_FOOTER}>
+                        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                            <Button
+                                intent={Intent.DANGER}
+                                onClick={::this.removeSelectedAttachment}
+                            >
+                                Remove
+                            </Button>
+                            <Button onClick={() => this.setState({ removeAttachment: null })}>
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                </Dialog>
             </Card>
         );
     }

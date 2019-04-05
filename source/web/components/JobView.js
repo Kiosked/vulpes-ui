@@ -153,6 +153,7 @@ export default class JobPage extends Component {
         goToNewJobPage: PropTypes.func.isRequired,
         job: JobShape,
         jobID: PropTypes.string.isRequired,
+        removeAttachment: PropTypes.func.isRequired,
         resetJob: PropTypes.func.isRequired,
         stopJob: PropTypes.func.isRequired,
         updateJob: PropTypes.func.isRequired
@@ -370,7 +371,10 @@ export default class JobPage extends Component {
                             <Otherwise />
                         </Choose>
                     </Buttons>
-                    <Attachments results={this.props.job ? this.props.job.result.data : {}} />
+                    <Attachments
+                        onRemoveAttachment={id => this.props.removeAttachment(id)}
+                        results={this.props.job ? this.props.job.result.data : {}}
+                    />
                 </When>
                 <Otherwise>
                     <Spinner />

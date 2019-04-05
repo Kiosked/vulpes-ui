@@ -32,6 +32,7 @@ export default class JobPage extends Component {
         jobID: PropTypes.string.isRequired,
         jobTree: PropTypes.arrayOf(JobShape),
         onReady: PropTypes.func.isRequired,
+        removeAttachment: PropTypes.func.isRequired,
         resetJob: PropTypes.func.isRequired,
         stopJob: PropTypes.func.isRequired,
         updateJob: PropTypes.func.isRequired
@@ -103,6 +104,9 @@ export default class JobPage extends Component {
                             goToNewJobPage={this.props.goToNewJobPage}
                             job={this.props.job}
                             jobID={this.props.jobID}
+                            removeAttachment={id =>
+                                this.props.removeAttachment(this.props.jobID, id)
+                            }
                             resetJob={this.props.resetJob}
                             stopJob={this.props.stopJob}
                             updateJob={this.props.updateJob}
