@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Button, ButtonGroup, Card, Classes, Dialog, Icon, Intent } from "@blueprintjs/core";
 import { LazyLog } from "react-lazylog";
+import humanDate from "human-date";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const MIME_IMAGE_REXP = /^image\//;
@@ -76,6 +77,13 @@ const NoImage = styled.div`
     align-items: center;
 `;
 const Title = styled.div`
+    text-align: center;
+`;
+const DateSubtitle = styled.span`
+    color: #aaa;
+    font-size: 11px;
+    font-style: italic;
+    width: 80%;
     text-align: center;
 `;
 const BigImage = styled.img`
@@ -168,6 +176,11 @@ export default class Attachments extends Component {
                                 </Choose>
                             </ImageContainer>
                             <Title>{attachment.title}</Title>
+                            <DateSubtitle>
+                                {humanDate.prettyPrint(new Date(attachment.created), {
+                                    showTime: true
+                                })}
+                            </DateSubtitle>
                             <ItemRemoveButton
                                 onClick={evt => this.handleClickFileRemove(evt, attachment)}
                             >
