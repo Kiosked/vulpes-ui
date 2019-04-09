@@ -1,6 +1,6 @@
 # Vulpes-UI
 
-## v0.9.0
+## v0.9.1
 _2019-04-09_
 
  * New job tree visualiser
