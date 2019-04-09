@@ -1,8 +1,10 @@
 import axios from "axios";
 import joinURL from "url-join";
-import { dispatch } from "../redux/index.js";
+import objectHash from "object-hash";
+import { dispatch, getState } from "../redux/index.js";
 import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
 import { setJob, setJobs, setJobTree } from "../actions/jobs.js";
+import { getJob, getJobTree } from "../selectors/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
 
@@ -22,6 +24,10 @@ export function addJob(properties) {
 
 export function collectJob(jobID) {
     return fetchJob(jobID).then(job => {
+        const existingJob = getJob(getState(), jobID);
+        if (existingJob && !objectsDiffer(existingJob, job)) {
+            return;
+        }
         dispatch(setJob(job));
     });
 }
@@ -35,6 +41,10 @@ export function collectAllJobs() {
 
 export function collectJobTree(jobID) {
     fetchJobTree(jobID).then(tree => {
+        const existingTree = getJobTree(getState(), jobID);
+        if (existingTree && !objectsDiffer(existingTree, tree)) {
+            return;
+        }
         dispatch(
             setJobTree({
                 jobID,
@@ -42,6 +52,12 @@ export function collectJobTree(jobID) {
             })
         );
     });
+}
+
+function objectsDiffer(obj1, obj2) {
+    const hash1 = objectHash(obj1);
+    const hash2 = objectHash(obj2);
+    return hash1 !== hash2;
 }
 
 export function resetJob(jobId) {
