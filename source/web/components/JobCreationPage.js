@@ -13,6 +13,7 @@ const ParentsInput = styled(InputGroup)`
 
 export default class JobCreationPage extends Component {
     static propTypes = {
+        initialParent: PropTypes.string,
         jobTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
         onReady: PropTypes.func.isRequired
     };
@@ -25,6 +26,7 @@ export default class JobCreationPage extends Component {
         return (
             <Layout>
                 <JobEditor
+                    parents={this.props.initialParent ? [this.props.initialParent] : []}
                     jobTypes={this.props.jobTypes}
                     onSave={job => this.props.addNewJob(job)}
                 />

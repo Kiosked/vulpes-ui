@@ -18,6 +18,7 @@ import ms from "ms";
 import brace from "brace";
 import AceEditor from "react-ace";
 import Select from "react-select";
+import _ from "lodash";
 import { JobShape, JobShapeNew } from "../library/propTypes.js";
 import {
     JOB_PRIORITY_HIGH,
@@ -64,7 +65,8 @@ export default class JobEditor extends Component {
     static defaultProps = {
         canSetID: false,
         isTemplate: false,
-        jobTypes: []
+        jobTypes: [],
+        parents: []
     };
 
     static propTypes = {
@@ -73,7 +75,8 @@ export default class JobEditor extends Component {
         job: PropTypes.oneOfType([JobShape, JobShapeNew]),
         jobTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
         onCancel: PropTypes.func,
-        onSave: PropTypes.func.isRequired
+        onSave: PropTypes.func.isRequired,
+        parents: PropTypes.arrayOf(PropTypes.string).isRequired
     };
 
     state = {
@@ -125,7 +128,7 @@ export default class JobEditor extends Component {
     addNewParent() {
         const parents = [...this.state.jobParents, this.state.newParent];
         this.setState({
-            jobParents: parents,
+            jobParents: _.uniq(parents),
             newParent: ""
         });
     }
@@ -133,12 +136,24 @@ export default class JobEditor extends Component {
     componentDidMount() {
         if (this.props.job) {
             this.processUpdatedJob(this.props.job);
+        } else if (this.props.parents.length > 0) {
+            this.setState({
+                jobParents: _.uniq([...this.state.jobParents, ...this.props.parents])
+            });
         }
     }
 
     componentDidUpdate() {
         if (this.props.job) {
             this.processUpdatedJob(this.props.job);
+        } else if (this.props.parents.length > 0) {
+            const parents = _.uniq([...this.state.jobParents, ...this.props.parents]).sort();
+            if (!_.isEqual(parents, this.state.jobParents.sort())) {
+                console.log("NOT EQ", parents, this.state.jobParents.sort());
+                this.setState({
+                    jobParents: parents
+                });
+            }
         }
     }
 
@@ -175,7 +190,11 @@ export default class JobEditor extends Component {
             jobData: job.data ? JSON.stringify(job.data, undefined, 2) : "{}",
             jobID: job.id || null,
             jobMaxAttempts: nestedProperty.get(job, "predicate.attemptsMax") || null,
-            jobParents: Array.isArray(job.parents) ? [...job.parents] : [],
+            jobParents: _.uniq(
+                Array.isArray(job.parents)
+                    ? [...job.parents, ...this.props.parents]
+                    : [...this.props.parents]
+            ),
             jobPriority: job.priority || null,
             jobTimeBetweenRetries:
                 nestedProperty.get(job, "predicate.timeBetweenRetries") || ms("5m"),

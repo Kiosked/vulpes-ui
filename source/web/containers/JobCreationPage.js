@@ -6,6 +6,7 @@ import { getJobTypes } from "../selectors/jobs.js";
 
 export default connect(
     (state, ownProps) => ({
+        initialParent: ownProps.match.params.parentID || null,
         jobTypes: getJobTypes(state)
     }),
     {

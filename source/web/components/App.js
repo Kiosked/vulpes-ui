@@ -23,9 +23,9 @@ class App extends Component {
                         <Route path="/" exact component={HomePage} />
                         <Route path="/jobs" exact component={JobListPage} />
                         <Route path="/job/:jobId" component={JobPage} />
-                        <Route path="/new-job" component={JobCreationPage} />
+                        <Route path="/new-job" exact component={JobCreationPage} />
                         <Route
-                            path="/new-job/parents/:parentId"
+                            path="/new-job/parents/:parentID"
                             exact
                             component={JobCreationPage}
                         />
