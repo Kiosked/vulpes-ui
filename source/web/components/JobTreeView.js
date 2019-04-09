@@ -45,9 +45,9 @@ function getFriendlyStatus(job) {
     } else if (job.status === JOB_STATUS_PENDING) {
         return "pending";
     } else if (job.status === JOB_STATUS_STOPPED) {
-        if (FAILED_TYPES.includes(job.status)) {
+        if (FAILED_TYPES.includes(job.result.type)) {
             return "failed";
-        } else if (job.status === JOB_RESULT_TYPE_SUCCESS) {
+        } else if (job.result.type === JOB_RESULT_TYPE_SUCCESS) {
             return "succeeded";
         }
     }
