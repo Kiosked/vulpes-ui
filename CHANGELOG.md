@@ -1,5 +1,13 @@
 # Vulpes-UI
 
+## v0.8.0
+_2019-04-09_
+
+ * Trigger scheduled tasks
+ * Skip fetching attactments for jobs list parents (only for individual job page)
+ * **Bugfix**:
+   * ([#13](https://github.com/Kiosked/vulpes-ui/issues/13)) Create dependent job broken: Parent ID not added
+
 ## v0.7.0
 _2019-04-05_
 
