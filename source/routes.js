@@ -245,6 +245,16 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.post("/scheduled-task/:id/trigger", function(req, res) {
+        const taskID = req.params.id;
+        service.scheduler
+            .triggerTask(taskID)
+            .then(() => res.status(200).send(""))
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
     router.put("/scheduled-task/:id/jobs", function(req, res) {
         const taskID = req.params.id;
         const { jobs } = req.body;

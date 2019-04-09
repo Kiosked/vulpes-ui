@@ -39,6 +39,7 @@ export default class ScheduledTaskPage extends Component {
         onDeleteJobFromTask: PropTypes.func.isRequired,
         onEditTask: PropTypes.func.isRequired,
         onToggleTask: PropTypes.func.isRequired,
+        onTriggerTask: PropTypes.func.isRequired,
         task: ScheduledTaskShape,
         taskID: PropTypes.string.isRequired
     };
@@ -166,6 +167,12 @@ export default class ScheduledTaskPage extends Component {
                                         !this.props.task.enabled
                                     )
                                 }
+                                disabled={!!this.state.editingJob || !!this.state.editingTask}
+                            />
+                            <VerticallySpacedButton
+                                icon="upload"
+                                text="Trigger Task"
+                                onClick={() => this.props.onTriggerTask(this.props.taskID)}
                                 disabled={!!this.state.editingJob || !!this.state.editingTask}
                             />
                         </ButtonGroup>

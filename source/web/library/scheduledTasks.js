@@ -52,6 +52,10 @@ export function toggleScheduledTask(taskID, enabled) {
     });
 }
 
+export function triggerScheduledTask(taskID, enabled) {
+    return axios.post(joinURL(API_BASE, `/scheduled-task/${taskID}/trigger`), {});
+}
+
 export function updateScheduledTask(taskID, title, schedule) {
     return axios.post(joinURL(API_BASE, `/scheduled-task/${taskID}/details`), {
         title,

@@ -6,7 +6,8 @@ import {
     addJobToScheduledTask,
     collectScheduledTask,
     setScheduledTaskJobs,
-    toggleScheduledTask
+    toggleScheduledTask,
+    triggerScheduledTask
 } from "../library/scheduledTasks.js";
 import { notifyError, notifySuccess } from "../library/notifications.js";
 
@@ -77,6 +78,17 @@ export default connect(
                 .catch(err => {
                     console.error(err);
                     notifyError(`Failed toggling task: ${err.message}`);
+                });
+        },
+        onTriggerTask: taskID => () => {
+            triggerScheduledTask(taskID)
+                .then(() => collectScheduledTask(taskID))
+                .then(() => {
+                    notifySuccess("Successfully triggered task");
+                })
+                .catch(err => {
+                    console.error(err);
+                    notifyError(`Failed triggering task: ${err.message}`);
                 });
         }
     }
