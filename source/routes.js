@@ -48,6 +48,23 @@ function createRoutes(router, service) {
         const options = { limit: req.query.limit, order: req.query.order, sort: req.query.sort };
         service
             .queryJobs({}, options)
+            .then(jobs =>
+                jobs.map(job => {
+                    if (job.result.data) {
+                        // Strip attachments
+                        job.result.data = Object.keys(job.result.data)
+                            .filter(key => /^%attachment:/.test(key) === false)
+                            .reduce(
+                                (output, key) =>
+                                    Object.assign(output, {
+                                        [key]: job.result.data[key]
+                                    }),
+                                {}
+                            );
+                    }
+                    return job;
+                })
+            )
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
