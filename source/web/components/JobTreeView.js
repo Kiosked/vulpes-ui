@@ -27,7 +27,7 @@ export default class JobTreeView extends Component {
         const nodes = [];
         const edges = [];
         if (tree) {
-            tree.map((job, index) => {
+            tree.forEach((job, index) => {
                 let status = job.result.type ? job.result.type.replace("job/result/", "") : "";
                 let statusColor;
                 switch (status) {
@@ -53,7 +53,7 @@ export default class JobTreeView extends Component {
                         jobData: {
                             id: job.id,
                             type: job.type,
-                            status: job.status.replace("job/status/", ""),
+                            status: job.status,
                             priority: job.priority
                         }
                     },
@@ -70,18 +70,20 @@ export default class JobTreeView extends Component {
                 };
                 nodes.push(node);
             });
-            tree.map(job => {
+            tree.forEach(job => {
                 if (job.parents.length > 0) {
-                    job.parents.map(parent => {
-                        let targetNode = nodes.find(node => node.data.jobData.id === job.id);
-                        let sourceNode = nodes.find(node => node.data.jobData.id === parent);
-                        let edge = {
+                    job.parents.forEach(parent => {
+                        const targetNode = nodes.find(node => node.data.jobData.id === job.id);
+                        const sourceNode = nodes.find(node => node.data.jobData.id === parent);
+                        if (!targetNode || !sourceNode) {
+                            return;
+                        }
+                        edges.push({
                             data: {
                                 source: sourceNode.data.id,
                                 target: targetNode.data.id
                             }
-                        };
-                        edges.push(edge);
+                        });
                     });
                 }
             });
