@@ -5,6 +5,7 @@ import JSONView from "react-json-view";
 import VulpesSymbols from "vulpes/symbols.js";
 import _ from "lodash";
 import {
+    Alert,
     Button,
     ButtonGroup,
     Callout,
@@ -20,7 +21,6 @@ import {
     Spinner,
     Tag
 } from "@blueprintjs/core";
-import Layout from "./Layout";
 import { getJobProgress } from "../library/progress.js";
 import EditingData from "./EditingData";
 import Attachments from "./Attachments.js";
@@ -163,7 +163,8 @@ export default class JobPage extends Component {
         super(props);
         this.state = {
             editingData: false,
-            editingResults: false
+            editingResults: false,
+            modalOpen: false
         };
     }
 
@@ -173,6 +174,10 @@ export default class JobPage extends Component {
         } else {
             this.setState({ editingResults: !this.state.editingResults });
         }
+    }
+
+    toggleModal() {
+        this.setState({ modalOpen: !this.state.modalOpen });
     }
 
     render() {
@@ -370,6 +375,26 @@ export default class JobPage extends Component {
                             </When>
                             <Otherwise />
                         </Choose>
+                        <StyledButton
+                            text="Delete job"
+                            icon="trash"
+                            intent={Intent.DANGER}
+                            onClick={() => this.toggleModal()}
+                        />
+                        <Alert
+                            cancelButtonText="Cancel"
+                            confirmButtonText="Delete job"
+                            icon="trash"
+                            intent={Intent.DANGER}
+                            isOpen={this.state.modalOpen}
+                            onCancel={() => this.toggleModal()}
+                            onConfirm={() => this.props.deleteJob(this.props.jobID)}
+                        >
+                            <p>
+                                Are you sure you want to permanently delete job with the ID{" "}
+                                <strong>{this.props.job.id}</strong>
+                            </p>
+                        </Alert>
                     </Buttons>
                     <Attachments
                         onRemoveAttachment={id => this.props.removeAttachment(id)}

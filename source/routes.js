@@ -308,6 +308,19 @@ function createRoutes(router, service) {
                 }
             });
     });
+    router.get("/delete/:jobId", function(req, res) {
+        const jobId = req.params.jobId;
+        service
+            .removeJob(jobId)
+            .then(data => {
+                res.set("Content-Type", "application/json");
+                res.status(200).send(data);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
 }
 
 module.exports = {

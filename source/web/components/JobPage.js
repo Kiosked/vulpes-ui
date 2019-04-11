@@ -100,6 +100,7 @@ export default class JobPage extends Component {
                 <Choose>
                     <When condition={this.state.tab === "job"}>
                         <JobView
+                            deleteJob={this.props.deleteJob}
                             goToNewDependentJobPage={this.props.goToNewDependentJobPage}
                             goToNewJobPage={this.props.goToNewJobPage}
                             job={this.props.job}

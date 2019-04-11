@@ -54,6 +54,19 @@ export function collectJobTree(jobID) {
     });
 }
 
+export function deleteJob(jobId) {
+    return axios
+        .get(joinURL(API_BASE, `/delete/${jobId}`))
+        .then(function(response) {
+            const data = response.data;
+            return data;
+        })
+        .catch(function(error) {
+            console.log(error);
+            throw error;
+        });
+}
+
 function objectsDiffer(obj1, obj2) {
     const hash1 = objectHash(obj1);
     const hash2 = objectHash(obj2);
