@@ -103,7 +103,7 @@ const IconButton = styled.span`
 const StyledButton = styled(Button)`
     margin-top: 10px;
     margin-bottom: 10px;
-    margin-right: 10px;
+    margin-right: 10px !important;
 `;
 const StyledIcon = styled(Icon)`
     margin-left: 5px;
@@ -352,35 +352,41 @@ export default class JobPage extends Component {
                         />
                     </If>
                     <Buttons>
-                        <Choose>
-                            <When
-                                condition={
-                                    this.props.job.status === JOB_STATUS_RUNNING ||
-                                    this.props.job.status === JOB_STATUS_PENDING
-                                }
-                            >
-                                <IconButton onClick={() => this.props.stopJob(this.props.jobID)}>
-                                    <StyledIcon icon="stop" iconSize={25} /> Stop job
-                                </IconButton>
-                            </When>
-                            <When
-                                condition={
-                                    this.props.job.status === JOB_STATUS_STOPPED &&
-                                    JOB_RESULT_FAILURES.includes(this.props.job.result.type)
-                                }
-                            >
-                                <IconButton onClick={() => this.props.resetJob(this.props.jobID)}>
-                                    <StyledIcon icon="swap-horizontal" iconSize={20} /> Re-run job
-                                </IconButton>
-                            </When>
-                            <Otherwise />
-                        </Choose>
-                        <StyledButton
-                            text="Delete job"
-                            icon="trash"
-                            intent={Intent.DANGER}
-                            onClick={() => this.toggleModal()}
-                        />
+                        <ButtonGroup>
+                            <Choose>
+                                <When
+                                    condition={
+                                        this.props.job.status === JOB_STATUS_RUNNING ||
+                                        this.props.job.status === JOB_STATUS_PENDING
+                                    }
+                                >
+                                    <StyledButton
+                                        text="Stop job"
+                                        icon="stop"
+                                        onClick={() => this.props.stopJob(this.props.jobID)}
+                                    />
+                                </When>
+                                <When
+                                    condition={
+                                        this.props.job.status === JOB_STATUS_STOPPED &&
+                                        JOB_RESULT_FAILURES.includes(this.props.job.result.type)
+                                    }
+                                >
+                                    <StyledButton
+                                        text="Reset job"
+                                        icon="swap-horizontal"
+                                        onClick={() => this.props.resetJob(this.props.jobID)}
+                                    />
+                                </When>
+                                <Otherwise />
+                            </Choose>
+                            <StyledButton
+                                text="Delete job"
+                                icon="trash"
+                                intent={Intent.DANGER}
+                                onClick={() => this.toggleModal()}
+                            />
+                        </ButtonGroup>
                         <Alert
                             cancelButtonText="Cancel"
                             confirmButtonText="Delete job"

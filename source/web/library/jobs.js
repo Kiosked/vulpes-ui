@@ -54,6 +54,12 @@ export function collectJobTree(jobID) {
     });
 }
 
+function objectsDiffer(obj1, obj2) {
+    const hash1 = objectHash(obj1);
+    const hash2 = objectHash(obj2);
+    return hash1 !== hash2;
+}
+
 export function removeJob(jobId) {
     return axios
         .get(joinURL(API_BASE, `/delete/${jobId}`))
@@ -68,12 +74,6 @@ export function removeJob(jobId) {
             console.log(error);
             throw error;
         });
-}
-
-function objectsDiffer(obj1, obj2) {
-    const hash1 = objectHash(obj1);
-    const hash2 = objectHash(obj2);
-    return hash1 !== hash2;
 }
 
 export function resetJob(jobId) {
