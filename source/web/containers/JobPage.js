@@ -5,7 +5,7 @@ import { getJob, getJobTree } from "../selectors/jobs.js";
 import {
     collectJob,
     collectJobTree,
-    deleteJob,
+    removeJob,
     resetJob,
     stopJob,
     updateJob
@@ -20,10 +20,10 @@ export default connect(
     }),
     {
         deleteJob: jobID => dispatch => {
-            deleteJob(jobID)
+            removeJob(jobID)
                 .then(() => {
                     notifySuccess("Successfully deleted job");
-                    dispatch(push("/"));
+                    dispatch(push("/jobs"));
                 })
                 .catch(err => {
                     console.error(err);

@@ -1,4 +1,4 @@
-import { JOB_SET, JOB_SET_MANY, JOB_TREE_SET } from "../actions/types.js";
+import { JOB_DELETE, JOB_SET, JOB_SET_MANY, JOB_TREE_SET } from "../actions/types.js";
 
 const INITIAL = {
     jobs: [],
@@ -35,6 +35,14 @@ export default function jobsReducer(state = INITIAL, action = {}) {
                 jobTrees: {
                     [jobID]: tree
                 }
+            };
+        }
+        case JOB_DELETE: {
+            const { jobId } = action.payload;
+            const jobs = state.jobs.filter(job => job.id !== jobId);
+            return {
+                ...state,
+                jobs: jobs
             };
         }
         default:

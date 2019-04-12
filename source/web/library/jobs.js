@@ -3,7 +3,7 @@ import joinURL from "url-join";
 import objectHash from "object-hash";
 import { dispatch, getState } from "../redux/index.js";
 import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
-import { setJob, setJobs, setJobTree } from "../actions/jobs.js";
+import { deleteJob, setJob, setJobs, setJobTree } from "../actions/jobs.js";
 import { getJob, getJobTree } from "../selectors/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
@@ -54,12 +54,15 @@ export function collectJobTree(jobID) {
     });
 }
 
-export function deleteJob(jobId) {
+export function removeJob(jobId) {
     return axios
         .get(joinURL(API_BASE, `/delete/${jobId}`))
-        .then(function(response) {
-            const data = response.data;
-            return data;
+        .then(() => {
+            dispatch(
+                deleteJob({
+                    jobId
+                })
+            );
         })
         .catch(function(error) {
             console.log(error);
