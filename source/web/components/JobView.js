@@ -391,7 +391,7 @@ export default class JobPage extends Component {
                             onConfirm={() => this.props.deleteJob(this.props.jobID)}
                         >
                             <p>
-                                Are you sure you want to permanently delete job with the ID{" "}
+                                Are you sure you want to permanently delete job with the ID
                                 <strong>{this.props.job.id}</strong>
                             </p>
                         </Alert>
