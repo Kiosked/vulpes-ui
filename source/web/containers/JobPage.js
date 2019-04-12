@@ -19,11 +19,11 @@ export default connect(
         jobTree: getJobTree(state, ownProps.match.params.jobId)
     }),
     {
-        deleteJob: jobID => () => {
+        deleteJob: jobID => dispatch => {
             deleteJob(jobID)
                 .then(() => {
                     notifySuccess("Successfully deleted job");
-                    dispatch(push("/jobs"));
+                    dispatch(push("/"));
                 })
                 .catch(err => {
                     console.error(err);
