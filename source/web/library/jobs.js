@@ -3,7 +3,7 @@ import joinURL from "url-join";
 import objectHash from "object-hash";
 import { dispatch, getState } from "../redux/index.js";
 import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
-import { setJob, setJobs, setJobTree } from "../actions/jobs.js";
+import { deleteJob, setJob, setJobs, setJobTree } from "../actions/jobs.js";
 import { getJob, getJobTree } from "../selectors/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
@@ -58,6 +58,22 @@ function objectsDiffer(obj1, obj2) {
     const hash1 = objectHash(obj1);
     const hash2 = objectHash(obj2);
     return hash1 !== hash2;
+}
+
+export function removeJob(jobId) {
+    return axios
+        .get(joinURL(API_BASE, `/delete/${jobId}`))
+        .then(() => {
+            dispatch(
+                deleteJob({
+                    jobId
+                })
+            );
+        })
+        .catch(function(error) {
+            console.log(error);
+            throw error;
+        });
 }
 
 export function resetJob(jobId) {

@@ -5,6 +5,7 @@ import JSONView from "react-json-view";
 import VulpesSymbols from "vulpes/symbols.js";
 import _ from "lodash";
 import {
+    Alert,
     Button,
     ButtonGroup,
     Callout,
@@ -20,7 +21,6 @@ import {
     Spinner,
     Tag
 } from "@blueprintjs/core";
-import Layout from "./Layout";
 import { getJobProgress } from "../library/progress.js";
 import EditingData from "./EditingData";
 import Attachments from "./Attachments.js";
@@ -103,7 +103,7 @@ const IconButton = styled.span`
 const StyledButton = styled(Button)`
     margin-top: 10px;
     margin-bottom: 10px;
-    margin-right: 10px;
+    margin-right: 10px !important;
 `;
 const StyledIcon = styled(Icon)`
     margin-left: 5px;
@@ -163,7 +163,8 @@ export default class JobPage extends Component {
         super(props);
         this.state = {
             editingData: false,
-            editingResults: false
+            editingResults: false,
+            modalOpen: false
         };
     }
 
@@ -173,6 +174,10 @@ export default class JobPage extends Component {
         } else {
             this.setState({ editingResults: !this.state.editingResults });
         }
+    }
+
+    toggleModal() {
+        this.setState({ modalOpen: !this.state.modalOpen });
     }
 
     render() {
@@ -347,29 +352,55 @@ export default class JobPage extends Component {
                         />
                     </If>
                     <Buttons>
-                        <Choose>
-                            <When
-                                condition={
-                                    this.props.job.status === JOB_STATUS_RUNNING ||
-                                    this.props.job.status === JOB_STATUS_PENDING
-                                }
-                            >
-                                <IconButton onClick={() => this.props.stopJob(this.props.jobID)}>
-                                    <StyledIcon icon="stop" iconSize={25} /> Stop job
-                                </IconButton>
-                            </When>
-                            <When
-                                condition={
-                                    this.props.job.status === JOB_STATUS_STOPPED &&
-                                    JOB_RESULT_FAILURES.includes(this.props.job.result.type)
-                                }
-                            >
-                                <IconButton onClick={() => this.props.resetJob(this.props.jobID)}>
-                                    <StyledIcon icon="swap-horizontal" iconSize={20} /> Re-run job
-                                </IconButton>
-                            </When>
-                            <Otherwise />
-                        </Choose>
+                        <ButtonGroup>
+                            <Choose>
+                                <When
+                                    condition={
+                                        this.props.job.status === JOB_STATUS_RUNNING ||
+                                        this.props.job.status === JOB_STATUS_PENDING
+                                    }
+                                >
+                                    <StyledButton
+                                        text="Stop job"
+                                        icon="stop"
+                                        onClick={() => this.props.stopJob(this.props.jobID)}
+                                    />
+                                </When>
+                                <When
+                                    condition={
+                                        this.props.job.status === JOB_STATUS_STOPPED &&
+                                        JOB_RESULT_FAILURES.includes(this.props.job.result.type)
+                                    }
+                                >
+                                    <StyledButton
+                                        text="Reset job"
+                                        icon="swap-horizontal"
+                                        onClick={() => this.props.resetJob(this.props.jobID)}
+                                    />
+                                </When>
+                                <Otherwise />
+                            </Choose>
+                            <StyledButton
+                                text="Delete job"
+                                icon="trash"
+                                intent={Intent.DANGER}
+                                onClick={() => this.toggleModal()}
+                            />
+                        </ButtonGroup>
+                        <Alert
+                            cancelButtonText="Cancel"
+                            confirmButtonText="Delete job"
+                            icon="trash"
+                            intent={Intent.DANGER}
+                            isOpen={this.state.modalOpen}
+                            onCancel={() => this.toggleModal()}
+                            onConfirm={() => this.props.deleteJob(this.props.jobID)}
+                        >
+                            <p>
+                                Are you sure you want to permanently delete job with the ID
+                                <strong>{this.props.job.id}</strong>
+                            </p>
+                        </Alert>
                     </Buttons>
                     <Attachments
                         onRemoveAttachment={id => this.props.removeAttachment(id)}
