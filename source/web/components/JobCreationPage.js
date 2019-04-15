@@ -15,6 +15,7 @@ export default class JobCreationPage extends Component {
     static propTypes = {
         initialParent: PropTypes.string,
         jobTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+        jobIds: PropTypes.arrayOf(PropTypes.string).isRequired,
         onReady: PropTypes.func.isRequired
     };
 
@@ -28,6 +29,7 @@ export default class JobCreationPage extends Component {
                 <JobEditor
                     parents={this.props.initialParent ? [this.props.initialParent] : []}
                     jobTypes={this.props.jobTypes}
+                    jobIds={this.props.jobIds}
                     onSave={job => this.props.addNewJob(job)}
                 />
             </Layout>
