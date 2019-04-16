@@ -366,12 +366,7 @@ export default class JobPage extends Component {
                                         onClick={() => this.props.stopJob(this.props.jobID)}
                                     />
                                 </When>
-                                <When
-                                    condition={
-                                        this.props.job.status === JOB_STATUS_STOPPED &&
-                                        JOB_RESULT_FAILURES.includes(this.props.job.result.type)
-                                    }
-                                >
+                                <When condition={this.props.job.status === JOB_STATUS_STOPPED}>
                                     <StyledButton
                                         text="Reset job"
                                         icon="swap-horizontal"
