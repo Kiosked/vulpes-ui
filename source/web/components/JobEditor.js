@@ -274,7 +274,7 @@ export default class JobEditor extends Component {
                             value={this.state.newParent}
                         >
                             <For each="jobId" index="idx" of={this.props.jobIds}>
-                                <option key={idx} value={jobId}>
+                                <option key={jobId} value={jobId}>
                                     {jobId}
                                 </option>
                             </For>
