@@ -1,3 +1,5 @@
+export const LOG_SET = "log/setLog";
+
 export const JOB_DELETE = "job/deleteJob";
 export const JOB_SET = "job/setJob";
 export const JOB_SET_MANY = "job/setManyJobs";

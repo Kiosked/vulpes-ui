@@ -321,6 +321,18 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.get("/log", function(req, res) {
+        service
+            .readLog()
+            .then(data => {
+                res.set("Content-Type", "application/json");
+                res.status(200).send(data);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
 }
 
 module.exports = {
