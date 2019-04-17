@@ -16,3 +16,8 @@ export function getJobTypes(state) {
     const types = getJobs(state).map(job => job.type);
     return [...new Set(types)];
 }
+
+export function getJobIds(state) {
+    const ids = getJobs(state).map(job => job.id);
+    return [...new Set(ids)];
+}

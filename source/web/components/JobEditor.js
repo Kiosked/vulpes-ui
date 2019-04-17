@@ -268,23 +268,34 @@ export default class JobEditor extends Component {
                     />
                 </FormGroup>
                 <FormGroup label="Parents" labelFor="parents">
-                    <ControlGroup>
-                        <InputGroup
+                    <div className={`${Classes.SELECT} select-editable ${Classes.FILL}`}>
+                        <select
+                            onChange={evt => this.setState({ newParent: evt.target.value })}
+                            value={this.state.newParent}
+                        >
+                            <For each="jobId" index="idx" of={this.props.jobIds}>
+                                <option key={jobId} value={jobId}>
+                                    {jobId}
+                                </option>
+                            </For>
+                        </select>
+                        <input
+                            className={`${Classes.INPUT} ${typeIntentClass}`}
                             type="text"
-                            id="parents"
+                            name="parentId"
                             value={this.state.newParent}
                             onChange={evt => this.setState({ newParent: evt.target.value })}
                         />
-                        <Button
-                            icon="add"
-                            onClick={::this.addNewParent}
-                            disabled={
-                                this.props.isTemplate
-                                    ? !TEMPLATE_JOB_ID_REXP.test(this.state.newParent)
-                                    : !UUID_REXP.test(this.state.newParent)
-                            }
-                        />
-                    </ControlGroup>
+                    </div>
+                    <Button
+                        icon="add"
+                        onClick={::this.addNewParent}
+                        disabled={
+                            this.props.isTemplate
+                                ? !TEMPLATE_JOB_ID_REXP.test(this.state.newParent)
+                                : !UUID_REXP.test(this.state.newParent)
+                        }
+                    />
                     <ParentIDUL>
                         <For each="parentID" of={this.state.jobParents}>
                             <ParentIDLI key={parentID}>
