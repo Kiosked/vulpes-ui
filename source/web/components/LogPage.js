@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Layout from "./Layout.js";
 import styled from "styled-components";
 import { Callout, Checkbox, Intent, Spinner } from "@blueprintjs/core";
+import { startTimer, stopTimer } from "../library/timers.js";
 
 const LOG_LEVELS = {
     alert: {
@@ -59,6 +60,11 @@ export default class LogPage extends Component {
 
     componentDidMount() {
         this.props.onReady();
+        this.timer = startTimer(() => this.props.onReady(), 10000);
+    }
+
+    componentWillUnmount() {
+        stopTimer(this.timer);
     }
 
     onCheckboxValueChange(e, value) {
