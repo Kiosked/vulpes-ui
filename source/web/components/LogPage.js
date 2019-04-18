@@ -133,11 +133,11 @@ export default class LogPage extends Component {
                                 checked={this.state.visibleLevels.includes("debug")}
                             />
                         </CheckboxContainer>
-                        <For each="entry" index="idx" of={visibleEntries}>
+                        <For each="entry" of={visibleEntries}>
                             <StyledCallout
                                 intent={LOG_LEVELS[entry.level].intent}
                                 icon={LOG_LEVELS[entry.level].icon}
-                                key={idx}
+                                key={entry.id}
                             >
                                 <strong>{parseDate(entry.timestamp)}</strong>: {entry.msg}
                             </StyledCallout>
