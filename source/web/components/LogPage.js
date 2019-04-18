@@ -55,7 +55,7 @@ function parseDate(timestamp) {
 
 export default class LogPage extends Component {
     state = {
-        visibleLevels: ["alert", "error", "warning", "info", "debug"]
+        visibleLevels: ["alert", "error", "warning", "info"]
     };
 
     componentDidMount() {

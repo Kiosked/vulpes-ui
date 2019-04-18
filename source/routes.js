@@ -322,8 +322,8 @@ function createRoutes(router, service) {
             });
     });
     router.get("/log", function(req, res) {
-        service
-            .readLog()
+        service.logger
+            .readLogEntries()
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
