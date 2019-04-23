@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Callout, ProgressBar } from "@blueprintjs/core";
+import { Callout, Intent, ProgressBar } from "@blueprintjs/core";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import styled from "styled-components";
+import humanDate from "human-date";
 import VulpesSymbols from "vulpes/symbols.js";
 import Layout from "./Layout.js";
-import { JobShape } from "../library/propTypes.js";
+import { JobShape, WorkerShape } from "../library/propTypes.js";
 import { startTimer, stopTimer } from "../library/timers.js";
 
 const {
@@ -43,11 +44,17 @@ const CustomTab = styled(Tab)`
     margin-right: 15px;
     cursor: pointer;
 `;
+const WorkersUpdatedText = styled.span`
+    font-size: 10px;
+    color: #333;
+`;
 
 export default class HomePage extends Component {
     static propTypes = {
         jobs: PropTypes.arrayOf(JobShape).isRequired,
-        onReady: PropTypes.func.isRequired
+        onReady: PropTypes.func.isRequired,
+        serverTimestamp: PropTypes.number,
+        workers: PropTypes.arrayOf(WorkerShape).isRequired
     };
 
     componentDidMount() {
@@ -79,6 +86,7 @@ export default class HomePage extends Component {
             }
             countsByResult[result] += 1;
         });
+        const latestWorker = this.props.workers.sort((a, b) => b.updated - a.updated)[0];
         return (
             <Layout>
                 <h1>Dashboard</h1>
@@ -89,12 +97,12 @@ export default class HomePage extends Component {
                     <TabPanel>
                         <JobRow>
                             <JobStat>
-                                <Callout icon="tick" intent="success" title="Succeeded jobs">
+                                <Callout icon="tick" intent={Intent.SUCCESS} title="Succeeded jobs">
                                     <h3>{countsByResult[JOB_RESULT_TYPE_SUCCESS]}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
-                                <Callout icon="cross" intent="danger" title="Failed jobs">
+                                <Callout icon="cross" intent={Intent.DANGER} title="Failed jobs">
                                     <h3>
                                         {countsByResult[JOB_RESULT_TYPE_FAILURE] +
                                             countsByResult[JOB_RESULT_TYPE_FAILURE_SOFT] +
@@ -103,26 +111,59 @@ export default class HomePage extends Component {
                                 </Callout>
                             </JobStat>
                             <JobStat>
-                                <Callout icon="repeat" intent="primary" title="Running jobs">
+                                <Callout icon="repeat" intent={Intent.PRIMARY} title="Running jobs">
                                     <h3>{countsByStatus[JOB_STATUS_RUNNING]}</h3>
                                 </Callout>
                             </JobStat>
                         </JobRow>
                         <JobRow>
                             <JobStat>
-                                <Callout icon="outdated" intent="none" title="Pending jobs">
+                                <Callout icon="outdated" intent={Intent.NONE} title="Pending jobs">
                                     <h3>{countsByStatus[JOB_STATUS_PENDING]}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
-                                <Callout icon="time" intent="none" title="Jobs per hour">
+                                <Callout icon="time" intent={Intent.NONE} title="Jobs per hour">
                                     <h3>?</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
-                                <Callout icon="th-list" intent="none" title="Total jobs">
+                                <Callout icon="th-list" intent={Intent.NONE} title="Total jobs">
                                     <h3>{this.props.jobs.length}</h3>
                                 </Callout>
+                            </JobStat>
+                        </JobRow>
+                        <JobRow>
+                            <JobStat>
+                                <With
+                                    intent={
+                                        this.props.serverTimestamp
+                                            ? this.props.workers.length > 0
+                                                ? Intent.SUCCESS
+                                                : Intent.DANGER
+                                            : Intent.NONE
+                                    }
+                                    content={
+                                        this.props.serverTimestamp ? this.props.workers.length : "?"
+                                    }
+                                >
+                                    <Callout icon="outdated" intent={intent} title="Live workers">
+                                        <h3>{content}</h3>
+                                        <If condition={latestWorker}>
+                                            <WorkersUpdatedText>
+                                                Latest updated{" "}
+                                                <strong>
+                                                    {humanDate.relativeTime(
+                                                        -1 *
+                                                            ((this.props.serverTimestamp -
+                                                                latestWorker.updated) /
+                                                                1000)
+                                                    )}
+                                                </strong>
+                                            </WorkersUpdatedText>
+                                        </If>
+                                    </Callout>
+                                </With>
                             </JobStat>
                         </JobRow>
                     </TabPanel>

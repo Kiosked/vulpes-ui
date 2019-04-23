@@ -321,17 +321,24 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.get("/workers", function(req, res) {
+        const workers = service.tracker.liveWorkers;
+        res.status(200).send({
+            workers,
+            now: Date.now()
+        });
+    });
     router.get("/log", function(req, res) {
-        service.logger
-            .readLogEntries()
-            .then(data => {
-                res.set("Content-Type", "application/json");
-                res.status(200).send(data);
-            })
-            .catch(err => {
-                console.error(err);
-                res.status(500).send("Internal server error");
-            });
+      service.logger
+          .readLogEntries()
+          .then(data => {
+              res.set("Content-Type", "application/json");
+              res.status(200).send(data);
+          })
+          .catch(err => {
+              console.error(err);
+              res.status(500).send("Internal server error");
+          });
     });
 }
 
