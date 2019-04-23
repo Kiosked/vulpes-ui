@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.10.0
+_2019-04-23_
+
+ * Logging
+ * Worker registration and live workers
+
 ## v0.9.1
 _2019-04-09_
 
