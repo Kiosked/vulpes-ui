@@ -273,11 +273,13 @@ export default class JobEditor extends Component {
                             onChange={evt => this.setState({ newParent: evt.target.value })}
                             value={this.state.newParent}
                         >
-                            <For each="jobId" index="idx" of={this.props.jobIds}>
-                                <option key={jobId} value={jobId}>
-                                    {jobId}
-                                </option>
-                            </For>
+                            <If condition={this.props.jobIds}>
+                                <For each="jobId" index="idx" of={this.props.jobIds}>
+                                    <option key={jobId} value={jobId}>
+                                        {jobId}
+                                    </option>
+                                </For>
+                            </If>
                         </select>
                         <input
                             className={`${Classes.INPUT} ${typeIntentClass}`}

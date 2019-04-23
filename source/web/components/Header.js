@@ -15,6 +15,7 @@ const Container = styled.div`
 
 export default class Header extends PureComponent {
     static propTypes = {
+        onClickLog: PropTypes.func.isRequired,
         onClickHome: PropTypes.func.isRequired,
         onClickJobs: PropTypes.func.isRequired,
         onClickScheduling: PropTypes.func.isRequired
@@ -48,10 +49,10 @@ export default class Header extends PureComponent {
                             onClick={this.props.onClickScheduling}
                         />
                         <Button
-                            disabled={true}
                             className="bp3-minimal"
                             icon="align-left"
                             text="Log"
+                            onClick={this.props.onClickLog}
                         />
                         <Button
                             disabled={true}

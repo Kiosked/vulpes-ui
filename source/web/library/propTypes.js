@@ -29,3 +29,8 @@ export const ScheduledTaskShape = PropTypes.shape({
     enabled: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(JobShapeNew).isRequired
 });
+export const WorkerShape = PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    updated: PropTypes.number.isRequired,
+    count: PropTypes.number.isRequired
+});

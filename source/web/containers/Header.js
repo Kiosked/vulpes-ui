@@ -5,6 +5,9 @@ import Header from "../components/Header.js";
 export default connect(
     (state, ownProps) => ({}),
     {
+        onClickLog: () => dispatch => {
+            dispatch(push("/log"));
+        },
         onClickHome: () => dispatch => {
             dispatch(push("/"));
         },
