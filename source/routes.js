@@ -45,7 +45,12 @@ function createRoutes(router, service) {
     });
     router.use("/", express.static(DIST));
     router.get("/jobs", function(req, res) {
-        const options = { limit: req.query.limit, order: req.query.order, sort: req.query.sort };
+        const options = {
+            limit: req.query.limit,
+            order: req.query.order,
+            sort: req.query.sort,
+            offset: req.query.offset
+        };
         service
             .queryJobs({}, options)
             .then(jobs =>

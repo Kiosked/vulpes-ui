@@ -39,6 +39,13 @@ export function collectAllJobs() {
     });
 }
 
+export function collectJobs(limit) {
+    return fetchJobs(limit).then(jobs => {
+        dispatch(setJobs(jobs));
+        return jobs;
+    });
+}
+
 export function collectJobTree(jobID) {
     fetchJobTree(jobID).then(tree => {
         const existingTree = getJobTree(getState(), jobID);
