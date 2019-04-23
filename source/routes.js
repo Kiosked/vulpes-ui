@@ -321,6 +321,13 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.get("/workers", function(req, res) {
+        const workers = service.tracker.liveWorkers;
+        res.status(200).send({
+            workers,
+            now: Date.now()
+        });
+    });
 }
 
 module.exports = {
