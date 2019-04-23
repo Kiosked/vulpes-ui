@@ -1,6 +1,7 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import ScheduledTaskPage from "../components/ScheduledTaskPage.js";
+import { getJobIds } from "../selectors/jobs.js";
 import { getScheduledTask } from "../selectors/scheduledTasks";
 import {
     addJobToScheduledTask,
@@ -13,6 +14,7 @@ import { notifyError, notifySuccess } from "../library/notifications.js";
 
 export default connect(
     (state, ownProps) => ({
+        jobIds: getJobIds(state),
         task: getScheduledTask(state, ownProps.match.params.id),
         taskID: ownProps.match.params.id
     }),

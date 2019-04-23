@@ -328,6 +328,18 @@ function createRoutes(router, service) {
             now: Date.now()
         });
     });
+    router.get("/log", function(req, res) {
+      service.logger
+          .readLogEntries()
+          .then(data => {
+              res.set("Content-Type", "application/json");
+              res.status(200).send(data);
+          })
+          .catch(err => {
+              console.error(err);
+              res.status(500).send("Internal server error");
+          });
+    });
 }
 
 module.exports = {
