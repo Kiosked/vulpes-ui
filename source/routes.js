@@ -48,8 +48,7 @@ function createRoutes(router, service) {
         const options = {
             limit: req.query.limit,
             order: req.query.order,
-            sort: req.query.sort,
-            offset: req.query.offset
+            sort: req.query.sort
         };
         service
             .queryJobs({}, options)

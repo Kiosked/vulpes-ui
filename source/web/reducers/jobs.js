@@ -1,10 +1,4 @@
-import {
-    JOB_DELETE,
-    JOB_SET,
-    JOB_SET_MANY,
-    JOB_SET_REPLACE,
-    JOB_TREE_SET
-} from "../actions/types.js";
+import { JOB_DELETE, JOB_SET, JOB_SET_MANY, JOB_TREE_SET } from "../actions/types.js";
 const INITIAL = {
     jobs: [],
     jobTrees: {}
@@ -31,13 +25,6 @@ export default function jobsReducer(state = INITIAL, action = {}) {
             return {
                 ...state,
                 jobs: [...jobs, ...incoming]
-            };
-        }
-        case JOB_SET_REPLACE: {
-            const jobs = action.payload;
-            return {
-                ...state,
-                jobs: jobs
             };
         }
         case JOB_TREE_SET: {
