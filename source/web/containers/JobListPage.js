@@ -19,6 +19,18 @@ export default connect(
                 notifyError(`Failed fetching jobs: ${err.message}`);
             });
         },
+        filterByStatus: (jobs, visibleStatuses) => () => {
+            if (jobs && jobs.length > 0) {
+                const newJobs = [];
+                for (let job of jobs) {
+                    if (visibleStatuses.includes(job.status)) {
+                        newJobs.push(job);
+                    }
+                }
+                return newJobs;
+            }
+            return [];
+        },
         goToNewJobPage: () => dispatch => {
             dispatch(push("/new-job"));
         }

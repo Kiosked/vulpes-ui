@@ -9,15 +9,7 @@ import { startTimer, stopTimer } from "../library/timers.js";
 import { sortJobs } from "vulpes/dist/jobSorting";
 import VulpesSymbols from "vulpes/symbols.js";
 
-const {
-    JOB_RESULT_TYPE_FAILURE,
-    JOB_RESULT_TYPE_FAILURE_SOFT,
-    JOB_RESULT_TYPE_SUCCESS,
-    JOB_RESULT_TYPE_TIMEOUT,
-    JOB_STATUS_PENDING,
-    JOB_STATUS_RUNNING,
-    JOB_STATUS_STOPPED
-} = VulpesSymbols;
+const { JOB_STATUS_PENDING, JOB_STATUS_RUNNING, JOB_STATUS_STOPPED } = VulpesSymbols;
 
 const CheckboxContainer = styled.div`
     margin-bottom: 10px;
@@ -50,7 +42,7 @@ export default class JobListPage extends Component {
         limit: 10,
         sort: "created",
         order: "desc",
-        visibleStatuses: []
+        visibleStatuses: [JOB_STATUS_PENDING, JOB_STATUS_RUNNING, JOB_STATUS_STOPPED]
     };
 
     componentDidMount() {
@@ -62,6 +54,20 @@ export default class JobListPage extends Component {
         stopTimer(this.timer);
     }
 
+    setFilters(e, value, filter) {
+        const arr = this.state[filter];
+        if (e.target.checked) {
+            if (!arr.includes(value)) {
+                arr.push(value);
+            }
+        } else {
+            if (arr.indexOf(value) !== -1) {
+                arr.splice(arr.indexOf(value), 1);
+            }
+        }
+        this.setState({ [filter]: arr });
+    }
+
     sortJobsByState() {
         if (this.props.jobs) {
             let jobs = sortJobs(this.props.jobs, [
@@ -70,6 +76,7 @@ export default class JobListPage extends Component {
                     direction: this.state.order
                 }
             ]);
+            jobs = this.props.filterByStatus(jobs, this.state.visibleStatuses);
             jobs = this.state.limit !== Infinity ? jobs.slice(0, this.state.limit) : jobs.slice(0);
             return jobs;
         }
@@ -114,15 +121,30 @@ export default class JobListPage extends Component {
                     </StyledFormGroup>
                 </ControlsContainer>
                 <CheckboxContainer>
-                    {/** 
                     <Checkbox
-                        label="Show alerts"
+                        label="Show pending jobs"
                         inline={true}
-                        onChange={event => this.onCheckboxValueChange(event, "alert")}
-                        checked={this.state.visibleLevels.includes("alert")}
-                    >
-                    </Checkbox>
-                    */}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_STATUS_PENDING, "visibleStatuses")
+                        }
+                        checked={this.state.visibleStatuses.includes(JOB_STATUS_PENDING)}
+                    />
+                    <Checkbox
+                        label="Show running jobs"
+                        inline={true}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_STATUS_RUNNING, "visibleStatuses")
+                        }
+                        checked={this.state.visibleStatuses.includes(JOB_STATUS_RUNNING)}
+                    />
+                    <Checkbox
+                        label="Show stopped jobs"
+                        inline={true}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_STATUS_STOPPED, "visibleStatuses")
+                        }
+                        checked={this.state.visibleStatuses.includes(JOB_STATUS_STOPPED)}
+                    />
                 </CheckboxContainer>
                 <VerticallySpacedButton
                     icon="add"
