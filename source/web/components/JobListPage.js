@@ -22,6 +22,18 @@ const ControlsContainer = styled.div`
     justify-content: flex-start;
 `;
 
+const PaginationButton = styled(Button)`
+    margin-left: 10px;
+`;
+
+const PaginationContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 25px;
+`;
+
 const StyledFormGroup = styled(FormGroup)`
     margin-right: 30px;
 `;
@@ -40,6 +52,7 @@ export default class JobListPage extends Component {
 
     state = {
         limit: 10,
+        offset: 0,
         sort: "created",
         order: "desc",
         visibleStatuses: [JOB_STATUS_PENDING, JOB_STATUS_RUNNING, JOB_STATUS_STOPPED]
@@ -69,6 +82,8 @@ export default class JobListPage extends Component {
     }
 
     sortJobsByState() {
+        const start = this.state.offset;
+        const end = parseInt(this.state.limit + this.state.offset);
         if (this.props.jobs) {
             let jobs = sortJobs(this.props.jobs, [
                 {
@@ -77,7 +92,7 @@ export default class JobListPage extends Component {
                 }
             ]);
             jobs = this.props.filterByStatus(jobs, this.state.visibleStatuses);
-            jobs = this.state.limit !== Infinity ? jobs.slice(0, this.state.limit) : jobs.slice(0);
+            jobs = this.state.limit !== Infinity ? jobs.slice(start, end) : jobs.slice(start);
             return jobs;
         }
     }
@@ -91,7 +106,7 @@ export default class JobListPage extends Component {
                     <StyledFormGroup label="Limit jobs">
                         <select
                             value={this.state.limit}
-                            onChange={evt => this.setState({ limit: evt.target.value, offset: 0 })}
+                            onChange={evt => this.setState({ limit: parseInt(evt.target.value) })}
                         >
                             <option value={10}>10</option>
                             <option value={20}>20</option>
@@ -102,7 +117,7 @@ export default class JobListPage extends Component {
                     <StyledFormGroup label="Sort jobs">
                         <select
                             value={this.state.sort}
-                            onChange={evt => this.setState({ sort: evt.target.value, offset: 0 })}
+                            onChange={evt => this.setState({ sort: evt.target.value })}
                         >
                             <option value="created">Creation date</option>
                             <option value="priority">Priority</option>
@@ -113,7 +128,7 @@ export default class JobListPage extends Component {
                     <StyledFormGroup label="Order">
                         <select
                             value={this.state.order}
-                            onChange={evt => this.setState({ order: evt.target.value, offset: 0 })}
+                            onChange={evt => this.setState({ order: evt.target.value })}
                         >
                             <option value="desc">Descending</option>
                             <option value="asc">Ascending</option>
@@ -160,14 +175,41 @@ export default class JobListPage extends Component {
                                 onClick={() => this.props.goToJobPage(job.id)}
                             />
                         </For>
-                        <VerticallySpacedButton
-                            icon="more"
-                            text="Load more jobs"
-                            intent={Intent.PRIMARY}
-                            onClick={() =>
-                                this.setState({ limit: parseInt(this.state.limit + 10) })
-                            }
-                        />
+                        <PaginationContainer>
+                            <div>
+                                Showing {visibleJobs.length} jobs out of {this.props.jobs.length}
+                            </div>
+                            <div>
+                                <If condition={this.state.offset > 0}>
+                                    <PaginationButton
+                                        icon="direction-left"
+                                        text="Previous page"
+                                        intent={Intent.PRIMARY}
+                                        onClick={() =>
+                                            this.setState({
+                                                offset: parseInt(
+                                                    this.state.offset - this.state.limit
+                                                )
+                                            })
+                                        }
+                                    />
+                                </If>
+                                <If condition={visibleJobs.length === this.state.limit}>
+                                    <PaginationButton
+                                        icon="direction-right"
+                                        text="Next page"
+                                        intent={Intent.PRIMARY}
+                                        onClick={() =>
+                                            this.setState({
+                                                offset: parseInt(
+                                                    this.state.offset + this.state.limit
+                                                )
+                                            })
+                                        }
+                                    />
+                                </If>
+                            </div>
+                        </PaginationContainer>
                     </When>
                     <Otherwise>
                         <Spinner />
