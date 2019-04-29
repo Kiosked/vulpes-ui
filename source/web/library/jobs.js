@@ -3,14 +3,7 @@ import joinURL from "url-join";
 import objectHash from "object-hash";
 import { dispatch, getState } from "../redux/index.js";
 import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
-import {
-    deleteJob,
-    replaceJobs,
-    setJob,
-    setJobs,
-    setJobsRemainingStatus,
-    setJobTree
-} from "../actions/jobs.js";
+import { deleteJob, setJob, setJobs, setJobTree } from "../actions/jobs.js";
 import { getJob, getJobTree } from "../selectors/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
