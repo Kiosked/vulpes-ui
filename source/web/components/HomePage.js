@@ -147,7 +147,11 @@ export default class HomePage extends Component {
                                         this.props.serverTimestamp ? this.props.workers.length : "?"
                                     }
                                 >
-                                    <Callout icon="outdated" intent={intent} title="Live workers">
+                                    <Callout
+                                        icon="applications"
+                                        intent={intent}
+                                        title="Live workers"
+                                    >
                                         <h3>{content}</h3>
                                         <If condition={latestWorker}>
                                             <WorkersUpdatedText>
