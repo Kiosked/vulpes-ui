@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Button, Checkbox, FormGroup, Intent, Spinner } from "@blueprintjs/core";
+import { Button, Checkbox, FormGroup, InputGroup, Intent, Spinner } from "@blueprintjs/core";
 import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
@@ -28,6 +28,13 @@ const ControlsContainer = styled.div`
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
+`;
+
+const JobListHeader = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
 `;
 
 const PaginationButton = styled(Button)`
@@ -63,6 +70,7 @@ export default class JobListPage extends Component {
         offset: 0,
         order: "desc",
         page: 1,
+        searchTerm: "",
         sort: "created",
         visibleResultTypes: [
             JOB_RESULT_TYPE_FAILURE,
@@ -114,43 +122,58 @@ export default class JobListPage extends Component {
     }
 
     render() {
-        const visibleJobs = this.sortJobsByState();
+        let visibleJobs = this.sortJobsByState();
+        visibleJobs =
+            this.state.searchTerm.length > 0
+                ? this.props.searchJob(this.state.searchTerm, this.props.jobs)
+                : visibleJobs;
         return (
             <Layout>
                 <h1>Jobs</h1>
-                <ControlsContainer>
-                    <StyledFormGroup label="Limit jobs">
-                        <select
-                            value={this.state.limit}
-                            onChange={evt => this.setState({ limit: parseInt(evt.target.value) })}
-                        >
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
-                    </StyledFormGroup>
-                    <StyledFormGroup label="Sort jobs">
-                        <select
-                            value={this.state.sort}
-                            onChange={evt => this.setState({ sort: evt.target.value })}
-                        >
-                            <option value="created">Creation date</option>
-                            <option value="priority">Priority</option>
-                            <option value="status">Status</option>
-                            <option value="type">Job type</option>
-                        </select>
-                    </StyledFormGroup>
-                    <StyledFormGroup label="Order">
-                        <select
-                            value={this.state.order}
-                            onChange={evt => this.setState({ order: evt.target.value })}
-                        >
-                            <option value="desc">Descending</option>
-                            <option value="asc">Ascending</option>
-                        </select>
-                    </StyledFormGroup>
-                </ControlsContainer>
+                <JobListHeader>
+                    <ControlsContainer>
+                        <StyledFormGroup label="Limit jobs">
+                            <select
+                                value={this.state.limit}
+                                onChange={evt =>
+                                    this.setState({ limit: parseInt(evt.target.value) })
+                                }
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+                        </StyledFormGroup>
+                        <StyledFormGroup label="Sort jobs">
+                            <select
+                                value={this.state.sort}
+                                onChange={evt => this.setState({ sort: evt.target.value })}
+                            >
+                                <option value="created">Creation date</option>
+                                <option value="priority">Priority</option>
+                                <option value="status">Status</option>
+                                <option value="type">Job type</option>
+                            </select>
+                        </StyledFormGroup>
+                        <StyledFormGroup label="Order">
+                            <select
+                                value={this.state.order}
+                                onChange={evt => this.setState({ order: evt.target.value })}
+                            >
+                                <option value="desc">Descending</option>
+                                <option value="asc">Ascending</option>
+                            </select>
+                        </StyledFormGroup>
+                    </ControlsContainer>
+                    <FormGroup label="Search jobs">
+                        <InputGroup
+                            placeholder="Search by type or id"
+                            value={this.state.searchTerm}
+                            onChange={evt => this.setState({ searchTerm: evt.target.value })}
+                        />
+                    </FormGroup>
+                </JobListHeader>
                 <CheckboxContainer>
                     <Checkbox
                         label="Show pending jobs"

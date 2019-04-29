@@ -1,8 +1,18 @@
 import React, { Component } from "react";
 import Layout from "./Layout.js";
 import styled from "styled-components";
-import { Button, Callout, Checkbox, Intent, Spinner } from "@blueprintjs/core";
+import {
+    Button,
+    Callout,
+    Checkbox,
+    Intent,
+    Popover,
+    PopoverInteractionKind,
+    PopoverPosition,
+    Spinner
+} from "@blueprintjs/core";
 import { startTimer, stopTimer } from "../library/timers.js";
+import JobPreviewModal from "../containers/JobPreviewModal.js";
 
 const LOG_LEVELS = {
     alert: {
@@ -36,6 +46,7 @@ const LIMIT = 20;
 
 const StyledCallout = styled(Callout)`
     margin-bottom: 10px;
+    cursor: pointer;
 `;
 
 const CheckboxContainer = styled.div`
@@ -152,14 +163,25 @@ export default class LogPage extends Component {
                                 checked={this.state.visibleLevels.includes("debug")}
                             />
                         </CheckboxContainer>
-                        <For each="entry" of={visibleEntries}>
-                            <StyledCallout
-                                intent={LOG_LEVELS[entry.level].intent}
-                                icon={LOG_LEVELS[entry.level].icon}
-                                key={entry.id}
+                        <For each="entry" index="idx" of={visibleEntries}>
+                            <Popover
+                                interactionKind={PopoverInteractionKind.HOVER}
+                                content={<JobPreviewModal jobId={entry.jobId} />}
+                                key={idx}
+                                position={PopoverPosition.TOP}
+                                hoverOpenDelay={400}
+                                hoverCloseDelay={400}
+                                minimal={true}
                             >
-                                <strong>{parseDate(entry.timestamp)}</strong>: {entry.msg}
-                            </StyledCallout>
+                                <StyledCallout
+                                    intent={LOG_LEVELS[entry.level].intent}
+                                    icon={LOG_LEVELS[entry.level].icon}
+                                    key={entry.id}
+                                    onClick={() => this.props.goToJobPage(entry.jobId)}
+                                >
+                                    <strong>{parseDate(entry.timestamp)}</strong>: {entry.msg}
+                                </StyledCallout>
+                            </Popover>
                         </For>
                         <PaginationContainer>
                             <div>

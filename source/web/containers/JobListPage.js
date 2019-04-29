@@ -10,15 +10,6 @@ export default connect(
         jobs: getJobs(state)
     }),
     {
-        goToJobPage: jobId => dispatch => {
-            dispatch(push(`/job/${jobId}`));
-        },
-        onReady: () => () => {
-            collectAllJobs().catch(err => {
-                console.error(err);
-                notifyError(`Failed fetching jobs: ${err.message}`);
-            });
-        },
         filterByResultType: (jobs, visibleResultTypes) => () => {
             if (jobs && jobs.length > 0) {
                 const newJobs = [];
@@ -45,6 +36,27 @@ export default connect(
         },
         goToNewJobPage: () => dispatch => {
             dispatch(push("/new-job"));
+        },
+        goToJobPage: jobId => dispatch => {
+            dispatch(push(`/job/${jobId}`));
+        },
+        onReady: () => () => {
+            collectAllJobs().catch(err => {
+                console.error(err);
+                notifyError(`Failed fetching jobs: ${err.message}`);
+            });
+        },
+        searchJob: (searchTerm, jobs) => () => {
+            if (jobs && jobs.length > 0) {
+                const newJobs = [];
+                for (let job of jobs) {
+                    if (job.type.includes(searchTerm) || job.id.includes(searchTerm)) {
+                        newJobs.push(job);
+                    }
+                }
+                return newJobs;
+            }
+            return [];
         }
     }
 )(JobListPage);
