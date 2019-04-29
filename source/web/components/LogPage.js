@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Layout from "./Layout.js";
 import styled from "styled-components";
-import { Callout, Checkbox, Intent, Spinner } from "@blueprintjs/core";
+import { Button, Callout, Checkbox, Intent, Spinner } from "@blueprintjs/core";
 import { startTimer, stopTimer } from "../library/timers.js";
 
 const LOG_LEVELS = {
@@ -32,12 +32,26 @@ const LOG_LEVELS = {
     }
 };
 
+const LIMIT = 20;
+
 const StyledCallout = styled(Callout)`
     margin-bottom: 10px;
 `;
 
 const CheckboxContainer = styled.div`
     margin-bottom: 10px;
+`;
+
+const PaginationButton = styled(Button)`
+    margin-left: 10px;
+`;
+
+const PaginationContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 25px;
 `;
 
 function parseDate(timestamp) {
@@ -55,6 +69,8 @@ function parseDate(timestamp) {
 
 export default class LogPage extends Component {
     state = {
+        offset: 0,
+        page: 1,
         visibleLevels: ["alert", "error", "warning", "info"]
     };
 
@@ -82,14 +98,17 @@ export default class LogPage extends Component {
     }
 
     filterLogEntries(entries) {
+        const start = this.state.offset;
+        const end = parseInt(LIMIT + this.state.offset);
         if (entries && entries.length > 0) {
-            const newEntries = [];
+            let newEntries = [];
             for (let entry of entries) {
                 if (this.state.visibleLevels.includes(entry.level)) {
                     newEntries.push(entry);
                 }
             }
-            return newEntries.reverse();
+            newEntries = newEntries.reverse();
+            return newEntries.splice(start, end);
         }
         return [];
     }
@@ -142,6 +161,44 @@ export default class LogPage extends Component {
                                 <strong>{parseDate(entry.timestamp)}</strong>: {entry.msg}
                             </StyledCallout>
                         </For>
+                        <PaginationContainer>
+                            <div>
+                                Showing {visibleEntries.length} jobs out of{" "}
+                                {this.props.logEntries.length}
+                            </div>
+                            <div>
+                                Page {this.state.page} out of{" "}
+                                {Math.ceil(this.props.logEntries.length / LIMIT)}
+                            </div>
+                            <div>
+                                <If condition={this.state.offset > 0}>
+                                    <PaginationButton
+                                        icon="direction-left"
+                                        text="Previous page"
+                                        intent={Intent.PRIMARY}
+                                        onClick={() =>
+                                            this.setState({
+                                                offset: parseInt(this.state.offset - LIMIT),
+                                                page: this.state.page - 1
+                                            })
+                                        }
+                                    />
+                                </If>
+                                <If condition={visibleEntries.length >= LIMIT}>
+                                    <PaginationButton
+                                        icon="direction-right"
+                                        text="Next page"
+                                        intent={Intent.PRIMARY}
+                                        onClick={() =>
+                                            this.setState({
+                                                offset: parseInt(this.state.offset + LIMIT),
+                                                page: this.state.page + 1
+                                            })
+                                        }
+                                    />
+                                </If>
+                            </div>
+                        </PaginationContainer>
                     </When>
                     <Otherwise>
                         <Spinner />

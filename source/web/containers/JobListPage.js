@@ -19,6 +19,18 @@ export default connect(
                 notifyError(`Failed fetching jobs: ${err.message}`);
             });
         },
+        filterByResultType: (jobs, visibleResultTypes) => () => {
+            if (jobs && jobs.length > 0) {
+                const newJobs = [];
+                for (let job of jobs) {
+                    if (job.result.type === null || visibleResultTypes.includes(job.result.type)) {
+                        newJobs.push(job);
+                    }
+                }
+                return newJobs;
+            }
+            return [];
+        },
         filterByStatus: (jobs, visibleStatuses) => () => {
             if (jobs && jobs.length > 0) {
                 const newJobs = [];

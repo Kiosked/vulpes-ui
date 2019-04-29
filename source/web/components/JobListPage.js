@@ -9,7 +9,15 @@ import { startTimer, stopTimer } from "../library/timers.js";
 import { sortJobs } from "vulpes/dist/jobSorting";
 import VulpesSymbols from "vulpes/symbols.js";
 
-const { JOB_STATUS_PENDING, JOB_STATUS_RUNNING, JOB_STATUS_STOPPED } = VulpesSymbols;
+const {
+    JOB_STATUS_PENDING,
+    JOB_STATUS_RUNNING,
+    JOB_STATUS_STOPPED,
+    JOB_RESULT_TYPE_FAILURE,
+    JOB_RESULT_TYPE_FAILURE_SOFT,
+    JOB_RESULT_TYPE_SUCCESS,
+    JOB_RESULT_TYPE_TIMEOUT
+} = VulpesSymbols;
 
 const CheckboxContainer = styled.div`
     margin-bottom: 10px;
@@ -53,8 +61,15 @@ export default class JobListPage extends Component {
     state = {
         limit: 10,
         offset: 0,
-        sort: "created",
         order: "desc",
+        page: 1,
+        sort: "created",
+        visibleResultTypes: [
+            JOB_RESULT_TYPE_FAILURE,
+            JOB_RESULT_TYPE_FAILURE_SOFT,
+            JOB_RESULT_TYPE_SUCCESS,
+            JOB_RESULT_TYPE_TIMEOUT
+        ],
         visibleStatuses: [JOB_STATUS_PENDING, JOB_STATUS_RUNNING, JOB_STATUS_STOPPED]
     };
 
@@ -91,6 +106,7 @@ export default class JobListPage extends Component {
                     direction: this.state.order
                 }
             ]);
+            jobs = this.props.filterByResultType(jobs, this.state.visibleResultTypes);
             jobs = this.props.filterByStatus(jobs, this.state.visibleStatuses);
             jobs = this.state.limit !== Infinity ? jobs.slice(start, end) : jobs.slice(start);
             return jobs;
@@ -160,6 +176,40 @@ export default class JobListPage extends Component {
                         }
                         checked={this.state.visibleStatuses.includes(JOB_STATUS_STOPPED)}
                     />
+                    <Checkbox
+                        label="Show failed jobs"
+                        inline={true}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_RESULT_TYPE_FAILURE, "visibleResultTypes")
+                        }
+                        checked={this.state.visibleResultTypes.includes(JOB_RESULT_TYPE_FAILURE)}
+                    />
+                    <Checkbox
+                        label="Show soft-failed jobs"
+                        inline={true}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_RESULT_TYPE_FAILURE_SOFT, "visibleResultTypes")
+                        }
+                        checked={this.state.visibleResultTypes.includes(
+                            JOB_RESULT_TYPE_FAILURE_SOFT
+                        )}
+                    />
+                    <Checkbox
+                        label="Show succeeded jobs"
+                        inline={true}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_RESULT_TYPE_SUCCESS, "visibleResultTypes")
+                        }
+                        checked={this.state.visibleResultTypes.includes(JOB_RESULT_TYPE_SUCCESS)}
+                    />
+                    <Checkbox
+                        label="Show timeouted jobs"
+                        inline={true}
+                        onChange={evt =>
+                            this.setFilters(evt, JOB_RESULT_TYPE_TIMEOUT, "visibleResultTypes")
+                        }
+                        checked={this.state.visibleResultTypes.includes(JOB_RESULT_TYPE_TIMEOUT)}
+                    />
                 </CheckboxContainer>
                 <VerticallySpacedButton
                     icon="add"
@@ -180,6 +230,10 @@ export default class JobListPage extends Component {
                                 Showing {visibleJobs.length} jobs out of {this.props.jobs.length}
                             </div>
                             <div>
+                                Page {this.state.page} out of{" "}
+                                {Math.ceil(this.props.jobs.length / this.state.limit)}
+                            </div>
+                            <div>
                                 <If condition={this.state.offset > 0}>
                                     <PaginationButton
                                         icon="direction-left"
@@ -189,12 +243,13 @@ export default class JobListPage extends Component {
                                             this.setState({
                                                 offset: parseInt(
                                                     this.state.offset - this.state.limit
-                                                )
+                                                ),
+                                                page: this.state.page - 1
                                             })
                                         }
                                     />
                                 </If>
-                                <If condition={visibleJobs.length === this.state.limit}>
+                                <If condition={visibleJobs.length >= this.state.limit}>
                                     <PaginationButton
                                         icon="direction-right"
                                         text="Next page"
@@ -203,7 +258,8 @@ export default class JobListPage extends Component {
                                             this.setState({
                                                 offset: parseInt(
                                                     this.state.offset + this.state.limit
-                                                )
+                                                ),
+                                                page: this.state.page + 1
                                             })
                                         }
                                     />
