@@ -14,13 +14,14 @@ export function fetchJob(jobId) {
         });
 }
 
-export function fetchJobs(limit, sort, order) {
+export function fetchJobs({ start, limit, sort, order } = {}) {
     return axios
         .get(joinURL(API_BASE, "/jobs"), {
             params: {
-                limit: limit,
-                sort: sort,
-                order: order
+                limit,
+                sort,
+                order,
+                start
             }
         })
         .then(resp => resp.data)

@@ -45,26 +45,22 @@ function createRoutes(router, service) {
     });
     router.use("/", express.static(DIST));
     router.get("/jobs", function(req, res) {
-        const options = { limit: req.query.limit, order: req.query.order, sort: req.query.sort };
+        const options = {
+            limit: req.query.limit,
+            order: req.query.order,
+            sort: req.query.sort,
+            start: req.query.start || 0
+        };
         service
             .queryJobs({}, options)
-            .then(jobs =>
-                jobs.map(job => {
-                    if (job.result.data) {
-                        // Strip attachments
-                        job.result.data = Object.keys(job.result.data)
-                            .filter(key => /^%attachment:/.test(key) === false)
-                            .reduce(
-                                (output, key) =>
-                                    Object.assign(output, {
-                                        [key]: job.result.data[key]
-                                    }),
-                                {}
-                            );
-                    }
+            .then(jobs => ({
+                jobs: jobs.map(job => {
+                    // Remove results
+                    delete job.result.data;
                     return job;
-                })
-            )
+                }),
+                total: jobs.total
+            }))
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);

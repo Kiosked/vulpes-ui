@@ -3,8 +3,15 @@ import joinURL from "url-join";
 import objectHash from "object-hash";
 import { dispatch, getState } from "../redux/index.js";
 import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
-import { deleteJob, setJob, setJobs, setJobTree } from "../actions/jobs.js";
-import { getJob, getJobTree } from "../selectors/jobs.js";
+import { deleteJob, setJob, setJobs, setJobTree, setTotalJobs } from "../actions/jobs.js";
+import {
+    getJob,
+    getJobTree,
+    getQueryPage,
+    getQueryPerPage,
+    getQueryResultsFilter,
+    getQueryStatusesFilter
+} from "../selectors/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
 
@@ -32,9 +39,17 @@ export function collectJob(jobID) {
     });
 }
 
-export function collectAllJobs() {
-    return fetchJobs(Infinity).then(jobs => {
+export function collectCurrentJobs() {
+    const state = getState();
+    const pageNum = getQueryPage(state);
+    const perPage = getQueryPerPage(state);
+    const resultsFilter = getQueryResultsFilter(state);
+    const statusesFilter = getQueryStatusesFilter(state);
+    const start = pageNum * perPage;
+    // @todo filters
+    return fetchJobs({ start, limit: perPage }).then(({ jobs, total }) => {
         dispatch(setJobs(jobs));
+        dispatch(setTotalJobs(total));
         return jobs;
     });
 }

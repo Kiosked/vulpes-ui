@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 export const JobResultShape = PropTypes.shape({
-    data: PropTypes.object.isRequired,
+    data: PropTypes.object,
     type: PropTypes.string
 });
 export const JobShape = PropTypes.shape({
