@@ -339,18 +339,25 @@ export default class JobPage extends Component {
                             </Button>
                         </ButtonGroup>
                     </StyledCard>
-                    <If condition={!this.state.editingResults}>
-                        <JSONView src={filterViewableData(this.props.job.result.data)} />
-                    </If>
-                    <If condition={this.state.editingResults}>
-                        <EditingData
-                            data={filterViewableData(this.props.job.result.data)}
-                            id={this.props.job.id}
-                            dataStr="resultData"
-                            onSaveData={this.sendDataForUpdate.bind(this)}
-                            onCancel={() => this.setState({ editingResults: null })}
-                        />
-                    </If>
+                    <Choose>
+                        <When condition={this.props.job.result.data}>
+                            <If condition={!this.state.editingResults}>
+                                <JSONView src={filterViewableData(this.props.job.result.data)} />
+                            </If>
+                            <If condition={this.state.editingResults}>
+                                <EditingData
+                                    data={filterViewableData(this.props.job.result.data)}
+                                    id={this.props.job.id}
+                                    dataStr="resultData"
+                                    onSaveData={this.sendDataForUpdate.bind(this)}
+                                    onCancel={() => this.setState({ editingResults: null })}
+                                />
+                            </If>
+                        </When>
+                        <Otherwise>
+                            <Spinner />
+                        </Otherwise>
+                    </Choose>
                     <Buttons>
                         <ButtonGroup>
                             <Choose>
@@ -397,10 +404,12 @@ export default class JobPage extends Component {
                             </p>
                         </Alert>
                     </Buttons>
-                    <Attachments
-                        onRemoveAttachment={id => this.props.removeAttachment(id)}
-                        results={this.props.job ? this.props.job.result.data : {}}
-                    />
+                    <If condition={this.props.job.result.data}>
+                        <Attachments
+                            onRemoveAttachment={id => this.props.removeAttachment(id)}
+                            results={this.props.job ? this.props.job.result.data : {}}
+                        />
+                    </If>
                 </When>
                 <Otherwise>
                     <Spinner />
