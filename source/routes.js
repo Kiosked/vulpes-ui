@@ -51,8 +51,13 @@ function createRoutes(router, service) {
             sort: req.query.sort,
             start: req.query.start || 0
         };
+        const { search = "" } = req.query;
+        const query =
+            search.length > 0
+                ? { type: type => type.toLowerCase().indexOf(search.toLowerCase()) >= 0 }
+                : {};
         service
-            .queryJobs({}, options)
+            .queryJobs(query, options)
             .then(jobs => ({
                 jobs: jobs.map(job => {
                     // Remove results

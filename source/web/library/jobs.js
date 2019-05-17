@@ -10,6 +10,7 @@ import {
     getQueryPage,
     getQueryPerPage,
     getQueryResultsFilter,
+    getQuerySearchTerm,
     getQueryStatusesFilter
 } from "../selectors/jobs.js";
 import { notifyError } from "./notifications.js";
@@ -47,13 +48,14 @@ export function collectJob(jobID) {
 
 export function collectCurrentJobs() {
     const state = getState();
+    const search = getQuerySearchTerm(state);
     const pageNum = getQueryPage(state);
     const perPage = getQueryPerPage(state);
     const resultsFilter = getQueryResultsFilter(state);
     const statusesFilter = getQueryStatusesFilter(state);
     const start = pageNum * perPage;
     // @todo filters
-    return fetchJobs({ start, limit: perPage })
+    return fetchJobs({ start, limit: perPage, search })
         .then(({ jobs, total }) => {
             dispatch(setJobs(jobs));
             dispatch(setTotalJobs(total));

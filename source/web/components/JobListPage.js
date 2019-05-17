@@ -1,12 +1,35 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Card, Colors, Elevation, Button, Icon, Intent, Spinner } from "@blueprintjs/core";
+import {
+    Button,
+    Card,
+    Colors,
+    ControlGroup,
+    Elevation,
+    HTMLSelect,
+    Icon,
+    InputGroup,
+    Intent,
+    Spinner
+} from "@blueprintjs/core";
 import ReactPaginate from "react-paginate";
 import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
 import { startTimer, stopTimer } from "../library/timers.js";
+
+const FILTER_OPTIONS = [
+    "Filter",
+    "Type - ascending",
+    "Type - descending",
+    "Created - ascending",
+    "Created - descending",
+    "Priority - ascending",
+    "Priority - descending",
+    "Status - ascending",
+    "Status - descending"
+];
 
 const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
@@ -50,6 +73,9 @@ const PaginationBar = styled.div`
         padding: 4px;
     }
 `;
+const FilteringCard = styled(Card)`
+    margin-bottom: 20px;
+`;
 
 export default class JobListPage extends Component {
     static propTypes = {
@@ -59,6 +85,8 @@ export default class JobListPage extends Component {
         jobs: PropTypes.arrayOf(JobShape).isRequired,
         jobsPerPage: PropTypes.number.isRequired,
         onReady: PropTypes.func.isRequired,
+        search: PropTypes.func.isRequired,
+        searchTerm: PropTypes.string.isRequired,
         totalJobs: PropTypes.number.isRequired
     };
 
@@ -68,6 +96,10 @@ export default class JobListPage extends Component {
 
     get pages() {
         return Math.ceil(this.props.totalJobs / this.props.jobsPerPage);
+    }
+
+    clearSearch() {
+        this.props.search("");
     }
 
     componentDidMount() {
@@ -83,6 +115,10 @@ export default class JobListPage extends Component {
         this.props.goToPage(page.selected);
     }
 
+    handleSearchChange(event) {
+        this.props.search(event.target.value);
+    }
+
     render() {
         return (
             <Layout>
@@ -92,6 +128,17 @@ export default class JobListPage extends Component {
                     text="New job"
                     onClick={this.props.goToNewJobPage}
                 />
+                <FilteringCard>
+                    <ControlGroup>
+                        <HTMLSelect options={FILTER_OPTIONS} />
+                        <InputGroup
+                            placeholder="Search..."
+                            value={this.props.searchTerm}
+                            onChange={::this.handleSearchChange}
+                        />
+                        <Button minimal small icon="cross" onClick={::this.clearSearch} />
+                    </ControlGroup>
+                </FilteringCard>
                 <Choose>
                     <When condition={this.props.jobs && this.props.jobs.length > 0}>
                         <For each="job" of={this.props.jobs}>

@@ -7,6 +7,7 @@ import {
     JOBS_PAGE_SET,
     JOBS_RESET_QUERY,
     JOBS_RESULTS_SET,
+    JOBS_SEARCH_SET,
     JOBS_STATES_SET,
     JOBS_TOTAL_SET
 } from "../actions/types.js";
@@ -16,6 +17,7 @@ const QUERY_INITIAL = {
     queryFilterStatuses: [],
     queryPage: 0,
     queryPerPage: 15,
+    querySearch: "",
     queryTotal: 0
 };
 const INITIAL = {
@@ -95,6 +97,11 @@ export default function jobsReducer(state = INITIAL, action = {}) {
             return {
                 ...state,
                 queryTotal: action.payload
+            };
+        case JOBS_SEARCH_SET:
+            return {
+                ...state,
+                querySearch: action.payload
             };
         default:
             return state;

@@ -38,6 +38,10 @@ export function getQueryResultsFilter(state) {
     return state[KEY].queryFilterResults;
 }
 
+export function getQuerySearchTerm(state) {
+    return state[KEY].querySearch;
+}
+
 export function getQueryStatusesFilter(state) {
     return state[KEY].queryFilterStatuses;
 }

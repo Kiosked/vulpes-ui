@@ -25,25 +25,24 @@ export function fetchJob(jobID) {
         );
 }
 
-export function fetchJobs({ start, limit, sort, order } = {}) {
-    const stack = `fetch:${start}+${limit}:${sort}/${order}`;
-    return __requests.channel("fetch-jobs").enqueue(
-        () =>
-            timeLimit(
-                axios
-                    .get(joinURL(API_BASE, "/jobs"), {
-                        params: {
-                            limit,
-                            sort,
-                            order,
-                            start
-                        }
-                    })
-                    .then(resp => resp.data),
-                FETCH_TIMELIMIT_PAGE
-            ),
-        undefined,
-        stack
+export function fetchJobs({ start, limit, sort, order, search = "" } = {}) {
+    const channel = __requests.channel("fetch-jobs");
+    channel.clear();
+    return channel.enqueue(() =>
+        timeLimit(
+            axios
+                .get(joinURL(API_BASE, "/jobs"), {
+                    params: {
+                        limit,
+                        sort,
+                        order,
+                        start,
+                        search
+                    }
+                })
+                .then(resp => resp.data),
+            FETCH_TIMELIMIT_PAGE
+        )
     );
 }
 

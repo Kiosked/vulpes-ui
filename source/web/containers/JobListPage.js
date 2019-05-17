@@ -1,15 +1,17 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
+import debounce from "debounce";
 import JobListPage from "../components/JobListPage.js";
 import { collectCurrentJobs } from "../library/jobs.js";
 import {
     getCurrentJobs,
     getQueryPage,
     getQueryPerPage,
+    getQuerySearchTerm,
     getQueryTotalJobs
 } from "../selectors/jobs.js";
 import { notifyError } from "../library/notifications.js";
-import { setJobPage, setJobs } from "../actions/jobs.js";
+import { setJobPage, setJobs, setSearchQuery } from "../actions/jobs.js";
 
 function processJobs() {
     collectCurrentJobs().catch(err => {
@@ -18,11 +20,14 @@ function processJobs() {
     });
 }
 
+const throttledProcessJobs = debounce(processJobs, 200, false);
+
 export default connect(
     (state, ownProps) => ({
         currentPage: getQueryPage(state),
         jobs: getCurrentJobs(state),
         jobsPerPage: getQueryPerPage(state),
+        searchTerm: getQuerySearchTerm(state),
         totalJobs: getQueryTotalJobs(state)
     }),
     {
@@ -37,10 +42,15 @@ export default connect(
             dispatch(setJobPage(pageNum));
             setTimeout(() => {
                 processJobs();
-            }, 1150);
+            }, 100);
         },
         onReady: () => () => {
             processJobs();
+        },
+        search: term => dispatch => {
+            dispatch(setJobPage(0));
+            dispatch(setSearchQuery(term));
+            setTimeout(throttledProcessJobs, 100);
         }
     }
 )(JobListPage);
