@@ -2,7 +2,7 @@ import axios from "axios";
 import joinURL from "url-join";
 import objectHash from "object-hash";
 import { dispatch, getState } from "../redux/index.js";
-import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
+import { fetchJob, fetchJobs, fetchJobTree } from "./jobFetching.js";
 import { deleteJob, setJob, setJobs, setJobTree, setTotalJobs } from "../actions/jobs.js";
 import {
     getJob,
@@ -12,6 +12,7 @@ import {
     getQueryResultsFilter,
     getQueryStatusesFilter
 } from "../selectors/jobs.js";
+import { notifyError } from "./notifications.js";
 
 const API_BASE = window.vulpesAPIBase;
 
@@ -30,13 +31,18 @@ export function addJob(properties) {
 }
 
 export function collectJob(jobID) {
-    return fetchJob(jobID).then(job => {
-        const existingJob = getJob(getState(), jobID);
-        if (existingJob && !objectsDiffer(existingJob, job)) {
-            return;
-        }
-        dispatch(setJob(job));
-    });
+    return fetchJob(jobID)
+        .then(job => {
+            const existingJob = getJob(getState(), jobID);
+            if (existingJob && !objectsDiffer(existingJob, job)) {
+                return;
+            }
+            dispatch(setJob(job));
+        })
+        .catch(err => {
+            console.error(err);
+            notifyError(`Failed collecting job ${jobID}: ${err.message}`);
+        });
 }
 
 export function collectCurrentJobs() {
@@ -47,11 +53,16 @@ export function collectCurrentJobs() {
     const statusesFilter = getQueryStatusesFilter(state);
     const start = pageNum * perPage;
     // @todo filters
-    return fetchJobs({ start, limit: perPage }).then(({ jobs, total }) => {
-        dispatch(setJobs(jobs));
-        dispatch(setTotalJobs(total));
-        return jobs;
-    });
+    return fetchJobs({ start, limit: perPage })
+        .then(({ jobs, total }) => {
+            dispatch(setJobs(jobs));
+            dispatch(setTotalJobs(total));
+            return jobs;
+        })
+        .catch(err => {
+            console.error(err);
+            notifyError(`Failed collecting jobs: ${err.message}`);
+        });
 }
 
 export function collectJobTree(jobID) {

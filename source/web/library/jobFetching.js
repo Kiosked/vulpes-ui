@@ -1,34 +1,50 @@
+import { join } from "path";
 import axios from "axios";
 import joinURL from "url-join";
-import { join } from "path";
+import ChannelQueue from "@buttercup/channel-queue";
+import timeLimit from "time-limit-promise";
 
 const API_BASE = window.vulpesAPIBase;
+const FETCH_TIMELIMIT_PAGE = 5000;
+const FETCH_TIMELIMIT_SINGLE = 2000;
 
-export function fetchJob(jobId) {
-    return axios
-        .get(joinURL(API_BASE, `/job/${jobId}`))
-        .then(resp => resp.data)
-        .catch(err => {
-            console.error(err);
-            throw err;
-        });
+const __requests = new ChannelQueue();
+
+export function fetchJob(jobID) {
+    const context = `get:job:${jobID}`;
+    return __requests
+        .channel(context)
+        .enqueue(
+            () =>
+                timeLimit(
+                    axios.get(joinURL(API_BASE, `/job/${jobID}`)).then(resp => resp.data),
+                    FETCH_TIMELIMIT_SINGLE
+                ),
+            undefined,
+            /* stack: */ context
+        );
 }
 
 export function fetchJobs({ start, limit, sort, order } = {}) {
-    return axios
-        .get(joinURL(API_BASE, "/jobs"), {
-            params: {
-                limit,
-                sort,
-                order,
-                start
-            }
-        })
-        .then(resp => resp.data)
-        .catch(err => {
-            console.error(err);
-            throw err;
-        });
+    const stack = `fetch:${start}+${limit}:${sort}/${order}`;
+    return __requests.channel("fetch-jobs").enqueue(
+        () =>
+            timeLimit(
+                axios
+                    .get(joinURL(API_BASE, "/jobs"), {
+                        params: {
+                            limit,
+                            sort,
+                            order,
+                            start
+                        }
+                    })
+                    .then(resp => resp.data),
+                FETCH_TIMELIMIT_PAGE
+            ),
+        undefined,
+        stack
+    );
 }
 
 export function fetchJobTree(jobId) {

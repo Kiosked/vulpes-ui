@@ -75,6 +75,10 @@ function createRoutes(router, service) {
         service
             .getJob(jobId)
             .then(data => {
+                if (!data) {
+                    res.status(404).send("Not found");
+                    return;
+                }
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
