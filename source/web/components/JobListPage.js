@@ -11,8 +11,7 @@ import {
     Icon,
     InputGroup,
     Intent,
-    NonIdealState,
-    Spinner
+    NonIdealState
 } from "@blueprintjs/core";
 import ReactPaginate from "react-paginate";
 import Layout from "./Layout.js";
@@ -163,9 +162,6 @@ export default class JobListPage extends Component {
                     </ControlGroup>
                 </FilteringCard>
                 <Choose>
-                    {/* <When condition={this.props.jobsQueryActive}>
-                        <Spinner />
-                    </When> */}
                     <When condition={this.props.jobs && this.props.jobs.length > 0}>
                         <For each="job" of={this.props.jobs}>
                             <JobItem
