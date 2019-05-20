@@ -7,6 +7,7 @@ import {
     JOBS_PAGE_SET,
     JOBS_RESET_QUERY,
     JOBS_RESULTS_SET,
+    JOBS_REQUEST_TOGGLE_ACTIVE,
     JOBS_SEARCH_SET,
     JOBS_STATES_SET,
     JOBS_TOTAL_SET
@@ -17,6 +18,7 @@ const QUERY_INITIAL = {
     queryFilterStatuses: [],
     queryPage: 0,
     queryPerPage: 15,
+    queryRequestActive: false,
     querySearch: "",
     queryTotal: 0
 };
@@ -102,6 +104,11 @@ export default function jobsReducer(state = INITIAL, action = {}) {
             return {
                 ...state,
                 querySearch: action.payload
+            };
+        case JOBS_REQUEST_TOGGLE_ACTIVE:
+            return {
+                ...state,
+                queryRequestActive: !!action.payload
             };
         default:
             return state;

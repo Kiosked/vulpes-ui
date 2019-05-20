@@ -3,6 +3,8 @@ import axios from "axios";
 import joinURL from "url-join";
 import ChannelQueue from "@buttercup/channel-queue";
 import timeLimit from "time-limit-promise";
+import { dispatch } from "../redux/index.js";
+import { setJobsRequestActive } from "../actions/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
 const FETCH_TIMELIMIT_PAGE = 5000;
@@ -77,4 +79,14 @@ export function fetchScheduledTasks() {
             console.error(err);
             throw err;
         });
+}
+
+export function watchJobsQueues() {
+    const channel = __requests.channel("fetch-jobs");
+    channel.on("started", () => {
+        dispatch(setJobsRequestActive(true));
+    });
+    channel.on("stopped", () => {
+        dispatch(setJobsRequestActive(false));
+    });
 }

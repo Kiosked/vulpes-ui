@@ -11,6 +11,7 @@ import {
     Icon,
     InputGroup,
     Intent,
+    NonIdealState,
     Spinner
 } from "@blueprintjs/core";
 import ReactPaginate from "react-paginate";
@@ -90,6 +91,10 @@ export default class JobListPage extends Component {
         totalJobs: PropTypes.number.isRequired
     };
 
+    state = {
+        intermediarySearch: ""
+    };
+
     get page() {
         return this.props.currentPage;
     }
@@ -109,6 +114,24 @@ export default class JobListPage extends Component {
 
     componentWillUnmount() {
         stopTimer(this.timer);
+    }
+
+    handleIntermediarySearch() {
+        const searchTerm = this.state.intermediarySearch;
+        this.setState(
+            {
+                intermediarySearch: ""
+            },
+            () => {
+                this.props.search(searchTerm);
+            }
+        );
+    }
+
+    handleIntermediarySearchUpdate(event) {
+        this.setState({
+            intermediarySearch: event.target.value
+        });
     }
 
     handlePageChange(page) {
@@ -140,6 +163,9 @@ export default class JobListPage extends Component {
                     </ControlGroup>
                 </FilteringCard>
                 <Choose>
+                    {/* <When condition={this.props.jobsQueryActive}>
+                        <Spinner />
+                    </When> */}
                     <When condition={this.props.jobs && this.props.jobs.length > 0}>
                         <For each="job" of={this.props.jobs}>
                             <JobItem
@@ -166,7 +192,23 @@ export default class JobListPage extends Component {
                         </PaginationBar>
                     </When>
                     <Otherwise>
-                        <Spinner />
+                        <NonIdealState
+                            icon="search"
+                            title="No job results"
+                            description="No jobs were found for the specified search/filter criteria"
+                            action={
+                                <InputGroup
+                                    placeholder="Search..."
+                                    value={this.state.intermediarySearch}
+                                    onChange={::this.handleIntermediarySearchUpdate}
+                                    onKeyPress={event => {
+                                        if (event.key === "Enter") {
+                                            this.handleIntermediarySearch();
+                                        }
+                                    }}
+                                />
+                            }
+                        />
                     </Otherwise>
                 </Choose>
             </Layout>
