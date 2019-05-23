@@ -333,6 +333,19 @@ function createRoutes(router, service) {
             now: Date.now()
         });
     });
+    router.get("/stats", function(req, res) {
+        service.tracker
+            .fetchStats()
+            .then(stats => {
+                res.status(200).send({
+                    stats
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
     router.get("/log", function(req, res) {
         service.logger
             .readLogEntries()

@@ -22,6 +22,15 @@ export const JobShapeNew = PropTypes.shape({
     data: PropTypes.object,
     priority: PropTypes.number
 });
+export const JobStatShape = PropTypes.shape({
+    totalJobs: PropTypes.number,
+    stoppedJobs: PropTypes.number,
+    runningJobs: PropTypes.number,
+    pendingJobs: PropTypes.number,
+    succeededJobs: PropTypes.number,
+    failedJobs: PropTypes.number,
+    jobsInLastHour: PropTypes.number
+});
 export const ScheduledTaskShape = PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
