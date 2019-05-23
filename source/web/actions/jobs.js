@@ -14,6 +14,7 @@ import {
     JOBS_TOTAL_SET
 } from "./types.js";
 
+export const clearJobsSearch = createAction(JOBS_RESET_QUERY);
 export const deleteJob = createAction(JOB_DELETE);
 export const setJob = createAction(JOB_SET);
 export const setJobPage = createAction(JOBS_PAGE_SET);

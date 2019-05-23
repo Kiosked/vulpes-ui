@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobPage from "../components/JobPage.js";
-import { getJob, getJobTree } from "../selectors/jobs.js";
+import { getJob, getJobTree, jobsQueryCustomised } from "../selectors/jobs.js";
 import {
     collectJob,
     collectJobTree,
@@ -16,7 +16,8 @@ export default connect(
     (state, ownProps) => ({
         job: getJob(state, ownProps.match.params.jobId),
         jobID: ownProps.match.params.jobId,
-        jobTree: getJobTree(state, ownProps.match.params.jobId)
+        jobTree: getJobTree(state, ownProps.match.params.jobId),
+        searchActive: jobsQueryCustomised(state)
     }),
     {
         deleteJob: jobID => dispatch => {
@@ -29,6 +30,9 @@ export default connect(
                     console.error(err);
                     notifyError(`Failed to deleted job: ${err.message}`);
                 });
+        },
+        goBackToSearch: () => dispatch => {
+            dispatch(push("/jobs"));
         },
         goToJobPage: jobID => dispatch => {
             dispatch(push(`/job/${jobID}`));

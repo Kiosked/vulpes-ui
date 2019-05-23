@@ -1,3 +1,5 @@
+import { QUERY_INITIAL } from "../reducers/jobs.js";
+
 const KEY = "jobs";
 
 export function getCurrentJobs(state) {
@@ -48,6 +50,16 @@ export function getQueryStatusesFilter(state) {
 
 export function getQueryTotalJobs(state) {
     return state[KEY].queryTotal;
+}
+
+export function jobsQueryCustomised(state) {
+    return Object.keys(QUERY_INITIAL).some(queryKey => {
+        const stateValue = state[KEY][queryKey];
+        if (Array.isArray(stateValue)) {
+            return stateValue.sort().join(",") !== QUERY_INITIAL[queryKey].sort().join(",");
+        }
+        return stateValue !== QUERY_INITIAL[queryKey];
+    });
 }
 
 export function jobsQueryRequestActive(state) {

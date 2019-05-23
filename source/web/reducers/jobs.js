@@ -13,7 +13,7 @@ import {
     JOBS_TOTAL_SET
 } from "../actions/types.js";
 
-const QUERY_INITIAL = {
+export const QUERY_INITIAL = {
     queryFilterResults: [],
     queryFilterStatuses: [],
     queryPage: 0,
