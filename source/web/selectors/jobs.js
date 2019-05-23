@@ -49,7 +49,7 @@ export function getQueryStatusesFilter(state) {
 }
 
 export function getQueryTotalJobs(state) {
-    return state[KEY].queryTotal;
+    return state[KEY].jobResultsTotal;
 }
 
 export function jobsQueryCustomised(state) {

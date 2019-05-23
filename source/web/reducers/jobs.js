@@ -19,12 +19,12 @@ export const QUERY_INITIAL = {
     queryPage: 0,
     queryPerPage: 15,
     queryRequestActive: false,
-    querySearch: "",
-    queryTotal: 0
+    querySearch: ""
 };
 const INITIAL = {
     jobs: [],
     jobResults: [],
+    jobResultsTotal: 0,
     jobTrees: {},
     ...QUERY_INITIAL
 };
@@ -98,7 +98,7 @@ export default function jobsReducer(state = INITIAL, action = {}) {
         case JOBS_TOTAL_SET:
             return {
                 ...state,
-                queryTotal: action.payload
+                jobResultsTotal: action.payload
             };
         case JOBS_SEARCH_SET:
             return {

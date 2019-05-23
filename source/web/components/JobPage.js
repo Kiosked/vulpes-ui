@@ -23,6 +23,10 @@ const CustomTab = styled.li`
     }
     user-select: none;
 `;
+const SearchNavGroup = styled(ButtonGroup)`
+    margin-top: 6px;
+    margin-bottom 12px;
+`;
 
 export default class JobPage extends Component {
     static propTypes = {
@@ -100,11 +104,11 @@ export default class JobPage extends Component {
                     </CustomTab>
                 </CustomTabList>
                 <If condition={this.props.searchActive}>
-                    <ButtonGroup>
+                    <SearchNavGroup>
                         <Button onClick={() => this.props.goBackToSearch()} icon="arrow-left">
                             Back to Search
                         </Button>
-                    </ButtonGroup>
+                    </SearchNavGroup>
                 </If>
                 <Choose>
                     <When condition={this.state.tab === "job"}>
