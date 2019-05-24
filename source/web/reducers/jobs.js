@@ -9,6 +9,8 @@ import {
     JOBS_RESULTS_SET,
     JOBS_REQUEST_TOGGLE_ACTIVE,
     JOBS_SEARCH_SET,
+    JOBS_SORTING_COLUMN_SET,
+    JOBS_SORTING_ORDER_SET,
     JOBS_STATES_SET,
     JOBS_TOTAL_SET
 } from "../actions/types.js";
@@ -19,7 +21,9 @@ export const QUERY_INITIAL = {
     queryPage: 0,
     queryPerPage: 15,
     queryRequestActive: false,
-    querySearch: ""
+    querySearch: "",
+    querySortColumn: "created",
+    querySortOrder: "desc"
 };
 const INITIAL = {
     jobs: [],
@@ -109,6 +113,16 @@ export default function jobsReducer(state = INITIAL, action = {}) {
             return {
                 ...state,
                 queryRequestActive: !!action.payload
+            };
+        case JOBS_SORTING_COLUMN_SET:
+            return {
+                ...state,
+                querySortColumn: action.payload
+            };
+        case JOBS_SORTING_ORDER_SET:
+            return {
+                ...state,
+                querySortOrder: action.payload
             };
         default:
             return state;

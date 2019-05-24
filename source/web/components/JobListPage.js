@@ -18,18 +18,19 @@ import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
 import { startTimer, stopTimer } from "../library/timers.js";
+import { SORTING_COLUMNS, SORTING_ORDERS } from "../library/sorting.js";
 
-const FILTER_OPTIONS = [
-    "Filter",
-    "Type - ascending",
-    "Type - descending",
-    "Created - ascending",
-    "Created - descending",
-    "Priority - ascending",
-    "Priority - descending",
-    "Status - ascending",
-    "Status - descending"
-];
+// const FILTER_OPTIONS = [
+//     "Filter",
+//     "Type - ascending",
+//     "Type - descending",
+//     "Created - ascending",
+//     "Created - descending",
+//     "Priority - ascending",
+//     "Priority - descending",
+//     "Status - ascending",
+//     "Status - descending"
+// ];
 
 const VerticallySpacedButton = styled(Button)`
     margin-top: 10px;
@@ -87,6 +88,9 @@ export default class JobListPage extends Component {
         onReady: PropTypes.func.isRequired,
         search: PropTypes.func.isRequired,
         searchTerm: PropTypes.string.isRequired,
+        setSorting: PropTypes.func.isRequired,
+        sortColumn: PropTypes.string.isRequired,
+        sortOrder: PropTypes.string.isRequired,
         totalJobs: PropTypes.number.isRequired
     };
 
@@ -94,12 +98,29 @@ export default class JobListPage extends Component {
         intermediarySearch: ""
     };
 
+    constructor(...args) {
+        super(...args);
+        this._sortingOptions = [];
+        SORTING_COLUMNS.forEach(col => {
+            SORTING_ORDERS.forEach(dir => {
+                this._sortingOptions.push(`${col} - ${dir}`);
+            });
+        });
+    }
+
     get page() {
         return this.props.currentPage;
     }
 
     get pages() {
         return Math.ceil(this.props.totalJobs / this.props.jobsPerPage);
+    }
+
+    get selectedFilter() {
+        return this._sortingOptions.find(opt => {
+            const [col, ord] = opt.split(/\s*-\s*/);
+            return col === this.props.sortColumn && ord === this.props.sortOrder;
+        });
     }
 
     clearSearch() {
@@ -141,6 +162,11 @@ export default class JobListPage extends Component {
         this.props.search(event.target.value);
     }
 
+    handleSortingChange(event) {
+        const [col, ord] = event.target.value.split(/\s*-\s*/);
+        this.props.setSorting(col, ord);
+    }
+
     render() {
         return (
             <Layout>
@@ -152,7 +178,11 @@ export default class JobListPage extends Component {
                 />
                 <FilteringCard>
                     <ControlGroup>
-                        <HTMLSelect options={FILTER_OPTIONS} />
+                        <HTMLSelect
+                            options={this._sortingOptions}
+                            value={this.selectedFilter}
+                            onChange={::this.handleSortingChange}
+                        />
                         <InputGroup
                             placeholder="Search..."
                             value={this.props.searchTerm}

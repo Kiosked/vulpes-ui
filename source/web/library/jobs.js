@@ -11,6 +11,8 @@ import {
     getQueryPerPage,
     getQueryResultsFilter,
     getQuerySearchTerm,
+    getQuerySortColumn,
+    getQuerySortOrder,
     getQueryStatusesFilter
 } from "../selectors/jobs.js";
 import { notifyError } from "./notifications.js";
@@ -53,9 +55,11 @@ export function collectCurrentJobs() {
     const perPage = getQueryPerPage(state);
     const resultsFilter = getQueryResultsFilter(state);
     const statusesFilter = getQueryStatusesFilter(state);
+    const sortColumn = getQuerySortColumn(state);
+    const sortOrder = getQuerySortOrder(state);
     const start = pageNum * perPage;
     // @todo filters
-    return fetchJobs({ start, limit: perPage, search })
+    return fetchJobs({ start, limit: perPage, search, sort: sortColumn, order: sortOrder })
         .then(({ jobs, total }) => {
             dispatch(setJobs(jobs));
             dispatch(setTotalJobs(total));

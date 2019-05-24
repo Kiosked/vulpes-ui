@@ -8,10 +8,18 @@ import {
     getQueryPage,
     getQueryPerPage,
     getQuerySearchTerm,
+    getQuerySortColumn,
+    getQuerySortOrder,
     getQueryTotalJobs
 } from "../selectors/jobs.js";
 import { notifyError } from "../library/notifications.js";
-import { setJobPage, setJobs, setSearchQuery } from "../actions/jobs.js";
+import {
+    setJobPage,
+    setJobs,
+    setSearchQuery,
+    setSortColumn,
+    setSortOrder
+} from "../actions/jobs.js";
 
 function processJobs() {
     collectCurrentJobs().catch(err => {
@@ -28,6 +36,8 @@ export default connect(
         jobs: getCurrentJobs(state),
         jobsPerPage: getQueryPerPage(state),
         searchTerm: getQuerySearchTerm(state),
+        sortColumn: getQuerySortColumn(state),
+        sortOrder: getQuerySortOrder(state),
         totalJobs: getQueryTotalJobs(state)
     }),
     {
@@ -50,6 +60,11 @@ export default connect(
         search: term => dispatch => {
             dispatch(setJobPage(0));
             dispatch(setSearchQuery(term));
+            setTimeout(throttledProcessJobs, 100);
+        },
+        setSorting: (column, order) => dispatch => {
+            dispatch(setSortColumn(column));
+            dispatch(setSortOrder(order));
             setTimeout(throttledProcessJobs, 100);
         }
     }

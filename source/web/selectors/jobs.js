@@ -44,6 +44,14 @@ export function getQuerySearchTerm(state) {
     return state[KEY].querySearch;
 }
 
+export function getQuerySortColumn(state) {
+    return state[KEY].querySortColumn;
+}
+
+export function getQuerySortOrder(state) {
+    return state[KEY].querySortOrder;
+}
+
 export function getQueryStatusesFilter(state) {
     return state[KEY].queryFilterStatuses;
 }
