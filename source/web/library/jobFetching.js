@@ -8,7 +8,7 @@ import { setJobsRequestActive } from "../actions/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
 const FETCH_TIMELIMIT_PAGE = 5000;
-const FETCH_TIMELIMIT_SINGLE = 2000;
+const FETCH_TIMELIMIT_SINGLE = 3000;
 
 const __requests = new ChannelQueue();
 
@@ -20,7 +20,8 @@ export function fetchJob(jobID) {
             () =>
                 timeLimit(
                     axios.get(joinURL(API_BASE, `/job/${jobID}`)).then(resp => resp.data),
-                    FETCH_TIMELIMIT_SINGLE
+                    FETCH_TIMELIMIT_SINGLE,
+                    { rejectWith: new Error("Timed-out fetching job") }
                 ),
             undefined,
             /* stack: */ context
@@ -43,7 +44,8 @@ export function fetchJobs({ start, limit, sort, order, search = "" } = {}) {
                     }
                 })
                 .then(resp => resp.data),
-            FETCH_TIMELIMIT_PAGE
+            FETCH_TIMELIMIT_PAGE,
+            { rejectWith: new Error("Timed-out fetching jobs") }
         )
     );
 }

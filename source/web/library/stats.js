@@ -7,7 +7,7 @@ import { setStats } from "../actions/stats.js";
 import { notifyError } from "../library/notifications.js";
 
 const API_BASE = window.vulpesAPIBase;
-const FETCH_TIMELIMIT_STATS = 2000;
+const FETCH_TIMELIMIT_STATS = 4000;
 
 const __requests = new ChannelQueue();
 
@@ -31,7 +31,8 @@ export function fetchStats() {
                     axios
                         .get(joinURL(API_BASE, "/stats"))
                         .then(resp => ({ stats: resp.data.stats })),
-                    FETCH_TIMELIMIT_STATS
+                    FETCH_TIMELIMIT_STATS,
+                    { rejectWith: new Error("Timed-out fetching stats") }
                 ),
             undefined,
             /* stack: */ "stats"
