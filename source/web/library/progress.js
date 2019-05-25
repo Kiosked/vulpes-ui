@@ -5,7 +5,7 @@ const JOB_PROGRESS_MAX = "%progressMax";
 
 export function getJobProgress(job) {
     const { status } = job;
-    const { type: resultType, data: resultData } = job.result;
+    const { type: resultType, data: resultData = {} } = job.result;
     if (status === JOB_STATUS_PENDING) {
         return 0;
     } else if (status === JOB_STATUS_STOPPED) {
