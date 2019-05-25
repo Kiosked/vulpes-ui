@@ -1,5 +1,10 @@
 # Vulpes-UI
 
+## v0.11.0
+_2019-05-25_
+
+ * Pagination, searching and filtering
+
 ## v0.10.0
 _2019-04-23_
 
