@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 export const JobResultShape = PropTypes.shape({
-    data: PropTypes.object.isRequired,
+    data: PropTypes.object,
     type: PropTypes.string
 });
 export const JobShape = PropTypes.shape({
@@ -21,6 +21,15 @@ export const JobShapeNew = PropTypes.shape({
     parents: PropTypes.arrayOf(PropTypes.string),
     data: PropTypes.object,
     priority: PropTypes.number
+});
+export const JobStatShape = PropTypes.shape({
+    totalJobs: PropTypes.number,
+    stoppedJobs: PropTypes.number,
+    runningJobs: PropTypes.number,
+    pendingJobs: PropTypes.number,
+    succeededJobs: PropTypes.number,
+    failedJobs: PropTypes.number,
+    jobsInLastHour: PropTypes.number
 });
 export const ScheduledTaskShape = PropTypes.shape({
     id: PropTypes.string.isRequired,

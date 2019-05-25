@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobCreationPage from "../components/JobCreationPage";
-import { addJob, collectAllJobs } from "../library/jobs.js";
+import { addJob, collectCurrentJobs } from "../library/jobs.js";
 import { getJobIds, getJobTypes } from "../selectors/jobs.js";
 
 export default connect(
@@ -22,7 +22,7 @@ export default connect(
                 });
         },
         onReady: () => () => {
-            collectAllJobs();
+            collectCurrentJobs();
         }
     }
 )(JobCreationPage);

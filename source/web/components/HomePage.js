@@ -6,7 +6,7 @@ import styled from "styled-components";
 import humanDate from "human-date";
 import VulpesSymbols from "vulpes/symbols.js";
 import Layout from "./Layout.js";
-import { JobShape, WorkerShape } from "../library/propTypes.js";
+import { JobStatShape, WorkerShape } from "../library/propTypes.js";
 import { startTimer, stopTimer } from "../library/timers.js";
 
 const {
@@ -50,8 +50,20 @@ const WorkersUpdatedText = styled.span`
 `;
 
 export default class HomePage extends Component {
+    static defaultProps = {
+        jobStats: {
+            totalJobs: 0,
+            stoppedJobs: 0,
+            runningJobs: 0,
+            pendingJobs: 0,
+            succeededJobs: 0,
+            failedJobs: 0,
+            jobsInLastHour: 0
+        }
+    };
+
     static propTypes = {
-        jobs: PropTypes.arrayOf(JobShape).isRequired,
+        jobStats: JobStatShape.isRequired,
         onReady: PropTypes.func.isRequired,
         serverTimestamp: PropTypes.number,
         workers: PropTypes.arrayOf(WorkerShape).isRequired
@@ -67,25 +79,25 @@ export default class HomePage extends Component {
     }
 
     render() {
-        const countsByResult = {
-            [JOB_RESULT_TYPE_SUCCESS]: 0,
-            [JOB_RESULT_TYPE_FAILURE]: 0,
-            [JOB_RESULT_TYPE_FAILURE_SOFT]: 0,
-            [JOB_RESULT_TYPE_TIMEOUT]: 0
-        };
-        const countsByStatus = {
-            [JOB_STATUS_PENDING]: 0,
-            [JOB_STATUS_RUNNING]: 0,
-            [JOB_STATUS_STOPPED]: 0
-        };
-        this.props.jobs.forEach(job => {
-            countsByStatus[job.status] += 1;
-            const result = job.result.type;
-            if (!result) {
-                return;
-            }
-            countsByResult[result] += 1;
-        });
+        // const countsByResult = {
+        //     [JOB_RESULT_TYPE_SUCCESS]: 0,
+        //     [JOB_RESULT_TYPE_FAILURE]: 0,
+        //     [JOB_RESULT_TYPE_FAILURE_SOFT]: 0,
+        //     [JOB_RESULT_TYPE_TIMEOUT]: 0
+        // };
+        // const countsByStatus = {
+        //     [JOB_STATUS_PENDING]: 0,
+        //     [JOB_STATUS_RUNNING]: 0,
+        //     [JOB_STATUS_STOPPED]: 0
+        // };
+        // this.props.jobs.forEach(job => {
+        //     countsByStatus[job.status] += 1;
+        //     const result = job.result.type;
+        //     if (!result) {
+        //         return;
+        //     }
+        //     countsByResult[result] += 1;
+        // });
         const latestWorker = this.props.workers.sort((a, b) => b.updated - a.updated)[0];
         return (
             <Layout>
@@ -98,38 +110,34 @@ export default class HomePage extends Component {
                         <JobRow>
                             <JobStat>
                                 <Callout icon="tick" intent={Intent.SUCCESS} title="Succeeded jobs">
-                                    <h3>{countsByResult[JOB_RESULT_TYPE_SUCCESS]}</h3>
+                                    <h3>{this.props.jobStats.succeededJobs}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
                                 <Callout icon="cross" intent={Intent.DANGER} title="Failed jobs">
-                                    <h3>
-                                        {countsByResult[JOB_RESULT_TYPE_FAILURE] +
-                                            countsByResult[JOB_RESULT_TYPE_FAILURE_SOFT] +
-                                            countsByResult[JOB_RESULT_TYPE_TIMEOUT]}
-                                    </h3>
+                                    <h3>{this.props.jobStats.failedJobs}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
                                 <Callout icon="repeat" intent={Intent.PRIMARY} title="Running jobs">
-                                    <h3>{countsByStatus[JOB_STATUS_RUNNING]}</h3>
+                                    <h3>{this.props.jobStats.runningJobs}</h3>
                                 </Callout>
                             </JobStat>
                         </JobRow>
                         <JobRow>
                             <JobStat>
                                 <Callout icon="outdated" intent={Intent.NONE} title="Pending jobs">
-                                    <h3>{countsByStatus[JOB_STATUS_PENDING]}</h3>
+                                    <h3>{this.props.jobStats.pendingJobs}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
                                 <Callout icon="time" intent={Intent.NONE} title="Jobs per hour">
-                                    <h3>?</h3>
+                                    <h3>{this.props.jobStats.jobsInLastHour}</h3>
                                 </Callout>
                             </JobStat>
                             <JobStat>
                                 <Callout icon="th-list" intent={Intent.NONE} title="Total jobs">
-                                    <h3>{this.props.jobs.length}</h3>
+                                    <h3>{this.props.jobStats.totalJobs}</h3>
                                 </Callout>
                             </JobStat>
                         </JobRow>

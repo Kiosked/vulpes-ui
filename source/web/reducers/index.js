@@ -3,6 +3,7 @@ import routing from "./routing.js";
 import jobs from "./jobs.js";
 import scheduledTasks from "./scheduledTasks.js";
 import log from "./log.js";
+import stats from "./stats.js";
 import workers from "./workers.js";
 
 export default combineReducers({
@@ -10,5 +11,6 @@ export default combineReducers({
     log,
     routing,
     scheduledTasks,
+    stats,
     workers
 });

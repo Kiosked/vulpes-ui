@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { Button, ButtonGroup } from "@blueprintjs/core";
 import Layout from "./Layout";
 import { JobShape } from "../library/propTypes.js";
 import JobView from "./JobView.js";
@@ -22,6 +23,10 @@ const CustomTab = styled.li`
     }
     user-select: none;
 `;
+const SearchNavGroup = styled(ButtonGroup)`
+    margin-top: 6px;
+    margin-bottom 12px;
+`;
 
 export default class JobPage extends Component {
     static propTypes = {
@@ -34,6 +39,7 @@ export default class JobPage extends Component {
         onReady: PropTypes.func.isRequired,
         removeAttachment: PropTypes.func.isRequired,
         resetJob: PropTypes.func.isRequired,
+        searchActive: PropTypes.bool.isRequired,
         stopJob: PropTypes.func.isRequired,
         updateJob: PropTypes.func.isRequired
     };
@@ -97,6 +103,13 @@ export default class JobPage extends Component {
                         Child Jobs
                     </CustomTab>
                 </CustomTabList>
+                <If condition={this.props.searchActive}>
+                    <SearchNavGroup>
+                        <Button onClick={() => this.props.goBackToSearch()} icon="arrow-left">
+                            Back to Search
+                        </Button>
+                    </SearchNavGroup>
+                </If>
                 <Choose>
                     <When condition={this.state.tab === "job"}>
                         <JobView

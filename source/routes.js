@@ -45,26 +45,27 @@ function createRoutes(router, service) {
     });
     router.use("/", express.static(DIST));
     router.get("/jobs", function(req, res) {
-        const options = { limit: req.query.limit, order: req.query.order, sort: req.query.sort };
+        const options = {
+            limit: req.query.limit,
+            order: req.query.order,
+            sort: req.query.sort,
+            start: req.query.start || 0
+        };
+        const { search = "" } = req.query;
+        const query =
+            search.length > 0
+                ? { type: type => type.toLowerCase().indexOf(search.toLowerCase()) >= 0 }
+                : {};
         service
-            .queryJobs({}, options)
-            .then(jobs =>
-                jobs.map(job => {
-                    if (job.result.data) {
-                        // Strip attachments
-                        job.result.data = Object.keys(job.result.data)
-                            .filter(key => /^%attachment:/.test(key) === false)
-                            .reduce(
-                                (output, key) =>
-                                    Object.assign(output, {
-                                        [key]: job.result.data[key]
-                                    }),
-                                {}
-                            );
-                    }
+            .queryJobs(query, options)
+            .then(jobs => ({
+                jobs: jobs.map(job => {
+                    // Remove results
+                    delete job.result.data;
                     return job;
-                })
-            )
+                }),
+                total: jobs.total
+            }))
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
@@ -79,6 +80,10 @@ function createRoutes(router, service) {
         service
             .getJob(jobId)
             .then(data => {
+                if (!data) {
+                    res.status(404).send("Not found");
+                    return;
+                }
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
             })
@@ -327,6 +332,19 @@ function createRoutes(router, service) {
             workers,
             now: Date.now()
         });
+    });
+    router.get("/stats", function(req, res) {
+        service.tracker
+            .fetchStats()
+            .then(stats => {
+                res.status(200).send({
+                    stats
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
     });
     router.get("/log", function(req, res) {
         service.logger

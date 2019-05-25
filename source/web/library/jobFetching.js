@@ -1,33 +1,51 @@
+import { join } from "path";
 import axios from "axios";
 import joinURL from "url-join";
-import { join } from "path";
+import ChannelQueue from "@buttercup/channel-queue";
+import timeLimit from "time-limit-promise";
+import { dispatch } from "../redux/index.js";
+import { setJobsRequestActive } from "../actions/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
+const FETCH_TIMELIMIT_PAGE = 5000;
+const FETCH_TIMELIMIT_SINGLE = 2000;
 
-export function fetchJob(jobId) {
-    return axios
-        .get(joinURL(API_BASE, `/job/${jobId}`))
-        .then(resp => resp.data)
-        .catch(err => {
-            console.error(err);
-            throw err;
-        });
+const __requests = new ChannelQueue();
+
+export function fetchJob(jobID) {
+    const context = `get:job:${jobID}`;
+    return __requests
+        .channel(context)
+        .enqueue(
+            () =>
+                timeLimit(
+                    axios.get(joinURL(API_BASE, `/job/${jobID}`)).then(resp => resp.data),
+                    FETCH_TIMELIMIT_SINGLE
+                ),
+            undefined,
+            /* stack: */ context
+        );
 }
 
-export function fetchJobs(limit, sort, order) {
-    return axios
-        .get(joinURL(API_BASE, "/jobs"), {
-            params: {
-                limit: limit,
-                sort: sort,
-                order: order
-            }
-        })
-        .then(resp => resp.data)
-        .catch(err => {
-            console.error(err);
-            throw err;
-        });
+export function fetchJobs({ start, limit, sort, order, search = "" } = {}) {
+    const channel = __requests.channel("fetch-jobs");
+    channel.clear();
+    return channel.enqueue(() =>
+        timeLimit(
+            axios
+                .get(joinURL(API_BASE, "/jobs"), {
+                    params: {
+                        limit,
+                        sort,
+                        order,
+                        start,
+                        search
+                    }
+                })
+                .then(resp => resp.data),
+            FETCH_TIMELIMIT_PAGE
+        )
+    );
 }
 
 export function fetchJobTree(jobId) {
@@ -61,4 +79,14 @@ export function fetchScheduledTasks() {
             console.error(err);
             throw err;
         });
+}
+
+export function watchJobsQueues() {
+    const channel = __requests.channel("fetch-jobs");
+    channel.on("started", () => {
+        dispatch(setJobsRequestActive(true));
+    });
+    channel.on("stopped", () => {
+        dispatch(setJobsRequestActive(false));
+    });
 }

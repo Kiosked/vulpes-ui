@@ -2,9 +2,20 @@ import axios from "axios";
 import joinURL from "url-join";
 import objectHash from "object-hash";
 import { dispatch, getState } from "../redux/index.js";
-import { fetchJob, fetchJobs, fetchJobTree } from "../library/jobFetching.js";
-import { deleteJob, setJob, setJobs, setJobTree } from "../actions/jobs.js";
-import { getJob, getJobTree } from "../selectors/jobs.js";
+import { fetchJob, fetchJobs, fetchJobTree } from "./jobFetching.js";
+import { deleteJob, setJob, setJobs, setJobTree, setTotalJobs } from "../actions/jobs.js";
+import {
+    getJob,
+    getJobTree,
+    getQueryPage,
+    getQueryPerPage,
+    getQueryResultsFilter,
+    getQuerySearchTerm,
+    getQuerySortColumn,
+    getQuerySortOrder,
+    getQueryStatusesFilter
+} from "../selectors/jobs.js";
+import { notifyError } from "./notifications.js";
 
 const API_BASE = window.vulpesAPIBase;
 
@@ -23,20 +34,41 @@ export function addJob(properties) {
 }
 
 export function collectJob(jobID) {
-    return fetchJob(jobID).then(job => {
-        const existingJob = getJob(getState(), jobID);
-        if (existingJob && !objectsDiffer(existingJob, job)) {
-            return;
-        }
-        dispatch(setJob(job));
-    });
+    return fetchJob(jobID)
+        .then(job => {
+            const existingJob = getJob(getState(), jobID);
+            if (existingJob && !objectsDiffer(existingJob, job)) {
+                return;
+            }
+            dispatch(setJob(job));
+        })
+        .catch(err => {
+            console.error(err);
+            notifyError(`Failed collecting job ${jobID}: ${err.message}`);
+        });
 }
 
-export function collectAllJobs() {
-    return fetchJobs(Infinity).then(jobs => {
-        dispatch(setJobs(jobs));
-        return jobs;
-    });
+export function collectCurrentJobs() {
+    const state = getState();
+    const search = getQuerySearchTerm(state);
+    const pageNum = getQueryPage(state);
+    const perPage = getQueryPerPage(state);
+    const resultsFilter = getQueryResultsFilter(state);
+    const statusesFilter = getQueryStatusesFilter(state);
+    const sortColumn = getQuerySortColumn(state);
+    const sortOrder = getQuerySortOrder(state);
+    const start = pageNum * perPage;
+    // @todo filters
+    return fetchJobs({ start, limit: perPage, search, sort: sortColumn, order: sortOrder })
+        .then(({ jobs, total }) => {
+            dispatch(setJobs(jobs));
+            dispatch(setTotalJobs(total));
+            return jobs;
+        })
+        .catch(err => {
+            console.error(err);
+            notifyError(`Failed collecting jobs: ${err.message}`);
+        });
 }
 
 export function collectJobTree(jobID) {
