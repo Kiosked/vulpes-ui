@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const pify = require("pify");
 const joinURL = require("url-join");
 const { Symbol: VulpesSymbols } = require("vulpes");
+const { JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX } = require("./symbols.js");
 
 const readFile = pify(fs.readFile);
 
@@ -60,8 +61,14 @@ function createRoutes(router, service) {
             .queryJobs(query, options)
             .then(jobs => ({
                 jobs: jobs.map(job => {
-                    // Remove results
-                    delete job.result.data;
+                    // Remove results data that could potentially be
+                    // too large to send - keep only very necessary
+                    // data points
+                    const existingData = job.result.data || {};
+                    job.result.data = {};
+                    [JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX].forEach(allowedKey => {
+                        job.result.data[allowedKey] = existingData[allowedKey];
+                    });
                     return job;
                 }),
                 total: jobs.total

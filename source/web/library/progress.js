@@ -1,7 +1,5 @@
 import { JOB_RESULT_TYPE_SUCCESS, JOB_STATUS_PENDING, JOB_STATUS_STOPPED } from "vulpes/symbols";
-
-const JOB_PROGRESS_CURRENT = "%progressCurrent";
-const JOB_PROGRESS_MAX = "%progressMax";
+import { JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX } from "../../symbols.js";
 
 export function getJobProgress(job) {
     const { status } = job;
