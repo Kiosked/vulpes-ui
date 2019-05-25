@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.11.1
+_2019-05-25_
+
+ * **Bugfix**:
+   * New jobs without `result.data` cause progress error
+
 ## v0.11.0
 _2019-05-25_
 
