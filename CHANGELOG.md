@@ -1,5 +1,10 @@
 # Vulpes-UI
 
+## v0.11.2
+_2019-05-25_
+
+ * Allow progress data to be sent for jobs query list
+
 ## v0.11.1
 _2019-05-25_
 
