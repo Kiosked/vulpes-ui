@@ -7,8 +7,8 @@ import { dispatch } from "../redux/index.js";
 import { setJobsRequestActive } from "../actions/jobs.js";
 
 const API_BASE = window.vulpesAPIBase;
-const FETCH_TIMELIMIT_PAGE = 5000;
-const FETCH_TIMELIMIT_SINGLE = 3000;
+const FETCH_TIMELIMIT_PAGE = 7500;
+const FETCH_TIMELIMIT_SINGLE = 4000;
 
 const __requests = new ChannelQueue();
 
@@ -19,7 +19,11 @@ export function fetchJob(jobID) {
         .enqueue(
             () =>
                 timeLimit(
-                    axios.get(joinURL(API_BASE, `/job/${jobID}`)).then(resp => resp.data),
+                    axios
+                        .get(joinURL(API_BASE, `/job/${jobID}`), {
+                            timeout: FETCH_TIMELIMIT_SINGLE
+                        })
+                        .then(resp => resp.data),
                     FETCH_TIMELIMIT_SINGLE,
                     { rejectWith: new Error("Timed-out fetching job") }
                 ),
@@ -41,7 +45,8 @@ export function fetchJobs({ start, limit, sort, order, search = "" } = {}) {
                         order,
                         start,
                         search
-                    }
+                    },
+                    timeout: FETCH_TIMELIMIT_PAGE
                 })
                 .then(resp => resp.data),
             FETCH_TIMELIMIT_PAGE,
