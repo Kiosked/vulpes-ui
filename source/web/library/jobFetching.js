@@ -14,22 +14,20 @@ const __requests = new ChannelQueue();
 
 export function fetchJob(jobID) {
     const context = `get:job:${jobID}`;
-    return __requests
-        .channel(context)
-        .enqueue(
-            () =>
-                timeLimit(
-                    axios
-                        .get(joinURL(API_BASE, `/job/${jobID}`), {
-                            timeout: FETCH_TIMELIMIT_SINGLE
-                        })
-                        .then(resp => resp.data),
-                    FETCH_TIMELIMIT_SINGLE,
-                    { rejectWith: new Error("Timed-out fetching job") }
-                ),
-            undefined,
-            /* stack: */ context
-        );
+    return __requests.channel(context).enqueue(
+        () =>
+            timeLimit(
+                axios
+                    .get(joinURL(API_BASE, `/job/${jobID}`), {
+                        timeout: FETCH_TIMELIMIT_SINGLE
+                    })
+                    .then(resp => resp.data),
+                FETCH_TIMELIMIT_SINGLE,
+                { rejectWith: new Error("Timed-out fetching job") }
+            ),
+        undefined,
+        /* stack: */ context
+    );
 }
 
 export function fetchJobs({ start, limit, sort, order, search = "" } = {}) {
