@@ -60,17 +60,7 @@ function createRoutes(router, service) {
         service
             .queryJobs(query, options)
             .then(jobs => ({
-                jobs: jobs.map(job => {
-                    // Remove results data that could potentially be
-                    // too large to send - keep only very necessary
-                    // data points
-                    const existingData = job.result.data || {};
-                    job.result.data = {};
-                    [JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX].forEach(allowedKey => {
-                        job.result.data[allowedKey] = existingData[allowedKey];
-                    });
-                    return job;
-                }),
+                jobs: stripJobResults(jobs),
                 total: jobs.total
             }))
             .then(data => {
@@ -103,9 +93,10 @@ function createRoutes(router, service) {
         const jobId = req.params.jobId;
         service
             .getJobTree(jobId, { resolveParents: true })
-            .then(data => {
+            .then(jobs => stripJobResults(jobs))
+            .then(jobs => {
                 res.set("Content-Type", "application/json");
-                res.status(200).send(data);
+                res.status(200).send(jobs);
             })
             .catch(err => {
                 console.error(err);
@@ -364,6 +355,20 @@ function createRoutes(router, service) {
                 console.error(err);
                 res.status(500).send("Internal server error");
             });
+    });
+}
+
+function stripJobResults(jobs) {
+    return jobs.map(job => {
+        // Remove results data that could potentially be
+        // too large to send - keep only very necessary
+        // data points
+        const existingData = job.result.data || {};
+        job.result.data = {};
+        [JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX].forEach(allowedKey => {
+            job.result.data[allowedKey] = existingData[allowedKey];
+        });
+        return job;
     });
 }
 
