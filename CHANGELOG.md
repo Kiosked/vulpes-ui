@@ -1,5 +1,10 @@
 # Vulpes-UI
 
+## v0.12.0
+_2019-06-04_
+
+ * Job results removed from job tree requests
+
 ## v0.11.4
 _2019-05-28_
 
