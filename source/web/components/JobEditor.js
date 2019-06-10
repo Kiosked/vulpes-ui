@@ -149,7 +149,6 @@ export default class JobEditor extends Component {
         } else if (this.props.parents.length > 0) {
             const parents = _.uniq([...this.state.jobParents, ...this.props.parents]).sort();
             if (!_.isEqual(parents, this.state.jobParents.sort())) {
-                console.log("NOT EQ", parents, this.state.jobParents.sort());
                 this.setState({
                     jobParents: parents
                 });

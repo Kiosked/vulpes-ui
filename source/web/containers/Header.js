@@ -7,9 +7,6 @@ import { collectCurrentJobs } from "../library/jobs.js";
 export default connect(
     (state, ownProps) => ({}),
     {
-        onClickLog: () => dispatch => {
-            dispatch(push("/log"));
-        },
         onClickHome: () => dispatch => {
             dispatch(push("/"));
         },
