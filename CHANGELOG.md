@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.13.0
+_2019-06-11_
+
+ * Artifacts management for improved UI speed
+ * Logging removed
+
 ## v0.12.0
 _2019-06-04_
 
