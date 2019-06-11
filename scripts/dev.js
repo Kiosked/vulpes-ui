@@ -1,14 +1,14 @@
 const path = require("path");
 const express = require("express");
-const { Service, FileStorage, MemoryStorage } = require("vulpes");
+const { ArtifactManager, Service, FileStorage, MemoryStorage } = require("vulpes");
 const { createVulpesRouter } = require("../source/index.js");
 
 Object.assign(global, { __DEV__: true });
 
 const app = express();
 const storage = new FileStorage(path.resolve(__dirname, "../jobs.db.json"));
-// const storage = new MemoryStorage();
-const service = new Service(storage);
+const artifactManager = new ArtifactManager("/tmp/vulpes");
+const service = new Service({ artifactManager, storage });
 
 service
     .initialise()

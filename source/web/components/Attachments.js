@@ -1,13 +1,24 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Button, ButtonGroup, Card, Classes, Dialog, Icon, Intent } from "@blueprintjs/core";
+import {
+    Button,
+    ButtonGroup,
+    Card,
+    Classes,
+    Dialog,
+    Icon,
+    Intent,
+    Spinner
+} from "@blueprintjs/core";
 import { LazyLog } from "react-lazylog";
 import humanDate from "human-date";
+import { clearDownloadQueue, downloadAttachmentToDataURI } from "../library/attachments.js";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const MIME_IMAGE_REXP = /^image\//;
 const MIME_TEXT_REXP = /(^text\/|^application\/(javascript|ecmascript|json))/;
+const MIME_TYPE_LOADABLE = /^(text|image)\//;
 
 const Items = styled.div`
     display: flex;
@@ -118,6 +129,7 @@ export default class Attachments extends Component {
     };
 
     state = {
+        attachmentData: {},
         presentedAttachment: null,
         removeAttachment: null
     };
@@ -130,6 +142,43 @@ export default class Attachments extends Component {
                 id: key.replace(/^%attachment:/, "")
             }))
             .sort((a, b) => b.created - a.created);
+    }
+
+    componentDidMount() {
+        this.fetchAllAttachments();
+    }
+
+    componentDidUpdate() {
+        this.fetchAllAttachments();
+    }
+
+    componentWillUnmount() {
+        clearDownloadQueue();
+    }
+
+    fetchAllAttachments() {
+        this.attachments.forEach(attachment => {
+            this.fetchAttachmentData(attachment.id);
+        });
+    }
+
+    fetchAttachmentData(id) {
+        if (this.state.attachmentData[id]) {
+            return;
+        }
+        const { mime } = this.attachments.find(attachment => attachment.id === id);
+        downloadAttachmentToDataURI(id, mime)
+            .then(data => {
+                this.setState({
+                    attachmentData: {
+                        ...this.state.attachmentData,
+                        [id]: data
+                    }
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
     }
 
     handleClickFile(attachment) {
@@ -165,8 +214,13 @@ export default class Attachments extends Component {
                         <Item key={attachment.id} onClick={() => this.handleClickFile(attachment)}>
                             <ImageContainer>
                                 <Choose>
-                                    <When condition={MIME_IMAGE_REXP.test(attachment.mime)}>
-                                        <Image src={attachment.data} />
+                                    <When
+                                        condition={
+                                            MIME_IMAGE_REXP.test(attachment.mime) &&
+                                            this.state.attachmentData[attachment.id]
+                                        }
+                                    >
+                                        <Image src={this.state.attachmentData[attachment.id]} />
                                     </When>
                                     <Otherwise>
                                         <NoImage>
@@ -191,7 +245,9 @@ export default class Attachments extends Component {
                 </Items>
                 <PreviewDialog
                     isOpen={!!this.state.presentedAttachment}
-                    onClose={() => this.setState({ presentedAttachment: null })}
+                    onClose={() =>
+                        this.setState({ presentedAttachment: null, presentedAttachmentData: null })
+                    }
                     title={
                         this.state.presentedAttachment ? this.state.presentedAttachment.title : ""
                     }
@@ -200,24 +256,50 @@ export default class Attachments extends Component {
                         <If condition={!!this.state.presentedAttachment}>
                             <Choose>
                                 <When
-                                    condition={MIME_IMAGE_REXP.test(
-                                        this.state.presentedAttachment.mime
-                                    )}
+                                    condition={
+                                        !this.state.attachmentData[
+                                            this.state.presentedAttachment.id
+                                        ] &&
+                                        MIME_TYPE_LOADABLE.test(this.state.presentedAttachment.mime)
+                                    }
                                 >
-                                    <BigImage src={this.state.presentedAttachment.data} />
-                                </When>
-                                <When
-                                    condition={MIME_TEXT_REXP.test(
-                                        this.state.presentedAttachment.mime
-                                    )}
-                                >
-                                    <LazyLog
-                                        url={this.state.presentedAttachment.data}
-                                        extraLines={2}
-                                    />
+                                    <Spinner />
                                 </When>
                                 <Otherwise>
-                                    <NoContentMessage>No preview available</NoContentMessage>
+                                    <Choose>
+                                        <When
+                                            condition={MIME_IMAGE_REXP.test(
+                                                this.state.presentedAttachment.mime
+                                            )}
+                                        >
+                                            <BigImage
+                                                src={
+                                                    this.state.attachmentData[
+                                                        this.state.presentedAttachment.id
+                                                    ]
+                                                }
+                                            />
+                                        </When>
+                                        <When
+                                            condition={MIME_TEXT_REXP.test(
+                                                this.state.presentedAttachment.mime
+                                            )}
+                                        >
+                                            <LazyLog
+                                                url={
+                                                    this.state.attachmentData[
+                                                        this.state.presentedAttachment.id
+                                                    ]
+                                                }
+                                                extraLines={2}
+                                            />
+                                        </When>
+                                        <Otherwise>
+                                            <NoContentMessage>
+                                                No preview available
+                                            </NoContentMessage>
+                                        </Otherwise>
+                                    </Choose>
                                 </Otherwise>
                             </Choose>
                         </If>

@@ -72,10 +72,10 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get("/job/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/job/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .getJob(jobId)
+            .getJob(jobID)
             .then(data => {
                 if (!data) {
                     res.status(404).send("Not found");
@@ -89,10 +89,10 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get("/tree/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/tree/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .getJobTree(jobId, { resolveParents: true })
+            .getJobTree(jobID, { resolveParents: true })
             .then(jobs => stripJobResults(jobs))
             .then(jobs => {
                 res.set("Content-Type", "application/json");
@@ -103,10 +103,10 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get("/start/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/start/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .startJob(jobId)
+            .startJob(jobID)
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
@@ -116,10 +116,10 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get("/stop/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/stop/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .stopJob(jobId, VulpesSymbols.JOB_RESULT_TYPE_FAILURE)
+            .stopJob(jobID, VulpesSymbols.JOB_RESULT_TYPE_FAILURE)
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
@@ -129,10 +129,10 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get("/reset/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/reset/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .resetJob(jobId)
+            .resetJob(jobID)
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
@@ -142,11 +142,11 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.post("/update/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.post("/update/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         const mergedProperties = req.body.properties;
         service
-            .updateJob(jobId, mergedProperties, { stripResults: true })
+            .updateJob(jobID, mergedProperties, { stripResults: true })
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
@@ -156,13 +156,33 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
-    router.get("/children/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/children/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .getJobChildren(jobId)
+            .getJobChildren(jobID)
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
+    router.get("/artifact/:artifactID", function(req, res) {
+        const { artifactID } = req.params;
+        const { mime } = req.query;
+        if (!mime) {
+            console.error("No mime type set for artifact request");
+            res.status(400).send("Bad request");
+            return;
+        }
+        service.artifactManager
+            .getArtifactReadStream(artifactID)
+            .then(rs => {
+                res.status(200);
+                res.set("Content-Type", mime);
+                rs.pipe(res);
             })
             .catch(err => {
                 console.error(err);
@@ -311,10 +331,10 @@ function createRoutes(router, service) {
                 }
             });
     });
-    router.get("/delete/:jobId", function(req, res) {
-        const jobId = req.params.jobId;
+    router.get("/delete/:jobID", function(req, res) {
+        const jobID = req.params.jobID;
         service
-            .removeJob(jobId)
+            .removeJob(jobID)
             .then(data => {
                 res.set("Content-Type", "application/json");
                 res.status(200).send(data);
