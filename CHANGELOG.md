@@ -1,5 +1,10 @@
 # Vulpes-UI
 
+## v0.13.1
+_2019-07-02_
+
+ * Prevent deadlock in attachments rendering
+
 ## v0.13.0
 _2019-06-11_
 
