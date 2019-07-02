@@ -13,6 +13,7 @@ import {
 } from "@blueprintjs/core";
 import { LazyLog } from "react-lazylog";
 import humanDate from "human-date";
+import debounce from "debounce";
 import { clearDownloadQueue, downloadAttachmentToDataURI } from "../library/attachments.js";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -134,6 +135,11 @@ export default class Attachments extends Component {
         removeAttachment: null
     };
 
+    constructor(props) {
+        super(props);
+        this.fetchAllAttachments = debounce(this._fetchAllAttachments, 500, false);
+    }
+
     get attachments() {
         return Object.keys(this.props.results)
             .filter(key => ATTACHMENT_REXP.test(key))
@@ -156,7 +162,7 @@ export default class Attachments extends Component {
         clearDownloadQueue();
     }
 
-    fetchAllAttachments() {
+    _fetchAllAttachments() {
         this.attachments.forEach(attachment => {
             this.fetchAttachmentData(attachment.id);
         });
