@@ -1,5 +1,10 @@
 # Vulpes-UI
 
+## v0.13.2
+_2020-02-15_
+
+ * Upgrade dependencies to fix fatal error
+
 ## v0.13.1
 _2019-07-02_
 
