@@ -17,6 +17,7 @@ export default class Header extends PureComponent {
     static propTypes = {
         onClickHome: PropTypes.func.isRequired,
         onClickJobs: PropTypes.func.isRequired,
+        onClickReporting: PropTypes.func.isRequired,
         onClickScheduling: PropTypes.func.isRequired
     };
 
@@ -48,16 +49,16 @@ export default class Header extends PureComponent {
                             onClick={this.props.onClickScheduling}
                         />
                         <Button
-                            disabled={true}
                             className="bp3-minimal"
-                            icon="align-left"
-                            text="Log"
+                            icon="regression-chart"
+                            text="Reporting"
+                            onClick={this.props.onClickReporting}
                         />
                         <Button
                             disabled={true}
                             className="bp3-minimal"
-                            icon="console"
-                            text="Terminal"
+                            icon="align-left"
+                            text="Log"
                         />
                         <Button
                             disabled={true}

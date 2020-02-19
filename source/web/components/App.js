@@ -11,6 +11,7 @@ import JobCreationPage from "../containers/JobCreationPage.js";
 import SchedulingPage from "../containers/SchedulingPage.js";
 import EditScheduledTaskPage from "../containers/EditScheduledTaskPage.js";
 import ScheduledTaskPage from "../containers/ScheduledTaskPage.js";
+import ReportingPage from "../containers/ReportingPage.js";
 import "../styles/vulpes.sass";
 import "../styles/base.sass";
 
@@ -39,6 +40,7 @@ class App extends Component {
                             render={props => <EditScheduledTaskPage {...props} mode="edit" />}
                         />
                         <Route path="/scheduling/task/:id" component={ScheduledTaskPage} />
+                        <Route path="/reporting" component={ReportingPage} />
                     </Switch>
                 </ConnectedRouter>
             </Provider>
