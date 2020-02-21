@@ -18,8 +18,21 @@ import {
 } from "@blueprintjs/core";
 import Layout from "./Layout";
 
+const INITIAL_STATE = {
+    editingIndex: -1,
+    editingPattern: "",
+    jobTypePatterns: [],
+    newJobPattern: "",
+    newProperties: null,
+    onlySucceeded: true,
+    reportingProperties: []
+};
+
 const FormCard = styled(Card)`
     margin: 0px 16px;
+`;
+const Heading3 = styled.h3`
+    margin-top: 0px;
 `;
 const PatternLI = styled.li`
     font-size: 16px;
@@ -29,21 +42,24 @@ const PatternLI = styled.li`
 
 export default class ReportingPage extends Component {
     state = {
-        editingIndex: -1,
-        editingPattern: "",
-        jobTypePatterns: [],
-        newJobPattern: "",
-        newProperties: null,
-        onlySucceeded: true,
-        reportingProperties: []
+        ...INITIAL_STATE
     };
+
+    promptReset() {
+        const shouldKill = window.confirm("Are you sure you want to reset the form?");
+        if (shouldKill) {
+            this.setState({
+                ...INITIAL_STATE
+            });
+        }
+    }
 
     render() {
         return (
             <Layout>
                 <h1>Reporting</h1>
                 <FormCard>
-                    <h3>Generate Report</h3>
+                    <Heading3>Generate Report</Heading3>
                     <FormGroup label="Job States" labelInfo="(required)">
                         <Switch
                             label="Only succeeded"
@@ -150,8 +166,19 @@ export default class ReportingPage extends Component {
                                             ind="index"
                                         >
                                             <tr key={`item-${index}`}>
-                                                <td />
-                                                <td />
+                                                <td>
+                                                    <code>{reportingProperty.type}</code>
+                                                </td>
+                                                <td>
+                                                    <For
+                                                        each="propPath"
+                                                        of={reportingProperty.properties}
+                                                    >
+                                                        <div key={`prop:${propPath}`}>
+                                                            <code>{propPath}</code>
+                                                        </div>
+                                                    </For>
+                                                </td>
                                                 <td>
                                                     <Button
                                                         small
@@ -193,7 +220,7 @@ export default class ReportingPage extends Component {
                     </FormGroup>
                     <hr />
                     <ButtonGroup>
-                        <Button text="Reset" intent={Intent.DANGER} />
+                        <Button text="Reset" intent={Intent.DANGER} onClick={::this.promptReset} />
                         <Button text="Generate report" />
                     </ButtonGroup>
                 </FormCard>
@@ -233,6 +260,12 @@ export default class ReportingPage extends Component {
                         />
                     </FormGroup>
                     <FormGroup label="Job Data Properties" labelInfo="(required)">
+                        <blockquote className={Classes.BLOCKQUOTE}>
+                            Job properties are <strong>property paths</strong> that indicate which
+                            properties (and their values) to include in the report. For example:{" "}
+                            <code>my.deep.property</code> would retrieve all matching nested
+                            properties on the job type pattern that appear for the report.
+                        </blockquote>
                         <table
                             className={classNames(
                                 Classes.HTML_TABLE,
@@ -316,6 +349,15 @@ export default class ReportingPage extends Component {
                                 !this.state.newProperties ||
                                 this.state.newProperties.type.trim() == "" ||
                                 this.state.newProperties.properties.length === 0
+                            }
+                            onClick={() =>
+                                this.setState({
+                                    newProperties: null,
+                                    reportingProperties: [
+                                        ...this.state.reportingProperties,
+                                        { ...this.state.newProperties }
+                                    ]
+                                })
                             }
                         />
                         <Button
