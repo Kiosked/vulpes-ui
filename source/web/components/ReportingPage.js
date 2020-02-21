@@ -7,6 +7,7 @@ import {
     ButtonGroup,
     Card,
     Classes,
+    ControlGroup,
     Dialog,
     EditableText,
     FormGroup,
@@ -31,6 +32,8 @@ export default class ReportingPage extends Component {
         editingIndex: -1,
         editingPattern: "",
         jobTypePatterns: [],
+        newJobPattern: "",
+        newProperties: null,
         onlySucceeded: true,
         reportingProperties: []
     };
@@ -178,6 +181,7 @@ export default class ReportingPage extends Component {
                                 icon="add"
                                 onClick={() =>
                                     this.setState({
+                                        newJobPattern: "",
                                         newProperties: {
                                             type: "",
                                             properties: []
@@ -210,6 +214,12 @@ export default class ReportingPage extends Component {
             >
                 <div className={Classes.DIALOG_BODY}>
                     <FormGroup label="Job Type" labelInfo="(required)">
+                        <blockquote className={Classes.BLOCKQUOTE}>
+                            Job types are queries on all jobs within the system. They will match
+                            exactly to the text to enter. You can use <code>*</code> wild-cards
+                            within the queries to symbolise dynamic portions of job types. For
+                            example: <code>test/*</code>.
+                        </blockquote>
                         <InputGroup
                             value={this.state.newProperties.type}
                             onChange={evt =>
@@ -255,7 +265,7 @@ export default class ReportingPage extends Component {
                                                     this.setState({
                                                         newProperties: {
                                                             ...this.state.newProperties,
-                                                            properties: this.state.newProperties.filter(
+                                                            properties: this.state.newProperties.properties.filter(
                                                                 (prop, ind) => ind !== index
                                                             )
                                                         }
@@ -268,6 +278,33 @@ export default class ReportingPage extends Component {
                             </tbody>
                         </table>
                     </FormGroup>
+                    <ControlGroup>
+                        <InputGroup
+                            placeholder="Enter new job pattern..."
+                            value={this.state.newJobPattern}
+                            onChange={evt =>
+                                this.setState({
+                                    newJobPattern: evt.target.value
+                                })
+                            }
+                        />
+                        <Button
+                            text="Add"
+                            onClick={() =>
+                                this.state.newJobPattern.trim() &&
+                                this.setState({
+                                    newJobPattern: "",
+                                    newProperties: {
+                                        ...this.state.newProperties,
+                                        properties: [
+                                            ...this.state.newProperties.properties,
+                                            this.state.newJobPattern
+                                        ]
+                                    }
+                                })
+                            }
+                        />
+                    </ControlGroup>
                 </div>
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -281,7 +318,14 @@ export default class ReportingPage extends Component {
                                 this.state.newProperties.properties.length === 0
                             }
                         />
-                        <Button text="Cancel" />
+                        <Button
+                            text="Cancel"
+                            onClick={() =>
+                                this.setState({
+                                    newProperties: null
+                                })
+                            }
+                        />
                     </div>
                 </div>
             </Dialog>
