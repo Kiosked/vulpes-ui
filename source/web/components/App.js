@@ -12,7 +12,7 @@ import SchedulingPage from "../containers/SchedulingPage.js";
 import EditScheduledTaskPage from "../containers/EditScheduledTaskPage.js";
 import ScheduledTaskPage from "../containers/ScheduledTaskPage.js";
 import ReportingPage from "../containers/ReportingPage.js";
-import ImportBatchPage from "../containers/ImportBatchPage.js";
+import ImportBatchPage from "../components/ImportBatchPage.js";
 import "../styles/vulpes.sass";
 import "../styles/base.sass";
 
