@@ -16,21 +16,44 @@ import {
     Intent,
     Switch
 } from "@blueprintjs/core";
-import Layout from "./Layout";
+import Layout from "./Layout.js";
+import ReportViewer from "./ReportViewer.js";
+
+// const INITIAL_STATE = {
+//     editingIndex: -1,
+//     editingPattern: "",
+//     jobTypePatterns: [],
+//     newJobPattern: "",
+//     newProperties: null,
+//     onlySucceeded: true,
+//     preparedConfig: null,
+//     reportingProperties: [],
+//     tagFilter: ""
+// };
 
 const INITIAL_STATE = {
     editingIndex: -1,
     editingPattern: "",
-    jobTypePatterns: [],
+    jobTypePatterns: ["test/*"],
     newJobPattern: "",
     newProperties: null,
     onlySucceeded: true,
     preparedConfig: null,
-    reportingProperties: []
+    reportingProperties: [
+        {
+            type: "*",
+            properties: ["fallback-value"]
+        },
+        {
+            type: "*",
+            properties: ["my.deep.result", "my.deep.string", "not.here"]
+        }
+    ],
+    tagFilter: ""
 };
 
 const FormCard = styled(Card)`
-    margin: 0px 16px;
+    margin: 0px 16px 20px 16px;
 `;
 const Heading3 = styled.h3`
     margin-top: 0px;
@@ -49,8 +72,10 @@ export default class ReportingPage extends Component {
     buildReport() {
         this.setState({
             preparedConfig: {
+                onlySucceeded: this.state.onlySucceeded,
                 types: [...this.state.jobTypePatterns],
-                reportingProperties: [...this.state.reportingProperties]
+                reportingProperties: [...this.state.reportingProperties],
+                tagFilter: this.state.tagFilter
             }
         });
     }
@@ -73,6 +98,11 @@ export default class ReportingPage extends Component {
                     <If condition={!this.state.preparedConfig}>{this.renderGenerateReport()}</If>
                 </FormCard>
                 <If condition={!!this.state.newProperties}>{this.renderNewPropertiesDialog()}</If>
+                <If condition={!!this.state.preparedConfig}>
+                    <FormCard>
+                        <ReportViewer config={this.state.preparedConfig} />
+                    </FormCard>
+                </If>
             </Layout>
         );
     }
@@ -236,6 +266,18 @@ export default class ReportingPage extends Component {
                             }
                         />
                     </ButtonGroup>
+                </FormGroup>
+                <FormGroup label="Tag" labelInfo="(optional)">
+                    <blockquote className={Classes.BLOCKQUOTE}>
+                        Filter all searched jobs by returning only those that match a certain{" "}
+                        <strong>tag</strong>. This is highly useful for reporting on batch imported
+                        jobs.
+                    </blockquote>
+                    <InputGroup
+                        placeholder="Enter tag text..."
+                        value={this.state.tagFilter}
+                        onChange={evt => this.setState({ tagFilter: evt.target.value })}
+                    />
                 </FormGroup>
                 <hr />
                 <ButtonGroup>

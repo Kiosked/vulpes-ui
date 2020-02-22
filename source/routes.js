@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const pify = require("pify");
 const joinURL = require("url-join");
+const nested = require("nested-property");
 const { Symbol: VulpesSymbols } = require("vulpes");
 const { JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX } = require("./symbols.js");
 
@@ -11,6 +12,10 @@ const readFile = pify(fs.readFile);
 
 const DIST = path.resolve(__dirname, "../dist");
 const INDEX = path.join(DIST, "index.html");
+
+const _jobTypeToRegex = jobType => new RegExp(`^${jobType.replace(/\*+/g, ".*")}$`);
+const _jobTypesToRegex = jobTypes =>
+    new RegExp(`(${jobTypes.map(type => _jobTypeToRegex(type).source).join("|")})`);
 
 function createRoutes(router, service) {
     router.use(
@@ -357,6 +362,72 @@ function createRoutes(router, service) {
             .then(stats => {
                 res.status(200).send({
                     stats
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
+    router.post("/report/on-the-fly", function(req, res) {
+        const {
+            types: jobTypePatterns,
+            reportingProperties,
+            tagFilter = "",
+            onlySucceeded = true
+        } = req.body;
+        const failRequest = () => res.status(400).send("Bad request");
+        if (!Array.isArray(jobTypePatterns) || jobTypePatterns.length <= 0) {
+            console.error("Job type patterns (types) not provided");
+            failRequest();
+            return;
+        }
+        if (!Array.isArray(reportingProperties) || reportingProperties.length <= 0) {
+            console.error("Report properties (reportingProperties) not provided");
+            failRequest();
+            return;
+        }
+        const jobType = _jobTypesToRegex(jobTypePatterns);
+        const query = { type: jobType };
+        if (tagFilter) {
+            query["data.tag"] = tagFilter;
+        }
+        if (onlySucceeded) {
+            query["result.type"] = VulpesSymbols.JOB_RESULT_TYPE_SUCCESS;
+        }
+        service
+            .queryJobs(query)
+            .then(jobs =>
+                jobs.reduce((output, job) => {
+                    const extractedValues = [];
+                    reportingProperties.forEach(reportingProp => {
+                        const { type: targetJobType, properties } = reportingProp;
+                        const targetJobTypeRegex = _jobTypeToRegex(targetJobType);
+                        if (!targetJobTypeRegex.test(job.type)) return;
+                        properties.forEach(prop => {
+                            const targetData = Object.assign({}, job.data, job.result.data || {});
+                            const value = nested.get(targetData, prop);
+                            if (typeof value !== "undefined") {
+                                extractedValues.push({
+                                    key: prop,
+                                    value
+                                });
+                            }
+                        });
+                    });
+                    if (extractedValues.length > 0) {
+                        output.push({
+                            id: job.id,
+                            type: job.type,
+                            properties: extractedValues
+                        });
+                    }
+                    return output;
+                }, [])
+            )
+            .then(results => {
+                res.status(200).send({
+                    results
                 });
             })
             .catch(err => {
