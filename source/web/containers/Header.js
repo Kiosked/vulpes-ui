@@ -7,6 +7,9 @@ import { collectCurrentJobs } from "../library/jobs.js";
 export default connect(
     (state, ownProps) => ({}),
     {
+        onClickBatchImport: () => dispatch => {
+            dispatch(push("/import/batch"));
+        },
         onClickHome: () => dispatch => {
             dispatch(push("/"));
         },
