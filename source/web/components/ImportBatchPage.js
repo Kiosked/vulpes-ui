@@ -2,7 +2,16 @@ import React, { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Button, ButtonGroup, Card, FormGroup, Intent, Spinner, Tree } from "@blueprintjs/core";
+import {
+    Button,
+    ButtonGroup,
+    Callout,
+    Card,
+    FormGroup,
+    Intent,
+    Spinner,
+    Tree
+} from "@blueprintjs/core";
 import brace from "brace";
 import AceEditor from "react-ace";
 import Layout from "./Layout.js";
@@ -43,6 +52,7 @@ export default function ImportBatchPage() {
     const [dryRunActive, setDryRunActive] = useState(false);
     const [importActive, setImportActive] = useState(false);
     const [imported, setImported] = useState(false);
+    const [importTag, setImportTag] = useState(null);
     const jsonValid = useMemo(() => {
         try {
             JSON.parse(importData);
@@ -69,11 +79,12 @@ export default function ImportBatchPage() {
     useEffect(() => {
         if (!importActive) return;
         importJobsTemplate(JSON.parse(importData))
-            .then(jobTree => {
+            .then(({ tree, tag }) => {
                 notifySuccess("Import executed successfully");
-                setJobTree(jobTree);
+                setJobTree(tree);
                 setImportActive(false);
                 setImported(true);
+                setImportTag(tag);
             })
             .catch(err => {
                 console.error(err);
@@ -126,6 +137,11 @@ export default function ImportBatchPage() {
             <If condition={importActive || dryRunActive || jobTree !== null}>
                 <FormCard>
                     <Heading3>Import results</Heading3>
+                    <If condition={importTag}>
+                        <Callout title="Import tag">
+                            Your tag for all jobs within this import is: <code>{importTag}</code>
+                        </Callout>
+                    </If>
                     <Choose>
                         <When condition={importActive || dryRunActive}>
                             <SpinnerContainer>

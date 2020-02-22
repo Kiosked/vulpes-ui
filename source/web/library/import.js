@@ -21,8 +21,13 @@ export function importJobsTemplate(template) {
         .post(joinURL(API_BASE, "/import/batch"), {
             template
         })
-        .then(response => response.data.jobs)
-        .then(jobs => jobsArrayToTree(jobs))
+        .then(response => {
+            const { jobs, tag } = response.data;
+            return {
+                tree: jobsArrayToTree(jobs),
+                tag
+            };
+        })
         .catch(function(error) {
             console.log(error);
             throw error;

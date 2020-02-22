@@ -379,10 +379,17 @@ function createRoutes(router, service) {
             res.status(400).send("Bad request");
             return;
         }
+        let tag = null;
         return service
             .addJobs(rawJobs)
-            .then(resultingJobs =>
-                resultingJobs.map(jobData => ({
+            .then(jobs => {
+                if (jobs.length > 0) {
+                    tag = jobs[0].data.tag || null;
+                }
+                return jobs;
+            })
+            .then(jobs =>
+                jobs.map(jobData => ({
                     id: jobData.id,
                     type: jobData.type,
                     parents: jobData.parents || []
@@ -390,7 +397,8 @@ function createRoutes(router, service) {
             )
             .then(jobs => {
                 res.status(200).send({
-                    jobs
+                    jobs,
+                    tag
                 });
             })
             .catch(err => {
