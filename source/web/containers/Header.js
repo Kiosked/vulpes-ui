@@ -15,6 +15,9 @@ export default connect(
             dispatch(push("/jobs"));
             collectCurrentJobs();
         },
+        onClickReporting: () => dispatch => {
+            dispatch(push("/reporting"));
+        },
         onClickScheduling: () => dispatch => {
             dispatch(push("/scheduling"));
         }
