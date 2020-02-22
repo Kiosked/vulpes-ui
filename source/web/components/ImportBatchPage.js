@@ -141,6 +141,7 @@ export default function ImportBatchPage() {
                         <Callout title="Import tag">
                             Your tag for all jobs within this import is: <code>{importTag}</code>
                         </Callout>
+                        <br />
                     </If>
                     <Choose>
                         <When condition={importActive || dryRunActive}>
