@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.14.1
+_2020-02-23_
+
+ * **Bugfix**:
+   * (Vulpes) Importing templates that use underscores would fail
+
 ## v0.14.0
 _2020-02-23_
 
