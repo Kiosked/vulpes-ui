@@ -23,18 +23,14 @@ export function collectStats() {
 }
 
 export function fetchStats() {
-    return __requests
-        .channel("stats")
-        .enqueue(
-            () =>
-                timeLimit(
-                    axios
-                        .get(joinURL(API_BASE, "/stats"))
-                        .then(resp => ({ stats: resp.data.stats })),
-                    FETCH_TIMELIMIT_STATS,
-                    { rejectWith: new Error("Timed-out fetching stats") }
-                ),
-            undefined,
-            /* stack: */ "stats"
-        );
+    return __requests.channel("stats").enqueue(
+        () =>
+            timeLimit(
+                axios.get(joinURL(API_BASE, "/stats")).then(resp => ({ stats: resp.data.stats })),
+                FETCH_TIMELIMIT_STATS,
+                { rejectWith: new Error("Timed-out fetching stats") }
+            ),
+        undefined,
+        /* stack: */ "stats"
+    );
 }
