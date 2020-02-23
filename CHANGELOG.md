@@ -1,5 +1,11 @@
 # Vulpes-UI
 
+## v0.14.0
+_2020-02-23_
+
+ * Reporting UI
+ * Batch importing via templates
+
 ## v0.13.2
 _2020-02-15_
 

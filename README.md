@@ -9,6 +9,14 @@
 
 Vulpes-UI is a plugin for the Vulpes platform that provides a web-based user interface to manage Vulpes jobs. Vulpes provides a `Service` which can be used to connect with Vulpes-UI to display jobs and their properties. Vulpes-UI provides a basic API (not related to [Vulpes-API](https://github.com/Kiosked/vulpes-api)) for handling UI events.
 
+This UI provides many useful features:
+
+ * Add jobs to a Vulpes service
+ * Start/Stop/Delete jobs
+ * Track inheritance and job chains
+ * Generate lightweight reports
+ * Batch import jobs (using templates)
+
 ## Installation
 
 Install by running `npm install vulpes-ui --save`. Vulpes-UI depends on vulpes as a peer dependency, so you must have that installed as well.
