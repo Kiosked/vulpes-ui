@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Alignment, Button, Navbar } from "@blueprintjs/core";
+import { Alignment, Button, Menu, MenuItem, Navbar, Popover, Position } from "@blueprintjs/core";
 
 const Container = styled.div`
     width: 100%;
@@ -15,6 +15,7 @@ const Container = styled.div`
 
 export default class Header extends PureComponent {
     static propTypes = {
+        onClickBatchImport: PropTypes.func.isRequired,
         onClickHome: PropTypes.func.isRequired,
         onClickJobs: PropTypes.func.isRequired,
         onClickReporting: PropTypes.func.isRequired,
@@ -48,6 +49,20 @@ export default class Header extends PureComponent {
                             text="Scheduling"
                             onClick={this.props.onClickScheduling}
                         />
+                        <Popover
+                            content={
+                                <Menu>
+                                    <MenuItem
+                                        text="Batch Template"
+                                        icon="multi-select"
+                                        onClick={this.props.onClickBatchImport}
+                                    />
+                                </Menu>
+                            }
+                            position={Position.BOTTOM}
+                        >
+                            <Button className="bp3-minimal" icon="upload" text="Import" />
+                        </Popover>
                         <Button
                             className="bp3-minimal"
                             icon="regression-chart"
@@ -65,12 +80,6 @@ export default class Header extends PureComponent {
                             className="bp3-minimal"
                             icon="cell-tower"
                             text="Hooks"
-                        />
-                        <Button
-                            disabled={true}
-                            className="bp3-minimal"
-                            icon="settings"
-                            text="System"
                         />
                     </Navbar.Group>
                 </Navbar>

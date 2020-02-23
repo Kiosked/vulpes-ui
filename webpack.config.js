@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const { EnvironmentPlugin, NoEmitOnErrorsPlugin } = require("webpack");
 const rimraf = require("rimraf").sync;
 
@@ -36,6 +37,10 @@ function getPlugins(env, argv) {
         console.log("Loading dev plugins");
         plugins.push(
             new NoEmitOnErrorsPlugin()
+        );
+    } else if (mode === "production") {
+        plugins.push(
+            new OptimizeCSSAssetsPlugin()
         );
     }
     if (process.env.RELOAD === "yes") {
@@ -83,12 +88,7 @@ module.exports = (env, argv) => ({
                 test: /\.s[ac]ss$/,
                 use: [
                     MiniCSSExtractPlugin.loader,
-                    {
-                        loader: "css-loader",
-                        options: {
-                            minimize: true
-                        }
-                    },
+                    "css-loader",
                     "sass-loader"
                 ]
             },
@@ -96,12 +96,7 @@ module.exports = (env, argv) => ({
                 test: /\.css$/,
                 use: [
                     MiniCSSExtractPlugin.loader,
-                    {
-                        loader: "css-loader",
-                        options: {
-                            minimize: true
-                        }
-                    }
+                    "css-loader"
                 ]
             }
         ]

@@ -19,36 +19,15 @@ import {
 import Layout from "./Layout.js";
 import ReportViewer from "./ReportViewer.js";
 
-// const INITIAL_STATE = {
-//     editingIndex: -1,
-//     editingPattern: "",
-//     jobTypePatterns: [],
-//     newJobPattern: "",
-//     newProperties: null,
-//     onlySucceeded: true,
-//     preparedConfig: null,
-//     reportingProperties: [],
-//     tagFilter: ""
-// };
-
 const INITIAL_STATE = {
     editingIndex: -1,
     editingPattern: "",
-    jobTypePatterns: ["test/*"],
+    jobTypePatterns: [],
     newJobPattern: "",
     newProperties: null,
     onlySucceeded: true,
     preparedConfig: null,
-    reportingProperties: [
-        {
-            type: "*",
-            properties: ["fallback-value"]
-        },
-        {
-            type: "*",
-            properties: ["my.deep.result", "my.deep.string", "not.here"]
-        }
-    ],
+    reportingProperties: [],
     tagFilter: ""
 };
 

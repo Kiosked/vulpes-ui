@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const pify = require("pify");
 const joinURL = require("url-join");
 const nested = require("nested-property");
-const { Symbol: VulpesSymbols } = require("vulpes");
+const { Symbol: VulpesSymbols, convertTemplateToJobArray } = require("vulpes");
 const { JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX } = require("./symbols.js");
 
 const readFile = pify(fs.readFile);
@@ -369,6 +369,56 @@ function createRoutes(router, service) {
                 res.status(500).send("Internal server error");
             });
     });
+    router.post("/import/batch", function(req, res) {
+        const { template } = req.body;
+        let rawJobs;
+        try {
+            rawJobs = convertTemplateToJobArray(template);
+        } catch (err) {
+            console.error(err);
+            res.status(400).send("Bad request");
+            return;
+        }
+        let tag = null;
+        return service
+            .addJobs(rawJobs)
+            .then(jobs => {
+                if (jobs.length > 0) {
+                    tag = jobs[0].data.tag || null;
+                }
+                return jobs;
+            })
+            .then(jobs =>
+                jobs.map(jobData => ({
+                    id: jobData.id,
+                    type: jobData.type,
+                    parents: jobData.parents || []
+                }))
+            )
+            .then(jobs => {
+                res.status(200).send({
+                    jobs,
+                    tag
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal server error");
+            });
+    });
+    router.post("/import/batch/dry", function(req, res) {
+        const { template } = req.body;
+        try {
+            const jobs = convertTemplateToJobArray(template);
+            res.status(200).send({
+                jobs
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(400).send("Bad request");
+            return;
+        }
+    });
     router.post("/report/on-the-fly", function(req, res) {
         const {
             types: jobTypePatterns,
@@ -377,7 +427,7 @@ function createRoutes(router, service) {
             onlySucceeded = true
         } = req.body;
         const failRequest = () => res.status(400).send("Bad request");
-        if (!Array.isArray(jobTypePatterns) || jobTypePatterns.length <= 0) {
+        if (!Array.isArray(jobTypePatterns)) {
             console.error("Job type patterns (types) not provided");
             failRequest();
             return;
@@ -386,6 +436,9 @@ function createRoutes(router, service) {
             console.error("Report properties (reportingProperties) not provided");
             failRequest();
             return;
+        }
+        if (jobTypePatterns.length <= 0) {
+            jobTypePatterns.push("*");
         }
         const jobType = _jobTypesToRegex(jobTypePatterns);
         const query = { type: jobType };
