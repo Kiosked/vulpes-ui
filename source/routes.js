@@ -427,7 +427,7 @@ function createRoutes(router, service) {
             onlySucceeded = true
         } = req.body;
         const failRequest = () => res.status(400).send("Bad request");
-        if (!Array.isArray(jobTypePatterns) || jobTypePatterns.length <= 0) {
+        if (!Array.isArray(jobTypePatterns)) {
             console.error("Job type patterns (types) not provided");
             failRequest();
             return;
@@ -436,6 +436,9 @@ function createRoutes(router, service) {
             console.error("Report properties (reportingProperties) not provided");
             failRequest();
             return;
+        }
+        if (jobTypePatterns.length <= 0) {
+            jobTypePatterns.push("*");
         }
         const jobType = _jobTypesToRegex(jobTypePatterns);
         const query = { type: jobType };

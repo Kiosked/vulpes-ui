@@ -17,6 +17,10 @@ const SpinnerContainer = styled.div`
     height: 480px;
 `;
 
+function renderValue(value) {
+    return `${value}`;
+}
+
 export default function ReportViewer({ config }) {
     const { types, reportingProperties, tagFilter = "" } = config;
     const [results, setResults] = useState([]);
@@ -92,7 +96,7 @@ export default function ReportViewer({ config }) {
                                                 <code>{propertyResult.key}</code>
                                             </td>
                                             <td>
-                                                <code>{propertyResult.value}</code>
+                                                <code>{renderValue(propertyResult.value)}</code>
                                             </td>
                                         </With>
                                     </tr>
