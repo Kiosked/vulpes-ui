@@ -52,10 +52,10 @@ function createRoutes(router, service) {
     router.use("/", express.static(DIST));
     router.get("/jobs", function(req, res) {
         const options = {
-            limit: req.query.limit,
+            limit: parseInt(req.query.limit, 10),
             order: req.query.order,
             sort: req.query.sort,
-            start: req.query.start || 0
+            start: req.query.start ? parseInt(req.query.start) : 0
         };
         const { search = "" } = req.query;
         const query =
