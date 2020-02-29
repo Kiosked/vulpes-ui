@@ -6,7 +6,11 @@ const { createVulpesRouter } = require("../source/index.js");
 Object.assign(global, { __DEV__: true });
 
 const app = express();
-const storage = new FileStorage(path.resolve(__dirname, "../jobs.db.json"));
+const fileStorage = new FileStorage(path.resolve(__dirname, "../jobs.db.json"));
+const storage = new MemoryStorage({
+    fileStorage,
+    flushDelay: 10000
+});
 const artifactManager = new ArtifactManager("/tmp/vulpes");
 const service = new Service({ artifactManager, storage });
 
