@@ -59,16 +59,13 @@ export function collectCurrentJobs() {
     const sortOrder = getQuerySortOrder(state);
     const start = pageNum * perPage;
     // @todo filters
-    return fetchJobs({ start, limit: perPage, search, sort: sortColumn, order: sortOrder })
-        .then(({ jobs, total }) => {
+    return fetchJobs({ start, limit: perPage, search, sort: sortColumn, order: sortOrder }).then(
+        ({ jobs, total }) => {
             dispatch(setJobs(jobs));
             dispatch(setTotalJobs(total));
             return jobs;
-        })
-        .catch(err => {
-            console.error(err);
-            notifyError(`Failed collecting jobs: ${err.message}`);
-        });
+        }
+    );
 }
 
 export function collectJobTree(jobID) {
