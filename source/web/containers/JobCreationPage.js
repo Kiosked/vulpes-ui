@@ -3,6 +3,7 @@ import { push } from "react-router-redux";
 import JobCreationPage from "../components/JobCreationPage";
 import { addJob, collectCurrentJobs } from "../library/jobs.js";
 import { getJobIds, getJobTypes } from "../selectors/jobs.js";
+import { notifyError } from "../library/notifications.js";
 
 export default connect(
     (state, ownProps) => ({
@@ -22,7 +23,10 @@ export default connect(
                 });
         },
         onReady: () => () => {
-            collectCurrentJobs();
+            collectCurrentJobs().catch(err => {
+                console.error(err);
+                notifyError(`Failed fetching jobs: ${err.message}`);
+            });
         }
     }
 )(JobCreationPage);

@@ -2,14 +2,7 @@ import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobPage from "../components/JobPage.js";
 import { getJob, getJobTree, jobsQueryCustomised } from "../selectors/jobs.js";
-import {
-    collectJob,
-    collectJobTree,
-    removeJob,
-    resetJob,
-    stopJob,
-    updateJob
-} from "../library/jobs.js";
+import { collectJob, removeJob, resetJob, stopJob, updateJob } from "../library/jobs.js";
 import { notifyError, notifySuccess } from "../library/notifications.js";
 
 export default connect(
@@ -17,9 +10,17 @@ export default connect(
         job: getJob(state, ownProps.match.params.jobId),
         jobID: ownProps.match.params.jobId,
         jobTree: getJobTree(state, ownProps.match.params.jobId),
-        searchActive: jobsQueryCustomised(state)
+        searchActive: jobsQueryCustomised(state),
+        tab: ownProps.match.params.tab || null
     }),
     {
+        changeTab: (jobID, tab) => dispatch => {
+            if (tab) {
+                dispatch(push(`/job/${jobID}/${tab}`));
+            } else {
+                dispatch(push(`/job/${jobID}`));
+            }
+        },
         deleteJob: jobID => dispatch => {
             removeJob(jobID)
                 .then(() => {
@@ -42,10 +43,6 @@ export default connect(
         },
         goToNewDependentJobPage: jobID => dispatch => {
             dispatch(push(`/new-job/parents/${jobID}`));
-        },
-        onReady: jobID => () => {
-            collectJob(jobID);
-            collectJobTree(jobID);
         },
         removeAttachment: (jobID, attachmentID) => (dispatch, getState) => {
             const job = getJob(getState(), jobID);

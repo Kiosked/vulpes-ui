@@ -17,7 +17,6 @@ import ReactPaginate from "react-paginate";
 import Layout from "./Layout.js";
 import { JobShape } from "../library/propTypes.js";
 import JobItem from "./JobItem.js";
-import { startTimer, stopTimer } from "../library/timers.js";
 import { SORTING_COLUMNS, SORTING_ORDERS } from "../library/sorting.js";
 
 // const FILTER_OPTIONS = [
@@ -85,7 +84,6 @@ export default class JobListPage extends Component {
         goToPage: PropTypes.func.isRequired,
         jobs: PropTypes.arrayOf(JobShape).isRequired,
         jobsPerPage: PropTypes.number.isRequired,
-        onReady: PropTypes.func.isRequired,
         search: PropTypes.func.isRequired,
         searchTerm: PropTypes.string.isRequired,
         setSorting: PropTypes.func.isRequired,
@@ -125,15 +123,6 @@ export default class JobListPage extends Component {
 
     clearSearch() {
         this.props.search("");
-    }
-
-    componentDidMount() {
-        this.props.onReady();
-        this.timer = startTimer(() => this.props.onReady(), 5000);
-    }
-
-    componentWillUnmount() {
-        stopTimer(this.timer);
     }
 
     handleIntermediarySearch() {

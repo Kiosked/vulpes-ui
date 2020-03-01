@@ -5,7 +5,7 @@ import { getJobs } from "../selectors/jobs.js";
 
 export default connect(
     (state, ownProps) => ({
-        jobTree: getJobTree(state, ownProps.job.id)
+        jobTree: ownProps.job ? getJobTree(state, ownProps.job.id) : null
     }),
     {}
 )(JobRelatedItemsView);

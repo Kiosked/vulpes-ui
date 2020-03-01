@@ -9,8 +9,5 @@ const reduxRouterMiddleware = routerMiddleware(history);
 
 const store = createStore(reducer, composeEnhancer(applyMiddleware(thunk, reduxRouterMiddleware)));
 
-const { dispatch, getState } = store;
-
 export default store;
-
-export { dispatch, getState };
+export const { dispatch, getState } = store;

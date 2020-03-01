@@ -34,18 +34,13 @@ export function addJob(properties) {
 }
 
 export function collectJob(jobID) {
-    return fetchJob(jobID)
-        .then(job => {
-            const existingJob = getJob(getState(), jobID);
-            if (existingJob && !objectsDiffer(existingJob, job)) {
-                return;
-            }
-            dispatch(setJob(job));
-        })
-        .catch(err => {
-            console.error(err);
-            notifyError(`Failed collecting job ${jobID}: ${err.message}`);
-        });
+    return fetchJob(jobID).then(job => {
+        const existingJob = getJob(getState(), jobID);
+        if (existingJob && !objectsDiffer(existingJob, job)) {
+            return;
+        }
+        dispatch(setJob(job));
+    });
 }
 
 export function collectCurrentJobs() {
@@ -59,16 +54,13 @@ export function collectCurrentJobs() {
     const sortOrder = getQuerySortOrder(state);
     const start = pageNum * perPage;
     // @todo filters
-    return fetchJobs({ start, limit: perPage, search, sort: sortColumn, order: sortOrder })
-        .then(({ jobs, total }) => {
+    return fetchJobs({ start, limit: perPage, search, sort: sortColumn, order: sortOrder }).then(
+        ({ jobs, total }) => {
             dispatch(setJobs(jobs));
             dispatch(setTotalJobs(total));
             return jobs;
-        })
-        .catch(err => {
-            console.error(err);
-            notifyError(`Failed collecting jobs: ${err.message}`);
-        });
+        }
+    );
 }
 
 export function collectJobTree(jobID) {
