@@ -41,10 +41,6 @@ export function collectJob(jobID) {
         }
         dispatch(setJob(job));
     });
-    // .catch(err => {
-    //     console.error(err);
-    //     notifyError(`Failed collecting job ${jobID}: ${err.message}`);
-    // });
 }
 
 export function collectCurrentJobs() {

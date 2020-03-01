@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import JobPage from "../components/JobPage.js";
 import { getJob, getJobTree, jobsQueryCustomised } from "../selectors/jobs.js";
-import { removeJob, resetJob, stopJob, updateJob } from "../library/jobs.js";
+import { collectJob, removeJob, resetJob, stopJob, updateJob } from "../library/jobs.js";
 import { notifyError, notifySuccess } from "../library/notifications.js";
 
 export default connect(

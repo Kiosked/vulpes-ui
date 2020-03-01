@@ -5,6 +5,7 @@ import { clearReloads, reload } from "../library/reload.js";
 import { collectCurrentJobs, collectJob, collectJobTree } from "../library/jobs.js";
 
 const JOB_PAGE_REXP = /^\/job\/([a-f0-9-]+)(\/|$)/;
+const JOB_PAGE_TREE_REXP = /^\/job\/([a-f0-9-]+)\/(tree|parents|children)/;
 
 let lastRoute = null,
     lastQueryHash = null;
@@ -22,7 +23,9 @@ function handleRouteChanged(route) {
     } else if (JOB_PAGE_REXP.test(route)) {
         const [, jobID] = route.match(JOB_PAGE_REXP);
         reload(() => collectJob(jobID));
-        reload(() => collectJobTree(jobID), 6000, 25000);
+        if (JOB_PAGE_TREE_REXP.test(route)) {
+            reload(() => collectJobTree(jobID), 15000, 25000);
+        }
     }
 }
 

@@ -44,12 +44,10 @@ export default connect(
         search: term => dispatch => {
             dispatch(setJobPage(0));
             dispatch(setSearchQuery(term));
-            setTimeout(throttledProcessJobs, 100);
         },
         setSorting: (column, order) => dispatch => {
             dispatch(setSortColumn(column));
             dispatch(setSortOrder(order));
-            setTimeout(throttledProcessJobs, 100);
         }
     }
 )(JobListPage);
