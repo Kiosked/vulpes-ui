@@ -12,20 +12,21 @@ export default class JobRelatedItemsView extends Component {
 
     static propTypes = {
         goToJobPage: PropTypes.func.isRequired,
-        job: JobShape.isRequired,
+        job: JobShape,
         jobTree: PropTypes.arrayOf(JobShape),
         show: PropTypes.string.isRequired
     };
 
     render() {
         const canShow = targetJob =>
-            this.props.show === "all" ||
-            (this.props.show === "parents" && this.props.job.parents.includes(targetJob.id)) ||
-            (this.props.show === "children" && targetJob.parents.includes(this.props.job.id));
+            this.props.job &&
+            (this.props.show === "all" ||
+                (this.props.show === "parents" && this.props.job.parents.includes(targetJob.id)) ||
+                (this.props.show === "children" && targetJob.parents.includes(this.props.job.id)));
         return (
             <Fragment>
                 <Choose>
-                    <When condition={this.props.jobTree}>
+                    <When condition={this.props.jobTree && this.props.job}>
                         <For each="job" of={this.props.jobTree}>
                             <If condition={canShow(job)}>
                                 <JobItem

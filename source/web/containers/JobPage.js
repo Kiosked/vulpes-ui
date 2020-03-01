@@ -10,9 +10,17 @@ export default connect(
         job: getJob(state, ownProps.match.params.jobId),
         jobID: ownProps.match.params.jobId,
         jobTree: getJobTree(state, ownProps.match.params.jobId),
-        searchActive: jobsQueryCustomised(state)
+        searchActive: jobsQueryCustomised(state),
+        tab: ownProps.match.params.tab || null
     }),
     {
+        changeTab: (jobID, tab) => dispatch => {
+            if (tab) {
+                dispatch(push(`/job/${jobID}/${tab}`));
+            } else {
+                dispatch(push(`/job/${jobID}`));
+            }
+        },
         deleteJob: jobID => dispatch => {
             removeJob(jobID)
                 .then(() => {

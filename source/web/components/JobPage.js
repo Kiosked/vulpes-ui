@@ -29,6 +29,7 @@ const SearchNavGroup = styled(ButtonGroup)`
 
 export default class JobPage extends Component {
     static propTypes = {
+        changeTab: PropTypes.func.isRequired,
         goToJobPage: PropTypes.func.isRequired,
         goToNewDependentJobPage: PropTypes.func.isRequired,
         goToNewJobPage: PropTypes.func.isRequired,
@@ -39,6 +40,7 @@ export default class JobPage extends Component {
         resetJob: PropTypes.func.isRequired,
         searchActive: PropTypes.bool.isRequired,
         stopJob: PropTypes.func.isRequired,
+        tab: PropTypes.oneOf(["tree", "parents", "children"]),
         updateJob: PropTypes.func.isRequired
     };
 
@@ -62,26 +64,26 @@ export default class JobPage extends Component {
             <Layout>
                 <CustomTabList>
                     <CustomTab
-                        selected={this.state.tab === "job"}
-                        onClick={() => this.setState({ tab: "job" })}
+                        selected={!this.props.tab}
+                        onClick={() => this.props.changeTab(this.props.jobID)}
                     >
                         Job details
                     </CustomTab>
                     <CustomTab
-                        selected={this.state.tab === "tree"}
-                        onClick={() => this.setState({ tab: "tree" })}
+                        selected={this.props.tab === "tree"}
+                        onClick={() => this.props.changeTab(this.props.jobID, "tree")}
                     >
                         Job tree
                     </CustomTab>
                     <CustomTab
-                        selected={this.state.tab === "parents"}
-                        onClick={() => this.setState({ tab: "parents" })}
+                        selected={this.props.tab === "parents"}
+                        onClick={() => this.props.changeTab(this.props.jobID, "parents")}
                     >
                         Parent Jobs
                     </CustomTab>
                     <CustomTab
-                        selected={this.state.tab === "children"}
-                        onClick={() => this.setState({ tab: "children" })}
+                        selected={this.props.tab === "children"}
+                        onClick={() => this.props.changeTab(this.props.jobID, "children")}
                     >
                         Child Jobs
                     </CustomTab>
@@ -94,7 +96,7 @@ export default class JobPage extends Component {
                     </SearchNavGroup>
                 </If>
                 <Choose>
-                    <When condition={this.state.tab === "job"}>
+                    <When condition={!this.props.tab}>
                         <JobView
                             deleteJob={this.props.deleteJob}
                             goToNewDependentJobPage={this.props.goToNewDependentJobPage}
@@ -109,7 +111,7 @@ export default class JobPage extends Component {
                             updateJob={this.props.updateJob}
                         />
                     </When>
-                    <When condition={this.state.tab === "tree"}>
+                    <When condition={this.props.tab === "tree"}>
                         <JobTreeView
                             goToJobPage={::this.goToJobPage}
                             job={this.props.job}
@@ -117,14 +119,14 @@ export default class JobPage extends Component {
                             jobTree={this.props.jobTree}
                         />
                     </When>
-                    <When condition={this.state.tab === "parents"}>
+                    <When condition={this.props.tab === "parents"}>
                         <JobRelatedItemsView
                             goToJobPage={::this.goToJobPage}
                             job={this.props.job}
                             show="parents"
                         />
                     </When>
-                    <When condition={this.state.tab === "children"}>
+                    <When condition={this.props.tab === "children"}>
                         <JobRelatedItemsView
                             goToJobPage={::this.goToJobPage}
                             job={this.props.job}
