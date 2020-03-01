@@ -34,18 +34,17 @@ export function addJob(properties) {
 }
 
 export function collectJob(jobID) {
-    return fetchJob(jobID)
-        .then(job => {
-            const existingJob = getJob(getState(), jobID);
-            if (existingJob && !objectsDiffer(existingJob, job)) {
-                return;
-            }
-            dispatch(setJob(job));
-        })
-        .catch(err => {
-            console.error(err);
-            notifyError(`Failed collecting job ${jobID}: ${err.message}`);
-        });
+    return fetchJob(jobID).then(job => {
+        const existingJob = getJob(getState(), jobID);
+        if (existingJob && !objectsDiffer(existingJob, job)) {
+            return;
+        }
+        dispatch(setJob(job));
+    });
+    // .catch(err => {
+    //     console.error(err);
+    //     notifyError(`Failed collecting job ${jobID}: ${err.message}`);
+    // });
 }
 
 export function collectCurrentJobs() {

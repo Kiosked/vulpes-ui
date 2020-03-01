@@ -2,7 +2,9 @@ import objectHash from "object-hash";
 import { getRoute } from "../selectors/nav.js";
 import { getJobsQuery } from "../selectors/jobs.js";
 import { clearReloads, reload } from "../library/reload.js";
-import { collectCurrentJobs } from "../library/jobs.js";
+import { collectCurrentJobs, collectJob, collectJobTree } from "../library/jobs.js";
+
+const JOB_PAGE_REXP = /^\/job\/([a-f0-9-]+)(\/|$)/;
 
 let lastRoute = null,
     lastQueryHash = null;
@@ -17,6 +19,10 @@ function handleRouteChanged(route) {
     clearReloads();
     if (route === "/jobs") {
         reload(collectCurrentJobs);
+    } else if (JOB_PAGE_REXP.test(route)) {
+        const [, jobID] = route.match(JOB_PAGE_REXP);
+        reload(() => collectJob(jobID));
+        reload(() => collectJobTree(jobID), 6000, 25000);
     }
 }
 

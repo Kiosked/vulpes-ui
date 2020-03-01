@@ -7,7 +7,6 @@ import { JobShape } from "../library/propTypes.js";
 import JobView from "./JobView.js";
 import JobTreeView from "./JobTreeView.js";
 import JobRelatedItemsView from "../containers/JobRelatedItemsView.js";
-import { startTimer, stopTimer } from "../library/timers.js";
 
 const CustomTabList = styled.ul`
     list-style-type: none;
@@ -36,7 +35,6 @@ export default class JobPage extends Component {
         job: JobShape,
         jobID: PropTypes.string.isRequired,
         jobTree: PropTypes.arrayOf(JobShape),
-        onReady: PropTypes.func.isRequired,
         removeAttachment: PropTypes.func.isRequired,
         resetJob: PropTypes.func.isRequired,
         searchActive: PropTypes.bool.isRequired,
@@ -47,21 +45,6 @@ export default class JobPage extends Component {
     state = {
         tab: "job"
     };
-
-    componentDidMount() {
-        this.props.onReady(this.props.jobID);
-        this.timer = startTimer(() => this.props.onReady(this.props.jobID), 3000);
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.jobID !== prevProps.jobID) {
-            this.props.onReady(this.props.jobID);
-        }
-    }
-
-    componentWillUnmount() {
-        stopTimer(this.timer);
-    }
 
     goToJobPage(jobID) {
         this.setState(
