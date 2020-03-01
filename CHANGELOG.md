@@ -1,5 +1,14 @@
 # Vulpes-UI
 
+## v0.15.0
+_2020-03-01_
+
+ * Performance improvements for querying
+ * Smart fetching of data from API
+   * Error stand-off delay
+ * **Bugfix**:
+   * Wrong result count on pages other than 1
+
 ## v0.14.1
 _2020-02-23_
 
