@@ -16,21 +16,24 @@ import {
 } from "../actions/types.js";
 
 export const QUERY_INITIAL = {
-    queryFilterResults: [],
-    queryFilterStatuses: [],
     queryPage: 0,
     queryPerPage: 15,
-    queryRequestActive: false,
     querySearch: "",
     querySortColumn: "created",
     querySortOrder: "desc"
+};
+const QUERY_RESULT_INITIAL = {
+    queryFilterResults: [],
+    queryFilterStatuses: [],
+    queryRequestActive: false
 };
 const INITIAL = {
     jobs: [],
     jobResults: [],
     jobResultsTotal: 0,
     jobTrees: {},
-    ...QUERY_INITIAL
+    ...QUERY_INITIAL,
+    ...QUERY_RESULT_INITIAL
 };
 
 export default function jobsReducer(state = INITIAL, action = {}) {
@@ -87,7 +90,8 @@ export default function jobsReducer(state = INITIAL, action = {}) {
         case JOBS_RESET_QUERY:
             return {
                 ...state,
-                ...QUERY_INITIAL
+                ...QUERY_INITIAL,
+                ...QUERY_RESULT_INITIAL
             };
         case JOBS_RESULTS_SET:
             return {

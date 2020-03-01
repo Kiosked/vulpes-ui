@@ -2,16 +2,16 @@ import { QUERY_INITIAL } from "../reducers/jobs.js";
 
 const KEY = "jobs";
 
+export function getAllJobs(state) {
+    return state[KEY].jobs;
+}
+
 export function getCurrentJobs(state) {
     return state[KEY].jobResults;
 }
 
 export function getJob(state, jobID) {
     return state[KEY].jobs.find(job => job.id === jobID) || null;
-}
-
-export function getAllJobs(state) {
-    return state[KEY].jobs;
 }
 
 export function getJobTree(state, jobID) {
@@ -26,6 +26,16 @@ export function getJobTypes(state) {
 export function getJobIds(state) {
     const ids = getAllJobs(state).map(job => job.id);
     return [...new Set(ids)];
+}
+
+export function getJobsQuery(state) {
+    return Object.keys(QUERY_INITIAL).reduce(
+        (output, key) => ({
+            ...output,
+            [key]: state[KEY][key]
+        }),
+        {}
+    );
 }
 
 export function getQueryPage(state) {

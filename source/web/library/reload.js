@@ -17,7 +17,10 @@ export function reload(fn, delay = 5000, errDelay = 20000) {
                     clearTimeout(timer);
                     timer = setTimeout(runFn, delay);
                 };
-                res.then(rerun, rerun);
+                res.then(rerun, err => {
+                    console.error(err);
+                    rerun();
+                });
             } else {
                 clearTimeout(timer);
                 timer = setTimeout(runFn, delay);
@@ -28,7 +31,7 @@ export function reload(fn, delay = 5000, errDelay = 20000) {
             timer = setTimeout(runFn, errDelay);
         }
     };
-    timer = setTimeout(runFn, 0);
+    timer = setTimeout(runFn, 250);
     __reloads.push(() => {
         active = false;
         clearTimeout(timer);
