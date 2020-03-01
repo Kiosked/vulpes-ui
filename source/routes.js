@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const pify = require("pify");
 const joinURL = require("url-join");
 const nested = require("nested-property");
+const VError = require("verror");
 const { Symbol: VulpesSymbols, convertTemplateToJobArray } = require("vulpes");
 const { JOB_PROGRESS_CURRENT, JOB_PROGRESS_MAX } = require("./symbols.js");
 
@@ -190,7 +191,12 @@ function createRoutes(router, service) {
                 rs.pipe(res);
             })
             .catch(err => {
+                const { code } = VError.info(err);
                 console.error(err);
+                if (code === VulpesSymbols.ERROR_CODE_ARTIFACT_NOTFOUND) {
+                    res.status(404).send("Not found");
+                    return;
+                }
                 res.status(500).send("Internal server error");
             });
     });

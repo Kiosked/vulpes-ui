@@ -5,6 +5,7 @@ import {
     Button,
     ButtonGroup,
     Card,
+    Colors,
     Classes,
     Dialog,
     Icon,
@@ -15,6 +16,7 @@ import { LazyLog } from "react-lazylog";
 import humanDate from "human-date";
 import debounce from "debounce";
 import { clearDownloadQueue, downloadAttachmentToDataURI } from "../library/attachments.js";
+import { notifyError } from "../library/notifications.js";
 
 const ATTACHMENT_REXP = /^%attachment:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const MIME_IMAGE_REXP = /^image\//;
@@ -87,6 +89,9 @@ const NoImage = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+`;
+const NoImageRed = styled(NoImage)`
+    color: ${Colors.RED3};
 `;
 const Title = styled.div`
     text-align: center;
@@ -164,16 +169,20 @@ export default class Attachments extends Component {
 
     _fetchAllAttachments() {
         this.attachments.forEach(attachment => {
-            this.fetchAttachmentData(attachment.id);
+            this.fetchAttachmentData(attachment.id).then(downloaded => {
+                if (downloaded === false) {
+                    notifyError(`Attachment failed to download: ${attachment.title}`);
+                }
+            });
         });
     }
 
     fetchAttachmentData(id) {
-        if (this.state.attachmentData[id]) {
-            return;
+        if (typeof this.state.attachmentData[id] !== "undefined") {
+            return Promise.resolve(null);
         }
         const { mime } = this.attachments.find(attachment => attachment.id === id);
-        downloadAttachmentToDataURI(id, mime)
+        return downloadAttachmentToDataURI(id, mime)
             .then(data => {
                 this.setState({
                     attachmentData: {
@@ -181,13 +190,22 @@ export default class Attachments extends Component {
                         [id]: data
                     }
                 });
+                return true;
             })
             .catch(err => {
+                this.setState({
+                    attachmentData: {
+                        ...this.state.attachmentData,
+                        [id]: null
+                    }
+                });
                 console.error(err);
+                return false;
             });
     }
 
     handleClickFile(attachment) {
+        if (this.state.attachmentData[attachment.id] === null) return;
         this.setState({
             presentedAttachment: attachment
         });
@@ -227,6 +245,15 @@ export default class Attachments extends Component {
                                         }
                                     >
                                         <Image src={this.state.attachmentData[attachment.id]} />
+                                    </When>
+                                    <When
+                                        condition={
+                                            this.state.attachmentData[attachment.id] === null
+                                        }
+                                    >
+                                        <NoImageRed>
+                                            <Icon icon="offline" />
+                                        </NoImageRed>
                                     </When>
                                     <Otherwise>
                                         <NoImage>
